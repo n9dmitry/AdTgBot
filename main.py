@@ -28,7 +28,7 @@ def start(message):
 @bot.message_handler(func=lambda message: message.text == 'Добавить объявление')
 def add_ad(message):
     markup = types.ReplyKeyboardMarkup()
-    car_brands = ['BMW', 'Mercedes', 'Audi', 'Другая']  # Здесь можно добавить список других марок машин
+    car_brands = ['BMW', 'Mercedes', 'Audi', 'Другая']
     for brand in car_brands:
         button_brand = types.KeyboardButton(brand)
         markup.add(button_brand)
@@ -42,13 +42,17 @@ def add_ad(message):
 
 
 def handle_brand(message):
-    user_data[message.chat.id] = {}  # Создаем пустой словарь для нового пользователя
-
+    user_data[message.chat.id] = {}
     brand = message.text
     if brand == 'Другая':
         bot.send_message(message.chat.id, 'Введите марку машины вручную')
         bot.register_next_step_handler(message, handle_custom_brand)
-    else:
+    elif brand in ['BMW', 'Mercedes', 'Audi']:
+        user_data[message.chat.id]['brand'] = brand
+        bot.send_message(message.chat.id, 'Введите модель машины')
+        bot.register_next_step_handler(message, handle_model)
+
+
         user_data[message.chat.id]['brand'] = brand
         bot.send_message(message.chat.id, 'Введите модель машины')
         bot.register_next_step_handler(message, handle_model)
@@ -67,6 +71,7 @@ def handle_model(message):
     user_data[message.chat.id]['model'] = model
 
     ask_body_type(message)
+
 
 def ask_body_type(message):
     body_type = message.text
@@ -205,6 +210,7 @@ def handle_additional_description(message):
 
     bot.send_message(message.chat.id, 'Выберите валюту:', reply_markup=keyboard)
     bot.register_next_step_handler(message, handle_currency)
+
 
 def handle_currency(message):
     currency = ''
