@@ -7,11 +7,12 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils import executor
 
 API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+API_TOKEN2 = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 GROUP_ID = '@autoxyibot1'
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=API_TOKEN2)
 dp = Dispatcher(bot)
 
 user_data = {}
