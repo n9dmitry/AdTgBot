@@ -16,6 +16,10 @@ bot = Bot(token=API_TOKEN2)
 dp = Dispatcher(bot)
 
 user_data = {}
+# Пример работы с user_data
+# async def handle_location(message: types.Message):
+#     location = message.text
+#     user_data[message.chat.id]['location'] = location
 
 # Клавиатура с быстрыми ссылками
 main_keyboard = ReplyKeyboardMarkup(
@@ -25,6 +29,26 @@ main_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+# ===Названия переменных===
+# car_brand
+# car_model
+# car_year
+# car_body_type  (кузов)
+# car_engine_type (тип двигателя)
+# car_engine_volume (объём)
+# car_power (мощность)
+# car_transmission_type
+# car_color
+# car_mileage (пробег)
+# car_document_status
+# car_owners
+# car_customs_cleared (растаможка)
+# car_photo
+# car_description
+# car_price
+# car_location
+# seller_name
+# seller_phone
 
 # Список моделей автомобилей
 car_models = {
@@ -95,7 +119,9 @@ async def process_model(callback_query: types.CallbackQuery):
     await bot.send_message(callback_query.from_user.id, f"Вы выбрали модель {model}. Теперь можно ввести другую информацию.")
 
 
+
+
+
 if __name__ == '__main__':
     from aiogram import executor
     executor.start_polling(dp, skip_updates=True)
-
