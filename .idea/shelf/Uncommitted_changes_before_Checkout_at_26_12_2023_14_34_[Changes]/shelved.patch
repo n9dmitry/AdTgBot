@@ -1,0 +1,21 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	
++++ b/.idea/workspace.xml	
+@@ -143,9 +143,11 @@
+     </configuration>
+     <recent_temporary>
+       <list>
+-        <item itemvalue="Python.main aiogram" />
+         <item itemvalue="Python.test post photoes" />
+         <item itemvalue="Python.stepik" />
++        <item itemvalue="Python.main aiogram" />
++        <item itemvalue="Python.main aiogram" />
++        <item itemvalue="Python.test post photoes" />
+       </list>
+     </recent_temporary>
+   </component>
