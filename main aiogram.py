@@ -114,21 +114,22 @@ async def process_brand(callback_query: types.CallbackQuery):
             car_brand = message.text
             user_data[user_id] = {"car_brand": car_brand}
             dp.message_handlers.unregister(process_car_brand) #отмена слежки за процессом
-    else:
-        # Иначе предлагаем выбрать модель из списка
-        models = car_models.get(brand, [])
-        markup = InlineKeyboardMarkup(row_width=2)
-        buttons = [InlineKeyboardButton(model, callback_data=f"model_{model}") for model in models]
-        markup.add(*buttons)
-        await bot.send_message(callback_query.from_user.id, "Выберите модель автомобиля:", reply_markup=markup)
-        print(user_data)
+    # else:
+    #     # Иначе предлагаем выбрать модель из списка
+    #     models = car_models.get(brand, [])
+    #     markup = InlineKeyboardMarkup(row_width=2)
+    #     buttons = [InlineKeyboardButton(model, callback_data=f"model_{model}") for model in models]
+    #     markup.add(*buttons)
+    #     await bot.send_message(callback_query.from_user.id, "Выберите модель автомобиля:", reply_markup=markup)
+    #     print(user_data)
 
 
 # Обработчик нажатия кнопки с моделью автомобиля
 @dp.callback_query_handler(lambda c: c.data.startswith('model_'))
 async def process_model(callback_query: types.CallbackQuery):
     model = callback_query.data.split('_')[1]
-    await bot.send_message(callback_query.from_user.id, f"Вы выбрали модель {model}. Теперь можно ввести другую информацию.")
+    if model == "Ввести свою марку":
+        await bot.send_message(callback_query.from_user.id, f"Вы выбрали модель {model}. Теперь можно ввести другую информацию.")
 
 
 

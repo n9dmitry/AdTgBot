@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="1.6">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="1.7">
       <change beforePath="$PROJECT_DIR$/main aiogram.py" beforeDir="false" afterPath="$PROJECT_DIR$/main aiogram.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -162,7 +161,7 @@
       <workItem from="1703487316277" duration="2937000" />
       <workItem from="1703506594730" duration="597000" />
       <workItem from="1703571318603" duration="16855000" />
-      <workItem from="1703658042558" duration="4421000" />
+      <workItem from="1703658042558" duration="4727000" />
     </task>
     <task id="LOCAL-00001" summary="1.6">
       <created>1703595765616</created>
@@ -171,7 +170,14 @@
       <option name="project" value="LOCAL" />
       <updated>1703595765616</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="1.7">
+      <created>1703662475309</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1703662475309</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -190,7 +196,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="1.6" />
-    <option name="LAST_COMMIT_MESSAGE" value="1.6" />
+    <MESSAGE value="1.7" />
+    <option name="LAST_COMMIT_MESSAGE" value="1.7" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
