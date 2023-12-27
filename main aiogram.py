@@ -24,6 +24,7 @@ user_data = {}
 # Клавиатура с быстрыми ссылками
 main_keyboard = ReplyKeyboardMarkup(
     keyboard=[
+        [KeyboardButton("Мои объявления")],
         [KeyboardButton("Разместить объявление")],
     ],
     resize_keyboard=True
@@ -52,7 +53,7 @@ main_keyboard = ReplyKeyboardMarkup(
 
 # Список моделей автомобилей
 car_models = {
-    'Другая': ['Ввести модель'],
+    'Ввести свою марку': [],
     'Audi': ['Ввести марку', 'A3', 'A4', 'Q5', 'Q7'],
     'BMW': ['Ввести марку', '3 Series', '5 Series', 'X3', 'X5'],
     'Mercedes-Benz': ['Ввести марку', 'C-Class', 'E-Class', 'GLC', 'GLE'],
@@ -96,13 +97,23 @@ async def place_ad(message: types.Message):
 
     await message.answer("Введите марку автомобиля или выберите из списка:", reply_markup=markup)
 
+@dp.message_handler(lambda message: message.text == "Мои объявления")
+async def my_ads(message: types.Message):
+    ()
+
 # Обработчик нажатия кнопки с маркой автомобиля
 @dp.callback_query_handler(lambda c: c.data.startswith('brand_'))
 async def process_brand(callback_query: types.CallbackQuery):
     brand = callback_query.data.split('_')[1]
     if brand == "Ввести свою марку":
         # Если выбран вариант "Ввести свою марку", предлагаем ввести марку
-        await bot.send_message(callback_query.from_user.id, "Введите свою марку автомобиля:")
+        await bot.send_message(callback_query.from_user.id, "Напишите свою марку автомобиля:")
+        @dp.message_handler(content_types=types.ContentTypes.TEXT)
+        async def process_car_brand(message: types.Message):
+            user_id = message.from_user.id
+            car_brand = message.text
+            user_data[user_id] = {"car_brand": car_brand}
+            dp.message_handlers.unregister(process_car_brand) #отмена слежки за процессом
     else:
         # Иначе предлагаем выбрать модель из списка
         models = car_models.get(brand, [])
@@ -110,6 +121,7 @@ async def process_brand(callback_query: types.CallbackQuery):
         buttons = [InlineKeyboardButton(model, callback_data=f"model_{model}") for model in models]
         markup.add(*buttons)
         await bot.send_message(callback_query.from_user.id, "Выберите модель автомобиля:", reply_markup=markup)
+        print(user_data)
 
 
 # Обработчик нажатия кнопки с моделью автомобиля
@@ -121,6 +133,18 @@ async def process_model(callback_query: types.CallbackQuery):
 
 
 
+
+# car_year
+# car_body_type  (кузов)
+# car_engine_type (тип двигателя)
+# car_engine_volume (объём)
+# car_power (мощность)
+# car_transmission_type
+# car_color
+# car_mileage (пробег)
+# car_document_status
+# car_owners
+# car_customs_cleared (растаможка)
 
 if __name__ == '__main__':
     from aiogram import executor
