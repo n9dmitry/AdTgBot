@@ -1,3 +1,4 @@
+import uuid
 from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
@@ -5,7 +6,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 storage = MemoryStorage()
 
-API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
@@ -31,7 +32,6 @@ STATE_CAR_LOCATION = 'state_car_location'
 STATE_SELLER_NAME = 'state_seller_name'
 STATE_SELLER_PHONE = 'state_seller_phone'
 
-
 # Обработка команды /start
 @dp.message_handler(Command("start"))
 async def cmd_start(event: types.Message, state: FSMContext):
@@ -41,15 +41,13 @@ async def cmd_start(event: types.Message, state: FSMContext):
     await event.answer("Напишите бренд автомобиля:")
     await state.set_state(STATE_CAR_BRAND)
 
-
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def get_car_brand(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
-    user_data["Марка Машины"] = event.text
+    user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Хорошо! Укажите модель автомобиля:")
     await state.set_state(STATE_CAR_MODEL)
-
 
 @dp.message_handler(state=STATE_CAR_MODEL)
 async def get_car_model(event: types.Message, state: FSMContext):
@@ -58,7 +56,6 @@ async def get_car_model(event: types.Message, state: FSMContext):
     await state.update_data(user_data=user_data)
     await event.answer("Отлично! Какой год выпуска у автомобиля?:")
     await state.set_state(STATE_CAR_YEAR)
-
 
 @dp.message_handler(state=STATE_CAR_YEAR)
 async def get_car_year(event: types.Message, state: FSMContext):
@@ -145,17 +142,33 @@ async def get_car_customs_cleared(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
     user_data["car_customs_cleared"] = event.text
     await state.update_data(user_data=user_data)
-    await event.answer("Приложите фотографии автомобиля.")
+    await event.answer("Добавьте фотографии автомобиля.")
     await state.set_state(STATE_CAR_PHOTO)
 
-@dp.message_handler(state=STATE_CAR_PHOTO)
+@dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
 async def get_car_photo(event: types.Message, state: FSMContext):
-    # Ваш код обработки фотографий, если необходим
-
     user_data = (await state.get_data()).get("user_data", {})
-    user_data["car_photo"] = "фото"  # Здесь можно сохранить ссылку на фотографии или другую информацию о них
-    await state.update_data(user_data=user_data)
+    if "car_photo" not in user_data:
+        user_data["car_photo"] = []
+    # Ваш код обработки фотографий, если необходим
+    user_id = event.from_user.id
+    photo_uuid = str(uuid.uuid4())
+    # Проверяем, отправляали ли уже фото с таким же уникльным идентификатором
+    if user_id not in dp.data:
+        dp.data[user_id] = {"sent_uuids": set(), "sent_photos": []}
+    if photo_uuid not in dp.data[user_id]["sent_uuids"]:
+        dp.data[user_id]["sent_uuids"].add(photo_uuid)
 
+        # Получаем идентификатор фотографии и описание
+        photo_id = event.photo[-1].file_id
+        width = event.photo[-1].width
+
+        unique_photos = [photo for photo in user_data["car_photo"] if photo.file_id != photo_id or photo.width < width]
+        user_data["car_photo"] = unique_photos
+        user_data["car_photo"].append(event.photo[-1])
+    # user_data["car_photo"] = event.photo  # Здесь можно сохранить ссылку на фотографии или другую информацию о них
+    print(user_data["car_photo"])
+    await state.update_data(user_data=user_data)
     await event.answer("Предоставьте описание автомобиля.")
     await state.set_state(STATE_CAR_DESCRIPTION)
 
@@ -183,7 +196,6 @@ async def get_car_location(event: types.Message, state: FSMContext):
     await event.answer("Прекрасно! Укажите имя продавца.")
     await state.set_state(STATE_SELLER_NAME)
 
-
 @dp.message_handler(state=STATE_SELLER_NAME)
 async def get_seller_name(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
@@ -191,7 +203,6 @@ async def get_seller_name(event: types.Message, state: FSMContext):
     await state.update_data(user_data=user_data)
     await event.answer("Отлично! Какой телефонный номер у продавца?")
     await state.set_state(STATE_SELLER_PHONE)
-
 
 @dp.message_handler(state=STATE_SELLER_PHONE)
 async def get_seller_phone(event: types.Message, state: FSMContext):
@@ -207,12 +218,10 @@ async def get_seller_phone(event: types.Message, state: FSMContext):
     message = "Получена новая заявка:\n"
     for key, value in user_data.items():
         message += f"{key.capitalize()}: {value}\n"
-
+    print(final_data)
     # Отправляем сообщение в канал
     await bot.send_message(CHANNEL_ID, message)
-
     await state.reset_state()
-
 
 if __name__ == '__main__':
     from aiogram import executor

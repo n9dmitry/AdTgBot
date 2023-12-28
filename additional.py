@@ -376,7 +376,6 @@ async def handle_manual_brand(message: types.Message):
 
 async def handle_model(message: types.Message):
     user_id = message.from_user.id
-
     user_data[user_id]['model'] = message.text
     await message.answer('Отправьте фотографии машины (от 1 до 10 штук)')
     await dp.register_next_step_handler(message, handle_photos)
@@ -421,7 +420,6 @@ async def send_photos_to_channel(user_id):
 
         # Отправляем уведомление пользователю о успешной отправке
         await bot.send_message(user_id, "Фотографии отправлены в канал.")
-
 
 if __name__ == '__main__':
     from aiogram import executor
