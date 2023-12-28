@@ -5,7 +5,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 storage = MemoryStorage()
 
-API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
+API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
@@ -45,7 +45,7 @@ async def cmd_start(event: types.Message, state: FSMContext):
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def get_car_brand(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
-    user_data["car_brand"] = event.text
+    user_data["Марка Машины"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Хорошо! Укажите модель автомобиля:")
     await state.set_state(STATE_CAR_MODEL)
@@ -202,8 +202,15 @@ async def get_seller_phone(event: types.Message, state: FSMContext):
     # Финальный шаг - собрать все данные и завершить состояние
     final_data = await state.get_data()
     user_data = final_data.get("user_data", {})
-    print("Final Data:", final_data)
-    print("User Data:", user_data)
+
+    # Формируем сообщение с данными пользователя
+    message = "Получена новая заявка:\n"
+    for key, value in user_data.items():
+        message += f"{key.capitalize()}: {value}\n"
+
+    # Отправляем сообщение в канал
+    await bot.send_message(CHANNEL_ID, message)
+
     await state.reset_state()
 
 
