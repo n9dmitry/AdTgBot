@@ -3,6 +3,12 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.types import InputMediaPhoto
+from aiogram.types import InputMediaPhoto, PhotoSize
+import asyncio
+
+
+lock = asyncio.Lock()
 
 storage = MemoryStorage()
 
@@ -25,12 +31,13 @@ STATE_CAR_MILEAGE = 'state_car_mileage'
 STATE_CAR_DOCUMENT_STATUS = 'state_car_document_status'
 STATE_CAR_OWNERS = 'state_car_owners'
 STATE_CAR_CUSTOMS_CLEARED = 'state_car_customs_cleared'
-STATE_CAR_PHOTO = 'state_car_photo'
+STATE_CAR_PHOTOS = 'state_car_photos'
 STATE_CAR_DESCRIPTION = 'state_car_description'
 STATE_CAR_PRICE = 'state_car_price'
 STATE_CAR_LOCATION = 'state_car_location'
 STATE_SELLER_NAME = 'state_seller_name'
 STATE_SELLER_PHONE = 'state_seller_phone'
+STATE_SEND = 'state_send'
 
 # Обработка команды /start
 @dp.message_handler(Command("start"))
@@ -143,13 +150,13 @@ async def get_car_customs_cleared(event: types.Message, state: FSMContext):
     user_data["car_customs_cleared"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Добавьте фотографии автомобиля.")
-    await state.set_state(STATE_CAR_PHOTO)
+    await state.set_state(STATE_CAR_PHOTOS)
 
-@dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
-async def get_car_photo(event: types.Message, state: FSMContext):
+@dp.message_handler(state=STATE_CAR_PHOTOS, content_types=['photo'])
+async def get_car_photos(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
-    if "car_photo" not in user_data:
-        user_data["car_photo"] = []
+    if "car_photos" not in user_data:
+        user_data["car_photos"] = []
     # Ваш код обработки фотографий, если необходим
     user_id = event.from_user.id
     photo_uuid = str(uuid.uuid4())
@@ -162,12 +169,13 @@ async def get_car_photo(event: types.Message, state: FSMContext):
         # Получаем идентификатор фотографии и описание
         photo_id = event.photo[-1].file_id
         width = event.photo[-1].width
+        caption = event.caption
 
-        unique_photos = [photo for photo in user_data["car_photo"] if photo.file_id != photo_id or photo.width < width]
-        user_data["car_photo"] = unique_photos
-        user_data["car_photo"].append(event.photo[-1])
-    # user_data["car_photo"] = event.photo  # Здесь можно сохранить ссылку на фотографии или другую информацию о них
-    print(user_data["car_photo"])
+        unique_photos = [photo for photo in user_data["car_photos"] if photo.file_id != photo_id or photo.width < width]
+        user_data["car_photos"] = unique_photos
+        user_data["car_photos"].append(event.photo[-1])
+        dp.data[user_id]["sent_photos"].append({"file_id": photo_id, "caption": caption, "uuid": photo_uuid})
+    # user_data["car_photos"] = event.photo  # Здесь можно сохранить ссылку на фотографии или другую информацию о них
     await state.update_data(user_data=user_data)
     await event.answer("Предоставьте описание автомобиля.")
     await state.set_state(STATE_CAR_DESCRIPTION)
@@ -209,19 +217,67 @@ async def get_seller_phone(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
     user_data["seller_phone"] = event.text
     await state.update_data(user_data=user_data)
+    await event.answer("Отлично! Сейчас запостим фото!")
+    await state.set_state(STATE_SEND)
 
-    # Финальный шаг - собрать все данные и завершить состояние
-    final_data = await state.get_data()
-    user_data = final_data.get("user_data", {})
+@dp.message_handler(state=STATE_SEND)
+async def send_photos_to_channel(user_id): # Функция отправляет группу фотографий в указанный канал (CHANNEL_ID)
+    if user_id in dp.data and "sent_photos" in dp.data[user_id]:
+        photos = dp.data[user_id]["sent_photos"]
+        media_group = [InputMediaPhoto(media=photo["file_id"], caption=photo.get("caption", "")) for photo in photos]
 
-    # Формируем сообщение с данными пользователя
-    message = "Получена новая заявка:\n"
-    for key, value in user_data.items():
-        message += f"{key.capitalize()}: {value}\n"
-    print(final_data)
-    # Отправляем сообщение в канал
-    await bot.send_message(CHANNEL_ID, message)
-    await state.reset_state()
+        # Отправляем медиагруппу в канал
+        await bot.send_media_group(chat_id=CHANNEL_ID, media=media_group, caption=str(dp.data[user_id]))
+
+        # Очищаем список после отправки всех фотографий
+        dp.data[user_id]["sent_photos"] = []
+        dp.data[user_id]["sent_uuids"].clear()  # Очищаем множество уникальных идентификаторов
+
+        # Отправляем уведомление пользователю о успешной отправке
+        await bot.send_message(user_id, "Фотографии отправлены в канал.")
+        await send_photos_to_channel(user_id)
+
+
+# Попытка 1
+    # # Финальный шаг - собрать все данные и завершить состояние
+    # final_data = await state.get_data()
+    # user_data = final_data.get("user_data", {})
+    #
+    # # Формируем сообщение с данными пользователя
+    # message = "Получена новая заявка:\n"
+    # for key, value in user_data.items():
+    #     message += f"{key.capitalize()}: {value}\n"
+    # print(final_data)
+    # # Отправляем сообщение в канал
+    # await bot.send_message(CHANNEL_ID, message)
+    # await state.reset_state()
+
+# Попытка 2
+#     media_group = []
+#
+#     for photo in photos:
+#         if isinstance(photo, Photo):
+#             # Если это объект Photo, используйте атрибуты
+#             media_group.append(InputMediaPhoto(media=photo.file_id, caption=photo.caption))
+#         elif isinstance(photo, PhotoSize):
+#             # Если это объект PhotoSize, используйте другие атрибуты, например, file_id
+#             media_group.append(InputMediaPhoto(media=photo.file_id, caption=""))
+#
+#     # Отправляем медиагруппу в канал
+#     await bot.send_media_group(chat_id=CHANNEL_ID, media=media_group)
+#     photos = user_data["car_photos"]
+#     # media_group = [InputMediaPhoto(media=photo["file_id"], caption=photo.get("caption", "")) for photo in photos]
+#     media_group = [InputMediaPhoto(media=photo.file_id, caption=photo.caption) for photo in photos if isinstance(photo, PhotoSize)]
+#
+#
+#     # Отправляем медиагруппу в канал
+#     await bot.send_media_group(chat_id=CHANNEL_ID, media=media_group, caption=user_data)
+#
+#
+#     # Отправляем уведомление пользователю о успешной отправке
+#     await bot.send_message(event.from_user.id, "Фотографии отправлены в канал.")
+
+
 
 if __name__ == '__main__':
     from aiogram import executor
