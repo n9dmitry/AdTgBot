@@ -214,6 +214,36 @@ async def get_seller_phone(event: types.Message, state: FSMContext):
     await state.reset_state()
 
 
+# Обработчик фотографий
+@dp.message_handler(content_types=['photo'])
+async def handle_photos(event: types.Message):
+    user_id = event.from_user.id
+
+    # Генерируем уникальный идентификатор для фотографии
+    photo_uuid = str(uuid.uuid4())
+
+    # Проверяем, отправляли ли уже фото с таким же уникальным идентификатором
+    if user_id not in dp.data:
+        dp.data[user_id] = {"sent_uuids": set(), "sent_photos": []}
+
+    if photo_uuid not in dp.data[user_id]["sent_uuids"]:
+        dp.data[user_id]["sent_uuids"].add(photo_uuid)
+
+        # Получаем идентификатор фотографии и описание
+        photo_id = event.photo[-1].file_id
+        caption = event.caption
+
+        # Добавляем информацию о фотографии в список для отправки в канал
+        dp.data[user_id]["sent_photos"].append({"file_id": photo_id, "caption": caption, "uuid": photo_uuid})
+        await event.reply(f"Фото добавлено")
+
+        # Если у пользователя есть хотя бы одна фотография, отправляем их в канал
+        if len(dp.data[user_id]["sent_photos"]) >= 1:
+            photo_count = 0
+            for i in range(len(dp.data[user_id]['sent_photos'])):
+                photo_count += 1
+                # print(f"Получаем фото от пользователя {user_id} {photo_count} из {len(dp.data[user_id]['sent_photos'])} штук")
+
 if __name__ == '__main__':
     from aiogram import executor
     executor.start_polling(dp, skip_updates=True)
