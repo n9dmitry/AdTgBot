@@ -63,13 +63,7 @@ async def handle_photos(message: types.Message, state: FSMContext):
         # Добавлено условие для перехода к следующему шагу - STATE_CAR_MODEL
         await state.set_state(STATE_CAR_MODEL)  # Переход к следующему шагу - STATE_CAR_MODEL
 
-async def send_photos_to_channel(user_id, user_data):
-    async with lock:
-        if buffered_photos:
-            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            await bot.send_message(user_id, "Фотографии отправлены в канал.")
-        else:
-            print("Buffered photos is empty. Nothing to send.")
+
 
 @dp.message_handler(lambda message: message.text == "Перейти к следующему шагу")
 async def next_step(message: types.Message):
@@ -83,6 +77,14 @@ async def get_car_brand(event: types.Message, state: FSMContext):
     await event.answer("Фото и другая информация отправлены в канал!!")
     await send_photos_to_channel(event.from_user.id, user_data)
 
+async def send_photos_to_channel(user_id, user_data):
+    async with lock:
+        if buffered_photos:
+            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
+            await bot.send_message(chat_id=CHANNEL_ID, text="Текстовый комментарий", disable_notification=True)
+            await bot.send_message(user_id, "Фотографии отправлены в канал.")
+        else:
+            print("Buffered photos is empty. Nothing to send.")
 
 if __name__ == '__main__':
     from aiogram import executor
