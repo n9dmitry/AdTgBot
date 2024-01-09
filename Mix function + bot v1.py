@@ -19,8 +19,6 @@ lock = asyncio.Lock()
 
 buffered_photos = []  # Глобальная переменная для буфера фотографий
 
-user_data = []
-
 STATE_CAR_BRAND = 'state_car_brand'
 STATE_CAR_PHOTO = 'state_car_photo'
 STATE_CAR_MODEL = 'state_car_model'
@@ -44,7 +42,7 @@ async def get_car_brand(event: types.Message, state: FSMContext):
     await state.set_state(STATE_CAR_PHOTO)
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
-async def handle_photos(message: types.Message):
+async def handle_photos(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await dp.storage.get_data(user=user_id)
     photo_id = message.photo[-1].file_id
@@ -66,6 +64,8 @@ async def handle_photos(message: types.Message):
         keyboard = InlineKeyboardMarkup().add(confirm_button)
         # Отправим клавиатуру с кнопкой вместе с сообщением
         await message.reply("Фото добавлено", reply_markup=keyboard)
+        await state.finish()
+
 
 
 @dp.callback_query_handler(lambda c: c.data == 'confirm_photo')
