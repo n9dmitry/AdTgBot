@@ -47,13 +47,14 @@ async def handle_photos(message: types.Message):
     caption = message.caption
     # Используем уникальный идентификатор для фотографии
     photo_uuid = str(uuid.uuid4())
-    if "sent_photos" not in user_data:
-        user_data["sent_photos"] = []
+    # if "sent_photos" not in user_data:
+    user_data["sent_photos"] = []
 
     user_data["sent_photos"].append({"file_id": photo_id, "caption": caption, "uuid": photo_uuid})
     print("user_data:", user_data)  # Добавленный принт
     # Добавим фотографию в буфер
     buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption))
+    print("buffered_photos:", buffered_photos)
     # Проверим, загружены ли все фотографии
     if len(buffered_photos) >= 1:  # Укажите здесь желаемое количество фотографий в альбоме
         # Добавим кнопку "Подтвердить фото" в самый низ клавиатуры
@@ -62,26 +63,6 @@ async def handle_photos(message: types.Message):
         # Отправим клавиатуру с кнопкой вместе с сообщением
         await message.reply("Фото добавлено", reply_markup=keyboard)
 
-
-async def send_photos_to_channel(user_id, user_data):
-    async with lock:
-        global buffered_photos
-
-        if buffered_photos:
-            print("Sending media group:", buffered_photos)  # Добавим этот принт
-            # Отправляем медиагруппу в канал
-            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            # Очищаем буфер после отправки всех фотографий
-            buffered_photos.clear()
-            # Очищаем список после отправки всех фотографий
-            user_data["sent_photos"].clear()
-            # Проверяем наличие ключа 'sent_uuids' перед его очисткой
-            if "sent_uuids" in user_data:
-                user_data["sent_uuids"].clear()
-            # Отправляем уведомление пользователю о успешной отправке
-            await bot.send_message(user_id, "Фотографии отправлены в канал.")
-        else:
-            print("Buffered photos is empty. Nothing to send.")
 
 @dp.callback_query_handler(lambda c: c.data == 'confirm_photo')
 async def confirm_photo(callback_query: types.CallbackQuery):
@@ -92,8 +73,27 @@ async def confirm_photo(callback_query: types.CallbackQuery):
     user_data = await dp.storage.get_data(user=user_id)
 
     # Вызываем функцию отправки фотографий вместе с user_data
-    await send_photos_to_channel(user_id, user_data)
+    await send_photos_to_channel(user_id, user_data, buffered_photos)
 
+async def send_photos_to_channel(user_id, user_data):
+    async with lock:
+        # global buffered_photos
+
+        if buffered_photos:
+            print("Sending media group:", buffered_photos)  # Добавим этот принт
+            # Отправляем медиагруппу в канал
+            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
+            # Очищаем буфер после отправки всех фотографий
+            # buffered_photos.clear()
+            # Очищаем список после отправки всех фотографий
+            # user_data["sent_photos"].clear()
+            # Проверяем наличие ключа 'sent_uuids' перед его очисткой
+            # if "sent_uuids" in user_data:
+            #     user_data["sent_uuids"].clear()
+            # Отправляем уведомление пользователю о успешной отправке
+            await bot.send_message(user_id, "Фотографии отправлены в канал.")
+        else:
+            print("Buffered photos is empty. Nothing to send.")
 
 if __name__ == '__main__':
     from aiogram import executor

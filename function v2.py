@@ -1,20 +1,22 @@
 import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import uuid
 import asyncio
 
 API_TOKEN = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
 CHANNEL_ID = '@CarsTradeChannel'
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 
 buffered_photos = []  # Глобальная переменная для буфера фотографий
 
 async def send_photos_to_channel(user_id, user_data):
     async with lock:
-        global buffered_photos
+        # global buffered_photos
+
 
         if buffered_photos:
             print("Sending media group:", buffered_photos)  # Добавим этот принт
@@ -25,12 +27,13 @@ async def send_photos_to_channel(user_id, user_data):
             # Очищаем буфер после отправки всех фотографий
             buffered_photos.clear()
 
+            # ???? ХЗ clear
             # Очищаем список после отправки всех фотографий
-            user_data["sent_photos"].clear()
+            # user_data["sent_photos"].clear()
 
             # Проверяем наличие ключа 'sent_uuids' перед его очисткой
-            if "sent_uuids" in user_data:
-                user_data["sent_uuids"].clear()
+            # if "sent_uuids" in user_data:
+            #     user_data["sent_uuids"].clear()
 
             # Отправляем уведомление пользователю о успешной отправке
             await bot.send_message(user_id, "Фотографии отправлены в канал.")
