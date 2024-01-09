@@ -6,6 +6,10 @@ from aiogram.dispatcher.filters import Command
 import uuid
 import asyncio
 
+
+# API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+# API_TOKEN2 = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
+# API_fttlolbot = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
 API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
@@ -13,8 +17,6 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 
 buffered_photos = []  # Глобальная переменная для буфера фотографий
-
-user_data = []
 
 STATE_CAR_BRAND = 'state_car_brand'
 STATE_CAR_PHOTO = 'state_car_photo'
@@ -39,7 +41,7 @@ async def get_car_brand(event: types.Message, state: FSMContext):
     await state.set_state(STATE_CAR_PHOTO)
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
-async def handle_photos(message: types.Message):
+async def handle_photos(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await dp.storage.get_data(user=user_id)
     photo_id = message.photo[-1].file_id
@@ -61,6 +63,8 @@ async def handle_photos(message: types.Message):
         keyboard = InlineKeyboardMarkup().add(confirm_button)
         # Отправим клавиатуру с кнопкой вместе с сообщением
         await message.reply("Фото добавлено", reply_markup=keyboard)
+        await state.finish()
+
 
 
 @dp.callback_query_handler(lambda c: c.data == 'confirm_photo')
@@ -72,7 +76,7 @@ async def confirm_photo(callback_query: types.CallbackQuery):
     user_data = await dp.storage.get_data(user=user_id)
 
     # Вызываем функцию отправки фотографий вместе с user_data
-    await send_photos_to_channel(user_id, user_data, buffered_photos)
+    await send_photos_to_channel(user_id, user_data)
 
 async def send_photos_to_channel(user_id, user_data):
     async with lock:
