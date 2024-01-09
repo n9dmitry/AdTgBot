@@ -10,11 +10,12 @@ import asyncio
 API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 
 buffered_photos = []  # Глобальная переменная для буфера фотографий
-storage = MemoryStorage()
+
+user_data = []
 
 STATE_CAR_BRAND = 'state_car_brand'
 STATE_CAR_PHOTO = 'state_car_photo'
