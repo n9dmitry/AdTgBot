@@ -80,7 +80,7 @@ async def get_car_brand(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
     user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
-    await event.answer("Привет!")
+    await event.answer("Фото и другая информация отправлены в канал!!")
     await send_photos_to_channel(event.from_user.id, user_data)
 
 
