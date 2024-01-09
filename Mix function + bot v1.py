@@ -1,4 +1,3 @@
-import logging
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
