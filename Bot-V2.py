@@ -12,8 +12,8 @@ lock = asyncio.Lock()
 
 storage = MemoryStorage()
 
-API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
-CHANNEL_ID = '@autoxyibot1'
+API_TOKEN = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
+CHANNEL_ID = '@CarsTradeChannel'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
@@ -217,42 +217,47 @@ async def get_seller_phone(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
     user_data["seller_phone"] = event.text
     await state.update_data(user_data=user_data)
-    await event.answer("Отлично! Сейчас запостим фото!")
+    await event.answer("Отлично! Данные переданы в канал!")
     await state.set_state(STATE_SEND)
     print(user_data)
-
-@dp.message_handler(state=STATE_SEND)
-async def send_data_to_channel(user_id):
-    if user_id in user_data[user_id] and "sent_photos" in user_data[user_id]:
-        photos = dp.data[user_id]["sent_photos"]
-        media_group = [InputMediaPhoto(media=photo["file_id"], caption=photo.get("caption", "")) for photo in photos]
-
+    message = "Получена новая заявка:\n"
+    for key, value in user_data.items():
+        message += f"{key.capitalize()}: {value}\n"
+    await bot.send_message(CHANNEL_ID, message)
+    await state.reset_state()
 
 # @dp.message_handler(state=STATE_SEND)
-# async def send_photos_to_channel(user_id): # Функция отправляет группу фотографий в указанный канал (CHANNEL_ID)
-#     if user_id in dp.data and "sent_photos" in dp.data[user_id]:
+# async def send_data_to_channel(user_id):
+#     if user_id in dp.data[user_id] and "sent_photos" in dp.data[user_id]:
 #         photos = dp.data[user_id]["sent_photos"]
 #         media_group = [InputMediaPhoto(media=photo["file_id"], caption=photo.get("caption", "")) for photo in photos]
 #
-#         # Отправляем медиагруппу в канал
-#         await bot.send_media_group(chat_id=CHANNEL_ID, media=media_group, caption=str(dp.data[user_id]))
-#
-#         # Очищаем список после отправки всех фотографий
-#         dp.data[user_id]["sent_photos"] = []
-#         dp.data[user_id]["sent_uuids"].clear()  # Очищаем множество уникальных идентификаторов
-#
-#         # Отправляем уведомление пользователю о успешной отправке
-#         await bot.send_message(user_id, "Фотографии отправлены в канал.")
-#         await send_photos_to_channel(user_id)
-#         message = "Получена новая заявка:\n"
-#         for key, value in user_data.items():
-#     #     message += f"{key.capitalize()}: {value}\n"
 
 @dp.message_handler(state=STATE_SEND)
-async def send_data_to_channel(user_id):
-    if user_id in user_data[user_id] and "sent_photos" in user_data[user_id]:
+async def send_photos_to_channel(user_id): # Функция отправляет группу фотографий в указанный канал (CHANNEL_ID)
+    if user_id in dp.data and "sent_photos" in dp.data[user_id]:
         photos = dp.data[user_id]["sent_photos"]
         media_group = [InputMediaPhoto(media=photo["file_id"], caption=photo.get("caption", "")) for photo in photos]
+
+        # Отправляем медиагруппу в канал
+        await bot.send_media_group(chat_id=CHANNEL_ID, media=media_group, caption=str(dp.data[user_id]))
+
+        # Очищаем список после отправки всех фотографий
+        dp.data[user_id]["sent_photos"] = []
+        dp.data[user_id]["sent_uuids"].clear()  # Очищаем множество уникальных идентификаторов
+
+        # Отправляем уведомление пользователю о успешной отправке
+        await bot.send_message(user_id, "Фотографии отправлены в канал.")
+        await send_photos_to_channel(user_id)
+        message = "Получена новая заявка:\n"
+        for key, value in dp.data.items():
+            message += f"{key.capitalize()}: {value}\n"
+
+# @dp.message_handler(state=STATE_SEND)
+# async def send_data_to_channel(user_id):
+#     if user_id in user_data[user_id] and "sent_photos" in user_data[user_id]:
+#         photos = dp.data[user_id]["sent_photos"]
+#         media_group = [InputMediaPhoto(media=photo["file_id"], caption=photo.get("caption", "")) for photo in photos]
 
 if __name__ == '__main__':
     from aiogram import executor
@@ -297,8 +302,8 @@ if __name__ == '__main__':
 #     # Отправляем уведомление пользователю о успешной отправке
 #     await bot.send_message(event.from_user.id, "Фотографии отправлены в канал.")
 
-
-
-if __name__ == '__main__':
-    from aiogram import executor
-    executor.start_polling(dp, skip_updates=True)
+#
+#
+# if __name__ == '__main__':
+#     from aiogram import executor
+#     executor.start_polling(dp, skip_updates=True)

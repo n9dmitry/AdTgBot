@@ -10,11 +10,10 @@ import asyncio
 API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage = MemoryStorage())
 lock = asyncio.Lock()
 
 buffered_photos = []  # Глобальная переменная для буфера фотографий
-storage = MemoryStorage()
 
 STATE_CAR_BRAND = 'state_car_brand'
 STATE_CAR_PHOTO = 'state_car_photo'
@@ -32,7 +31,8 @@ async def cmd_start(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def get_car_brand(event: types.Message, state: FSMContext):
-    user_data = (await state.get_data()).get("user_data", {})
+    user_id = event.from_user.id
+    user_data = await dp.storage.get_data(user=user_id)
     user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Привет! Загрузи фотографии с описанием, и я отправлю их в канал.")
@@ -82,9 +82,11 @@ async def send_photos_to_channel(user_id, user_data):
         else:
             print("Buffered photos is empty. Nothing to send.")
 
-@dp.callback_query_handler(lambda c: c.data == 'confirm_photo')
+@dp.callback_query_handler()
 async def confirm_photo(callback_query: types.CallbackQuery):
     # Обработка нажатия кнопки "Подтвердить фото"
+
+    print('CALLBACK DATA:', callback_query.data)
     await bot.answer_callback_query(callback_query.id, text="Фото подтверждено")
 
     user_id = callback_query.from_user.id
@@ -93,10 +95,15 @@ async def confirm_photo(callback_query: types.CallbackQuery):
     # Вызываем функцию отправки фотографий вместе с user_data
     await send_photos_to_channel(user_id, user_data)
 
-
 if __name__ == '__main__':
     from aiogram import executor
     executor.start_polling(dp, skip_updates=True)
+
+
+
+# lamda из  confirm foto ()
+# перед анс
+
 
 # import logging
 # from aiogram import Bot, Dispatcher, types
