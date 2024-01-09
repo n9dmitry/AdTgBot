@@ -4,8 +4,8 @@ from aiogram.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardB
 import uuid
 import asyncio
 
-API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
-CHANNEL_ID = '@autoxyibot1'
+API_TOKEN = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
+CHANNEL_ID = '@CarsTradeChannel'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 lock = asyncio.Lock()
