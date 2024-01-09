@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.3.1">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v3.5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mix function + bot v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/Mix function + bot v1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -300,7 +299,14 @@
       <option name="project" value="LOCAL" />
       <updated>1704785199208</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="v3.5">
+      <created>1704798659485</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1704798659485</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,7 +334,8 @@
     <MESSAGE value="v.2.8" />
     <MESSAGE value="v.3.0" />
     <MESSAGE value="v.3.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.3.1" />
+    <MESSAGE value="v3.5" />
+    <option name="LAST_COMMIT_MESSAGE" value="v3.5" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
