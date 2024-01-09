@@ -7,6 +7,10 @@ from aiogram.dispatcher.filters import Command
 import uuid
 import asyncio
 
+
+# API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+# API_TOKEN2 = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
+# API_fttlolbot = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
 API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
@@ -73,7 +77,7 @@ async def confirm_photo(callback_query: types.CallbackQuery):
     user_data = await dp.storage.get_data(user=user_id)
 
     # Вызываем функцию отправки фотографий вместе с user_data
-    await send_photos_to_channel(user_id, user_data, buffered_photos)
+    await send_photos_to_channel(user_id, user_data)
 
 async def send_photos_to_channel(user_id, user_data):
     async with lock:
