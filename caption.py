@@ -7,8 +7,12 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
 
+# API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+# API_TOKEN2 = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
+# API_fttlolbot = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
+# CHANNEL_ID2 = '@CarsTradeChannel'
 
-API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -43,16 +47,21 @@ async def handle_photos(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await dp.storage.get_data(user=user_id)
     photo_id = message.photo[-1].file_id
-    caption = message.caption
+    caption = format(str(user_data))
 
     photo_uuid = str(uuid.uuid4())
 
     if "sent_photos" not in user_data:
         user_data["sent_photos"] = []
 
-    user_data["sent_photos"].append({"file_id": photo_id, "caption": caption, "uuid": photo_uuid})
+    user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
 
     buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption))
+    if len(buffered_photos) > 1:
+        for i in range(len(buffered_photos) - 1):  # Проходим по всем элементам, кроме последнего
+            buffered_photos[i].caption = None
+        last_photo = buffered_photos[-1]
+        last_photo.caption = caption
 
     if len(buffered_photos) >= 1:
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
@@ -63,13 +72,7 @@ async def handle_photos(message: types.Message, state: FSMContext):
         # Добавлено условие для перехода к следующему шагу - STATE_CAR_MODEL
         await state.set_state(STATE_CAR_MODEL)  # Переход к следующему шагу - STATE_CAR_MODEL
 
-async def send_photos_to_channel(user_id, user_data):
-    async with lock:
-        if buffered_photos:
-            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            await bot.send_message(user_id, "Фотографии отправлены в канал.")
-        else:
-            print("Buffered photos is empty. Nothing to send.")
+
 
 @dp.message_handler(lambda message: message.text == "Перейти к следующему шагу")
 async def next_step(message: types.Message):
@@ -80,7 +83,17 @@ async def get_car_brand(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
     user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
-    await event.answer("Привет!")
+    await event.answer("Фото и другая информация отправлены в канал!!")
+    await send_photos_to_channel(event.from_user.id, user_data)
+
+async def send_photos_to_channel(user_id, user_data):
+    async with lock:
+        if buffered_photos:
+            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
+            # await bot.send_message(chat_id=CHANNEL_ID, text="Текстовый комментарий", disable_notification=True)
+            await bot.send_message(user_id, "Фотографии отправлены в канал.")
+        else:
+            print("Buffered photos is empty. Nothing to send.")
 
 if __name__ == '__main__':
     from aiogram import executor
