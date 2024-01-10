@@ -1,0 +1,38 @@
+Index: Mix function + bot v1.py
+===================================================================
+diff --git a/Mix function + bot v1.py b/Mix function + bot v1.py
+--- a/Mix function + bot v1.py	
++++ b/Mix function + bot v1.py	
+@@ -46,17 +46,21 @@
+     user_id = message.from_user.id
+     user_data = await dp.storage.get_data(user=user_id)
+     photo_id = message.photo[-1].file_id
+-    caption = message.caption
+-    # Используем уникальный идентификатор для фотографии
++    # caption = f"Юзер дата: {str(user_data)}"
++    # caption = message.caption
++    caption = 'Ваш контекст здесь: {}'.format(str(user_data))
++    # Используем уникальный иде
++    # нтификатор для фотографии
+     photo_uuid = str(uuid.uuid4())
+     # if "sent_photos" not in user_data:
+     user_data["sent_photos"] = []
+ 
+-    user_data["sent_photos"].append({"file_id": photo_id, "caption": caption, "uuid": photo_uuid})
++    user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
+     print("user_data:", user_data)  # Добавленный принт
+     # Добавим фотографию в буфер
+     buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption))
+     print("buffered_photos:", buffered_photos)
++    print("caption:", caption)
+     # Проверим, загружены ли все фотографии
+     if len(buffered_photos) >= 1:  # Укажите здесь желаемое количество фотографий в альбоме
+         # Добавим кнопку "Подтвердить фото" в самый низ клавиатуры
+@@ -82,7 +86,6 @@
+ async def send_photos_to_channel(user_id, user_data):
+     async with lock:
+         # global buffered_photos
+-
+         if buffered_photos:
+             print("Sending media group:", buffered_photos)  # Добавим этот принт
+             # Отправляем медиагруппу в канал
