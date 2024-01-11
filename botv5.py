@@ -7,7 +7,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
 
-API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+API_TOKEN = '6663634927:AAFvwAxHoSh50vPwE2lAAQidxfxVuvQE7QA'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -49,7 +49,7 @@ async def cmd_start(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def get_car_brand(event: types.Message, state: FSMContext):
-    user_data = (await state.get_data()).get("user_data") or {}
+    user_data = (await state.get_data()).get("user_data", {})
     user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Хорошо! Укажите модель автомобиля:")
@@ -149,15 +149,109 @@ async def get_car_customs_cleared(event: types.Message, state: FSMContext):
     user_data["car_customs_cleared"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Добавьте фотографии автомобиля.")
-    await state.set_state(STATE_CAR_PHOTO)
+    await state.set_state(STATE_CAR_DESCRIPTION)
 
+
+# @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
+# async def handle_photos(message: types.Message, state: FSMContext):
+#     user_id = message.from_user.id
+#     user_data = await state.get_data() or {}
+#     photo_id = message.photo[-1].file_id
+#     caption = (
+#         f"🚗 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
+#         f"Год: {user_data.get('user_data').get('car_year')}\n"
+#         f"Тип КПП: {user_data.get('user_data').get('car_transmission_type')}\n"
+#         f"Пробег: {user_data.get('user_data').get('car_mileage')}\n"
+#         f"Дополнительная информация: {user_data.get('user_data').get('car_description')}\n"
+#         f"Цена: {user_data.get('user_data').get('car_price')} руб\n"
+#         f"📲 tg: {user_data.get('user_data').get('seller_name')}\n"
+#         f"📞🇷🇺Звоните: {user_data.get('user_data').get('seller_phone')}"
+#     )
+#
+#
+#     photo_uuid = str(uuid.uuid4())
+#
+#     if "sent_photos" not in user_data:
+#         user_data["sent_photos"] = []
+#
+#     user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
+#
+#     buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption))
+#     if len(buffered_photos) > 1:
+#         for i in range(len(buffered_photos) - 1):
+#             buffered_photos[i].caption = None
+#         last_photo = buffered_photos[-1]
+#         last_photo.caption = caption
+#
+#     await message.reply("Фото добавлено")
+#     await state.set_state(STATE_CAR_DESCRIPTION)
+
+
+@dp.message_handler(state=STATE_CAR_DESCRIPTION)
+async def get_car_description(event: types.Message, state: FSMContext):
+    user_data = (await state.get_data()).get("user_data", {})
+    # Добавление ключа "car_description" со значением event.text в словарь user_data
+    user_data["car_description"] = event.text
+    await state.update_data(user_data=user_data)  # Обновление данных состояния
+
+    # Место для сохранения значений после STATE_CAR_PHOTO
+    await state.update_data(user_data=user_data)
+
+    await event.answer("Какова цена автомобиля?")
+    await state.set_state(STATE_CAR_PRICE)
+
+
+@dp.message_handler(state=STATE_CAR_PRICE)
+async def get_car_price(event: types.Message, state: FSMContext):
+    user_data = (await state.get_data()).get("user_data", {})
+    user_data["car_price"] = event.text
+    await state.update_data(user_data=user_data)
+    await event.answer("Прекрасно! Где находится автомобиль?")
+    await state.set_state(STATE_CAR_LOCATION)
+
+
+@dp.message_handler(state=STATE_CAR_LOCATION)
+async def get_car_location(event: types.Message, state: FSMContext):
+    user_data = (await state.get_data()).get("user_data", {})
+    user_data["car_location"] = event.text
+    await state.update_data(user_data=user_data)
+    await event.answer("Прекрасно! Укажите имя продавца.")
+    await state.set_state(STATE_SELLER_NAME)
+
+
+@dp.message_handler(state=STATE_SELLER_NAME)
+async def get_seller_name(event: types.Message, state: FSMContext):
+    user_data = (await state.get_data()).get("user_data", {})
+    user_data["seller_name"] = event.text
+    await state.update_data(user_data=user_data)
+    await event.answer("Отлично! Какой телефонный номер у продавца?")
+    await state.set_state(STATE_SELLER_PHONE)
+
+
+@dp.message_handler(state=STATE_SELLER_PHONE)
+async def get_seller_phone(event: types.Message, state: FSMContext):
+    user_data = await state.get_data() or {}
+    user_data["seller_phone"] = event.text
+    await state.update_data(user_data=user_data)
+    await event.answer("Отлично! Сейчас запостим фото!")
+    await state.set_state(STATE_CAR_PHOTO)
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await state.get_data() or {}
     photo_id = message.photo[-1].file_id
-    caption = str(user_data)
+
+    caption = (
+        f"🚗 #{user_data.get('user_data')['car_brand']} {user_data.get('user_data')['car_model']}\n"
+        f"Год: {user_data.get('user_data')['car_year']}\n"
+        f"Тип КПП: {user_data.get('user_data')['car_transmission_type']}\n"
+        f"Пробег: {user_data.get('user_data')['car_mileage']}\n"
+        f"Дополнительная информация: {user_data.get('user_data')['car_description']}\n"
+        f"Цена: {user_data.get('user_data')['car_price']} руб\n"
+        f"📲 tg: {user_data.get('user_data')['seller_name']}\n"
+        f"📞🇷🇺Звоните: {user_data.get('user_data')['seller_phone']}"
+    )
 
     photo_uuid = str(uuid.uuid4())
 
@@ -173,58 +267,10 @@ async def handle_photos(message: types.Message, state: FSMContext):
         last_photo = buffered_photos[-1]
         last_photo.caption = caption
 
-    await message.reply("Фото добавлено")
-    await state.finish()
-    await state.set_state(STATE_CAR_DESCRIPTION)
-
-
-@dp.message_handler(state=STATE_CAR_DESCRIPTION)
-async def get_car_description(event: types.Message, state: FSMContext):
-    user_data = await state.get_data() or {}
-    user_data["car_description"] = event.text
-    await state.update_data(user_data=user_data)  # Обновление данных состояния
-    await event.answer("Какова цена автомобиля?")
-    await state.set_state(STATE_CAR_PRICE)
-
-
-@dp.message_handler(state=STATE_CAR_PRICE)
-async def get_car_price(event: types.Message, state: FSMContext):
-    user_data = await state.get_data() or {}
-    user_data["car_price"] = event.text
-    await state.update_data(user_data=user_data)
-    await event.answer("Прекрасно! Где находится автомобиль?")
-    await state.set_state(STATE_CAR_LOCATION)
-
-
-@dp.message_handler(state=STATE_CAR_LOCATION)
-async def get_car_location(event: types.Message, state: FSMContext):
-    user_data = await state.get_data() or {}
-    user_data["car_location"] = event.text
-    await state.update_data(user_data=user_data)
-    await event.answer("Прекрасно! Укажите имя продавца.")
-    await state.set_state(STATE_SELLER_NAME)
-
-
-@dp.message_handler(state=STATE_SELLER_NAME)
-async def get_seller_name(event: types.Message, state: FSMContext):
-    user_data = await state.get_data() or {}
-    user_data["seller_name"] = event.text
-    await state.update_data(user_data=user_data)
-    await event.answer("Отлично! Какой телефонный номер у продавца?")
-    await state.set_state(STATE_SELLER_PHONE)
-
-
-@dp.message_handler(state=STATE_SELLER_PHONE)
-async def get_seller_phone(event: types.Message, state: FSMContext):
-    user_data = await state.get_data() or {}
-    user_data["seller_phone"] = event.text
-    await state.update_data(user_data=user_data)
-    await event.answer("Отлично! Сейчас запостим фото!")
-    await state.finish()
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
         KeyboardButton("Отправить объявление")
     )
-    await event.answer("Фотографии отправлены в канал.", reply_markup=keyboard)
+    await message.reply("Фото добавлено", reply_markup=keyboard)
 
 
 @dp.message_handler(lambda message: message.text == "Отправить объявление")
