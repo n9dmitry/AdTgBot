@@ -7,7 +7,10 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
 
-API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+# API_TOKEN = '6087732169:AAHABX0K5LHguc-ymnd0Um8UOK8oucvX_gY'
+# API_TOKEN2 = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
+# API_fttlolbot = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
+API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -157,7 +160,19 @@ async def handle_photos(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await state.get_data() or {}
     photo_id = message.photo[-1].file_id
-    caption = str(user_data)
+    # Формируем сообщение в нужном формате
+    print(user_data)
+
+    caption = (
+        f"🚗 #{user_data.get('user_data')['car_brand']} {user_data.get('user_data')['car_model']}\n"
+        f"Год: {user_data.get('user_data')['car_year']}\n"
+        f"Тип КПП: {user_data.get('user_data')['car_transmission_type']}\n"
+        f"Пробег: {user_data.get('car_mileage')}\n"
+        f"Дополнительная информация: {user_data.get('car_description')}\n"
+        f"Цена: {user_data.get('car_price')} руб\n"
+        f"📲 tg: {user_data.get('seller_name')}\n"
+        f"📞🇷🇺Звоните: {user_data.get('seller_phone')}"
+    )
 
     photo_uuid = str(uuid.uuid4())
 
@@ -179,6 +194,7 @@ async def handle_photos(message: types.Message, state: FSMContext):
         )
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await send_photos_to_channel(user_id, user_data)  # Изменено вызовом функции с аргументами
+        await state.finish()
 
 @dp.message_handler(lambda message: message.text == "Перейти к следующему шагу")
 async def next_step(message: types.Message):
