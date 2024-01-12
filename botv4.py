@@ -49,7 +49,11 @@ async def cmd_start(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def get_car_brand(event: types.Message, state: FSMContext):
+<<<<<<< HEAD
+    user_data = (await state.get_data()).get("user_data", {})
+=======
     user_data = (await state.get_data()).get("user_data") or {}
+>>>>>>> origin/forkL
     user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Хорошо! Укажите модель автомобиля:")
