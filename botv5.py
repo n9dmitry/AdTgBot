@@ -230,11 +230,12 @@ async def get_seller_name(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=STATE_SELLER_PHONE)
 async def get_seller_phone(event: types.Message, state: FSMContext):
-    user_data = await state.get_data() or {}
+    user_data = (await state.get_data()).get("user_data", {})
     user_data["seller_phone"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Отлично! Сейчас запостим фото!")
     await state.set_state(STATE_CAR_PHOTO)
+
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(message: types.Message, state: FSMContext):
