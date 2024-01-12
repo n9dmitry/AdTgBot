@@ -227,7 +227,7 @@ async def get_seller_name(event: types.Message, state: FSMContext):
     await event.answer("Отлично! Какой телефонный номер у продавца?")
     await state.set_state(STATE_SELLER_PHONE)
 
-
+# 7656
 @dp.message_handler(state=STATE_SELLER_PHONE)
 async def get_seller_phone(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
@@ -292,7 +292,6 @@ async def send_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     await send_photos_to_channel(user_id, user_data)  # Вместо (user_data, user_id)
     await message.answer("Объявление отправлено в канал.")
-
 
 async def send_photos_to_channel(user_id, user_data):
     async with lock:
