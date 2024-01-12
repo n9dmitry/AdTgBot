@@ -49,7 +49,7 @@ async def cmd_start(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def get_car_brand(event: types.Message, state: FSMContext):
-    user_data = (await state.get_data()).get("user_data", {})
+    user_data = (await state.get_data()).get("user_data") or {}
     user_data["car_brand"] = event.text
     await state.update_data(user_data=user_data)
     await event.answer("Хорошо! Укажите модель автомобиля:")
@@ -243,16 +243,16 @@ async def handle_photos(message: types.Message, state: FSMContext):
     photo_id = message.photo[-1].file_id
 
     caption = (
-        f"🚗 #{user_data.get('user_data')['car_brand']} {user_data.get('user_data')['car_model']}\n"
-        f"Год: {user_data.get('user_data')['car_year']}\n"
-        f"Тип КПП: {user_data.get('user_data')['car_transmission_type']}\n"
-        f"Пробег: {user_data.get('user_data')['car_mileage']}\n"
-        f"Дополнительная информация: {user_data.get('user_data')['car_description']}\n"
-        f"Цена: {user_data.get('user_data')['car_price']} руб\n"
-        f"📲 tg: {user_data.get('user_data')['seller_name']}\n"
-        f"📞🇷🇺Звоните: {user_data.get('user_data')['seller_phone']}"
+        f"🚗 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
+        f"Год: {user_data.get('user_data').get('car_year')}\n"
+        f"Тип КПП: {user_data.get('user_data').get('car_transmission_type')}\n"
+        f"Пробег: {user_data.get('user_data').get('car_mileage')}\n"
+        f"Дополнительная информация: {user_data.get('user_data').get('car_description')}\n"
+        f"Цена: {user_data.get('user_data').get('car_price')} руб\n"
+        f"📲 tg: {user_data.get('user_data').get('seller_name')}\n"
+        f"📞🇷🇺Звоните: {user_data.get('user_data').get('seller_phone')}"
     )
-
+    print(user_data)
     photo_uuid = str(uuid.uuid4())
 
     if "sent_photos" not in user_data:
@@ -271,6 +271,7 @@ async def handle_photos(message: types.Message, state: FSMContext):
         KeyboardButton("Отправить объявление")
     )
     await message.reply("Фото добавлено", reply_markup=keyboard)
+    await state.finish()
 
 
 @dp.message_handler(lambda message: message.text == "Отправить объявление")
