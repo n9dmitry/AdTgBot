@@ -247,13 +247,24 @@ async def handle_photos(message: types.Message, state: FSMContext):
         f"🚗 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
         f"Год: {user_data.get('user_data').get('car_year')}\n"
         f"Тип КПП: {user_data.get('user_data').get('car_transmission_type')}\n"
+        f"Кузов: {user_data.get('user_data').get('car_body_type')}\n"
+        f"Тип двигателя: {user_data.get('user_data').get('car_engine_type')}\n"
+        f"Объем двигателя: {user_data.get('user_data').get('car_engine_volume')}\n"
+        f"Мощность: {user_data.get('user_data').get('car_power')}\n"
+        f"Цвет: {user_data.get('user_data').get('car_color')}\n"
         f"Пробег: {user_data.get('user_data').get('car_mileage')}\n"
+        f"Статус документов: {user_data.get('user_data').get('car_document_status')}\n"
+        f"Количество владельцев: {user_data.get('user_data').get('car_owners')}\n"
+        f"Растаможка: {user_data.get('user_data').get('car_customs_cleared')}\n"
         f"Дополнительная информация: {user_data.get('user_data').get('car_description')}\n"
         f"Цена: {user_data.get('user_data').get('car_price')} руб\n"
-        f"📲 tg: {user_data.get('user_data').get('seller_name')}\n"
-        f"📞🇷🇺Звоните: {user_data.get('user_data').get('seller_phone')}"
+        f"Местоположение: {user_data.get('user_data').get('car_location')}\n"
+        f"Продавец: {user_data.get('user_data').get('seller_name')}\n"
+        f"Телефон продавца: {user_data.get('user_data').get('seller_phone')}"
     )
+
     print(user_data)
+
     photo_uuid = str(uuid.uuid4())
 
     if "sent_photos" not in user_data:
