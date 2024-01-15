@@ -152,6 +152,7 @@ async def cmd_start(event: types.Message, state: FSMContext):
     await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
     await state.set_state('state_car_brand')
 
+
 @dp.callback_query_handler(lambda c: c.data.startswith('brand_'), state='state_car_brand')
 async def process_brand_callback(query: types.CallbackQuery, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
