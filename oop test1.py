@@ -6,7 +6,7 @@ from aiogram.dispatcher.filters import Command
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
-from dicts import *
+from dict import *
 
 STATE_CAR_BRAND = 'state_car_brand'
 STATE_CAR_MODEL = 'state_car_model'
@@ -41,34 +41,31 @@ class CarBotHandler:
         user_data["user_id"] = user_id
         await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
 
-        keyboard = InlineKeyboardMarkup(row_width=2)
+        # Создаем ReplyKeyboardMarkup с вариантами выбора бренда
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         brands = list(dict_car_brands_and_models.keys())
-        buttons = [InlineKeyboardButton(text=brand, callback_data=f"brand_{brand}") for brand in brands]
+        buttons = [KeyboardButton(text=brand) for brand in brands]
         keyboard.add(*buttons)
-        keyboard.add(InlineKeyboardButton(text='Ввести свою марку', callback_data='brand_custom'))
+        keyboard.add(KeyboardButton(text='Ввести свою марку'))
 
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state('state_car_brand')
         # Другие методы...
-    async def process_brand_callback(self, query, state):
+    async def process_brand_callback(self, query, state, event):
         user_data = (await state.get_data()).get("user_data", {})
-        selected_brand = query.data.split('_')[1]
+        selected_brand = event.text
 
-        if selected_brand == 'custom':
-            await query.message.answer("Введите свою марку автомобиля:")
-            await state.set_state('state_car_model')
-        else:
-            user_data["car_brand"] = selected_brand
-            await state.update_data(user_data=user_data)
+        user_data["car_brand"] = selected_brand
+        await state.update_data(user_data=user_data)
 
-            # Создаем инлайн-клавиатуру с моделями выбранного бренда
-            keyboard = InlineKeyboardMarkup(row_width=2)
-            models = dict_car_brands_and_models[selected_brand]
-            buttons = [InlineKeyboardButton(text=model, callback_data=f"model_{model}") for model in models]
-            keyboard.add(*buttons)
+        # Создаем ReplyKeyboardMarkup с моделями выбранного бренда
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+        models = dict_car_brands_and_models[selected_brand]
+        buttons = [KeyboardButton(text=model) for model in models]
+        keyboard.add(*buttons)
 
-            await query.message.answer("Выберите модель автомобиля:", reply_markup=keyboard)
-            await state.set_state('state_car_model')
+        await event.answer("Выберите модель автомобиля:", reply_markup=keyboard)
+        await state.set_state('state_car_model')
 
         await query.answer()
     async def process_model_callback(self, query, state):
@@ -82,8 +79,10 @@ class CarBotHandler:
     async def get_car_year(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_year"] = event.text
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        keyboard.add(*dict_car_body_types)  # Добавляем кнопки на основе словаря
         await state.update_data(user_data=user_data)
-        await event.answer("Отлично! Какой тип кузова у автомобиля?")
+        await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BODY_TYPE)
     async def get_car_body_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -91,6 +90,7 @@ class CarBotHandler:
 
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_engine_types)  # Добавляем кнопки на основе словаря
+
         await state.update_data(user_data=user_data)
         await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_ENGINE_TYPE)
