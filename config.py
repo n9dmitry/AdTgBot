@@ -1,0 +1,2 @@
+API_TOKEN = '6663634927:AAFvwAxHoSh50vPwE2lAAQidxfxVuvQE7QA'
+CHANNEL_ID = '@autoxyibot1'

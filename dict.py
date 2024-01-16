@@ -88,7 +88,7 @@ dict_car_owners = {
     "4 и более",
 }
 
-dictcar_customs_cleared = {
+dict_car_customs_cleared = {
     "Да",
     "Нет",
 }
