@@ -53,7 +53,6 @@ class CarBotHandler:
 
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state('state_car_brand')
-        # Другие методы...
 
     async def process_brand_input(self, event, state):
         await event.answer("Введите свою марку автомобиля:")
@@ -375,8 +374,6 @@ async def handle_photos_handler(message: types.Message, state: FSMContext):
 @dp.message_handler(lambda message: message.text == "Отправить объявление")
 async def send_advertisement_handler(message: types.Message, state: FSMContext):
     await car_bot.send_advertisement(message, state)
-
-
 
 
 # старт бота

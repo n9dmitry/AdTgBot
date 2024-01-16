@@ -4,10 +4,28 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, Message
+import json
 import uuid
 import asyncio
 from aiogram import types
 from dicts import *
+
+# Загрузите все словари из файла JSON в начале вашего скрипта
+with open('dicts.json', 'r', encoding='utf-8') as file:
+    dicts = json.load(file)
+
+dict_car_brands_and_models = dicts.get("dict_car_brands_and_models", {})
+dict_car_body_types = dicts.get("dict_car_body_types", {})
+dict_car_engine_types = dicts.get("dict_car_engine_types", {})
+dict_car_transmission_types = dicts.get("dict_car_transmission_types", {})
+dict_car_colors = dicts.get("dict_car_colors", {})
+dict_car_document_statuses = dicts.get("dict_car_document_statuses", {})
+dict_car_owners = dicts.get("dict_car_owners", {})
+dict_car_customs_cleared = dicts.get("dict_car_customs_cleared", {})
+dict_currency = dicts.get("dict_currency", {})
+
+
+
 
 API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
@@ -40,49 +58,6 @@ STATE_SELLER_PHONE = 'state_seller_phone'
 STATE_CAR_PHOTO = 'state_car_photo'
 STATE_SEND = 'state_send'
 
-
-
-# car_models = {
-#     'Ввести свою марку': [],
-#     'Audi': ['Ввести марку', 'A3', 'A4', 'Q5', 'Q7'],
-#     'BMW': ['Ввести марку', '3 Series', '5 Series', 'X3', 'X5'],
-#     'Mercedes-Benz': ['Ввести марку', 'C-Class', 'E-Class', 'GLC', 'GLE'],
-#     'Chevrolet': ['Ввести марку', 'Cruze', 'Malibu', 'Equinox', 'Tahoe'],
-#     'Ford': ['Ввести марку', 'Focus', 'Fusion', 'Escape', 'Explorer'],
-#     'Honda': ['Ввести марку', 'Civic', 'Accord', 'CR-V', 'Pilot'],
-#     'Hyundai': ['Ввести марку', 'Elantra', 'Sonata', 'Tucson', 'Santa Fe'],
-#     'Kia': ['Ввести марку', 'Optima', 'Sorento', 'Sportage', 'Telluride'],
-#     'Nissan': ['Ввести марку', 'Altima', 'Maxima', 'Rogue', 'Pathfinder'],
-#     'Toyota': ['Ввести марку', 'Camry', 'Corolla', 'Rav4', 'Highlander'],
-#     'Volkswagen': ['Ввести марку', 'Golf', 'Jetta', 'Tiguan', 'Atlas'],
-#     'Volvo': ['Ввести марку', 'S60', 'S90', 'XC60', 'XC90'],
-#     'Ferrari': ['Ввести марку', '488', 'F8 Tributo', 'Portofino', 'SF90 Stradale'],
-#     'Porsche': ['Ввести марку', '911', 'Cayenne', 'Panamera', 'Macan'],
-#     'Tesla': ['Ввести марку', 'Model S', 'Model 3', 'Model X', 'Model Y'],
-#     'Lamborghini': ['Ввести марку', 'Huracan', 'Aventador', 'Urus'],
-#     'Jaguar': ['Ввести марку', 'XE', 'XF', 'F-Pace', 'I-Pace'],
-#     'Land Rover': ['Ввести марку', 'Discovery', 'Range Rover Evoque', 'Range Rover Sport', 'Defender'],
-#     'Mazda': ['Ввести марку', 'Mazda3', 'Mazda6', 'CX-5', 'CX-9'],
-#     'Subaru': ['Ввести марку', 'Impreza', 'Outback', 'Forester', 'Ascent'],
-#     'LADA': ['Ввести марку', 'Vesta', 'Granta', 'XRAY', '4x4'],
-#     'УАЗ': ['Ввести марку', 'Patriot', 'Hunter', 'Bukhanka'],
-#     'ГАЗ': ['Ввести марку', 'Sobol', 'Next', 'Gazelle'],
-#     'КАМАЗ': ['Ввести марку', '5490', '6520', '43118'],
-#     'АвтоВАЗ': ['Ввести марку', 'LADA 4x4', 'LADA Kalina', 'LADA Priora', 'LADA XRAY']
-# }
-#
-# car_body_types = {
-#     "Седан",
-#     "Хэтчбек",
-#     "Универсал",
-#     "Купе",
-#     "Кабриолет",
-#     "Спортивный купе",
-#     "Внедорожник",
-#     "Кроссовер",
-#     "Минивэн",
-#     "Пикап",
-# }
 
 @dp.message_handler(Command("start"))
 async def cmd_start(event: types.Message, state: FSMContext):
@@ -193,15 +168,18 @@ async def get_car_power(event: types.Message, state: FSMContext):
 async def get_car_transmission_type(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
     user_data["car_transmission_type"] = event.text
-
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    keyboard.add(*dict_car_colors)
     await state.update_data(user_data=user_data)
-    await event.answer("Какого цвета автомобиль?",)
+    await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
     await state.set_state(STATE_CAR_COLOR)
 
 @dp.message_handler(state=STATE_CAR_COLOR)
 async def get_car_color(event: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
+
     user_data["car_color"] = event.text
+
     await state.update_data(user_data=user_data)
     await event.answer("Каков пробег автомобиля?")
     await state.set_state(STATE_CAR_MILEAGE)
@@ -234,7 +212,7 @@ async def get_car_owners(event: types.Message, state: FSMContext):
     user_data["car_owners"] = event.text
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    keyboard.add(*dictcar_customs_cleared)
+    keyboard.add(*dict_car_customs_cleared)
     await state.update_data(user_data=user_data)
     await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
     await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
