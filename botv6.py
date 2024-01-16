@@ -9,7 +9,7 @@ import asyncio
 from aiogram import types
 from dicts import *
 
-API_TOKEN = '6663634927:AAFvwAxHoSh50vPwE2lAAQidxfxVuvQE7QA'
+API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
 CHANNEL_ID = '@autoxyibot1'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())

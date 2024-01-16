@@ -8,6 +8,9 @@ import uuid
 import asyncio
 from dict import *
 
+# get_car_data
+# get_car_data_input
+
 STATE_CAR_BRAND = 'state_car_brand'
 STATE_CAR_MODEL = 'state_car_model'
 STATE_CAR_YEAR = 'state_car_year'
@@ -51,6 +54,11 @@ class CarBotHandler:
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state('state_car_brand')
         # Другие методы...
+
+    async def process_brand_input(self, event, state):
+        await event.answer("Введите свою марку автомобиля:")
+        await state.set_state('state_car_model')
+
     async def process_brand_callback(self, query, state, event):
         user_data = (await state.get_data()).get("user_data", {})
         selected_brand = event.text
@@ -67,7 +75,6 @@ class CarBotHandler:
         await event.answer("Выберите модель автомобиля:", reply_markup=keyboard)
         await state.set_state('state_car_model')
 
-        await query.answer()
     async def process_model_callback(self, query, state):
         user_data = (await state.get_data()).get("user_data", {})
         selected_model = query.data.split('_')[1]
@@ -76,6 +83,7 @@ class CarBotHandler:
         await query.message.answer("Отлично! Какой год выпуска у автомобиля?")
         await state.set_state('state_car_year')
         await query.answer()
+
     async def get_car_year(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_year"] = event.text
@@ -84,6 +92,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BODY_TYPE)
+
     async def get_car_body_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_body_type"] = event.text
@@ -94,6 +103,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_ENGINE_TYPE)
+
     async def get_car_engine_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_engine_type"] = event.text
@@ -102,6 +112,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Хорошо! Какой объем двигателя у автомобиля?")
         await state.set_state(STATE_CAR_ENGINE_VOLUME)
+
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_engine_volume"] = event.text
@@ -110,6 +121,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Отлично! Укажите мощность двигателя автомобиля.")
         await state.set_state(STATE_CAR_POWER)
+
     async def get_car_power(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_power"] = event.text
@@ -119,6 +131,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
+
     async def get_car_transmission_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_transmission_type"] = event.text
@@ -126,12 +139,14 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Какого цвета автомобиль?", )
         await state.set_state(STATE_CAR_COLOR)
+
     async def get_car_color(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_color"] = event.text
         await state.update_data(user_data=user_data)
         await event.answer("Каков пробег автомобиля?")
         await state.set_state(STATE_CAR_MILEAGE)
+
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_mileage"] = event.text
@@ -141,6 +156,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Каков статус документов у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_DOCUMENT_STATUS)
+
     async def get_car_document_status(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_document_status"] = event.text
@@ -150,6 +166,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_OWNERS)
+
     async def get_car_owners(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_owners"] = event.text
@@ -159,6 +176,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
+
     async def get_car_customs_cleared(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_customs_cleared"] = event.text
@@ -166,6 +184,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Добавьте описание.")
         await state.set_state(STATE_CAR_DESCRIPTION)
+
     async def get_car_description(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_description"] = event.text
@@ -176,6 +195,7 @@ class CarBotHandler:
         await state.update_data(user_data=user_data)
         await event.answer("Выберите валюту:", reply_markup=keyboard)
         await state.set_state(STATE_SELECT_CURRENCY)
+
     async def select_currency(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["currency"] = event.text
@@ -183,30 +203,35 @@ class CarBotHandler:
 
         await event.answer("Какова цена автомобиля?")
         await state.set_state(STATE_CAR_PRICE)
+
     async def get_car_price(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_price"] = event.text
         await state.update_data(user_data=user_data)
         await event.answer("Прекрасно! Где находится автомобиль?")
         await state.set_state(STATE_CAR_LOCATION)
+
     async def get_car_location(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_location"] = event.text
         await state.update_data(user_data=user_data)
         await event.answer("Прекрасно! Укажите имя продавца.")
         await state.set_state(STATE_SELLER_NAME)
+
     async def get_seller_name(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["seller_name"] = event.text
         await state.update_data(user_data=user_data)
         await event.answer("Отлично! Какой телефонный номер у продавца?")
         await state.set_state(STATE_SELLER_PHONE)
+
     async def get_seller_phone(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["seller_phone"] = event.text
         await state.update_data(user_data=user_data)
         await event.answer("Добавьте фотографии авто")
         await state.set_state(STATE_CAR_PHOTO)
+
     async def handle_photos(self, message, state):
         user_data = (await state.get_data()).get("user_data", {})
         photo_id = message.photo[-1].file_id
@@ -239,6 +264,7 @@ class CarBotHandler:
         )
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
+
     async def send_advertisement(self, message, state):
         user_id = message.from_user.id
         user_data = await state.get_data()
@@ -261,6 +287,10 @@ buffered_photos = []
 @dp.message_handler(Command("start"))
 async def cmd_start(event: types.Message, state: FSMContext):
     await car_bot.start(event, state)
+
+@dp.message_handler(lambda message: isinstance(message.text, str) and message.text.startswith('Ввести свою марку'), state='state_car_brand')
+async def process_brand_input_handler(message: types.Message, state: FSMContext):
+    await car_bot.process_brand_input(message, state)
 
 @dp.callback_query_handler(lambda c: c.data.startswith('brand_'), state='state_car_brand')
 async def process_brand_callback(query: types.CallbackQuery, state: FSMContext):
