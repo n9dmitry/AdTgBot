@@ -288,24 +288,46 @@ async def handle_photos(message: types.Message, state: FSMContext):
     user_data = await state.get_data() or {}
     photo_id = message.photo[-1].file_id
 
+    # caption = (
+    #     f"🚗 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
+    #     f"Год: {user_data.get('user_data').get('car_year')}\n"
+    #     f"Тип КПП: {user_data.get('user_data').get('car_transmission_type')}\n"
+    #     f"Кузов: {user_data.get('user_data').get('car_body_type')}\n"
+    #     f"Тип двигателя: {user_data.get('user_data').get('car_engine_type')}\n"
+    #     f"Объем двигателя: {user_data.get('user_data').get('car_engine_volume')}\n"
+    #     f"Мощность: {user_data.get('user_data').get('car_power')}\n"
+    #     f"Цвет: {user_data.get('user_data').get('car_color')}\n"
+    #     f"Пробег: {user_data.get('user_data').get('car_mileage')}\n"
+    #     f"Статус документов: {user_data.get('user_data').get('car_document_status')}\n"
+    #     f"Количество владельцев: {user_data.get('user_data').get('car_owners')}\n"
+    #     f"Растаможка: {user_data.get('user_data').get('car_customs_cleared')}\n"
+    #     f"Дополнительная информация: {user_data.get('user_data').get('car_description')}\n"
+    #     f"Цена: {user_data.get('user_data').get('car_price')} {user_data.get('user_data').get('currency')}\n"
+    #     f"Местоположение: {user_data.get('user_data').get('car_location')}\n"
+    #     f"Продавец: {user_data.get('user_data').get('seller_name')}\n"
+    #     f"Телефон продавца: {user_data.get('user_data').get('seller_phone')}"
+    # )
     caption = (
-        f"🚗 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
-        f"Год: {user_data.get('user_data').get('car_year')}\n"
-        f"Тип КПП: {user_data.get('user_data').get('car_transmission_type')}\n"
-        f"Кузов: {user_data.get('user_data').get('car_body_type')}\n"
-        f"Тип двигателя: {user_data.get('user_data').get('car_engine_type')}\n"
-        f"Объем двигателя: {user_data.get('user_data').get('car_engine_volume')}\n"
-        f"Мощность: {user_data.get('user_data').get('car_power')}\n"
-        f"Цвет: {user_data.get('user_data').get('car_color')}\n"
-        f"Пробег: {user_data.get('user_data').get('car_mileage')}\n"
-        f"Статус документов: {user_data.get('user_data').get('car_document_status')}\n"
-        f"Количество владельцев: {user_data.get('user_data').get('car_owners')}\n"
-        f"Растаможка: {user_data.get('user_data').get('car_customs_cleared')}\n"
-        f"Дополнительная информация: {user_data.get('user_data').get('car_description')}\n"
-        f"Цена: {user_data.get('user_data').get('car_price')} {user_data.get('user_data').get('currency')}\n"
-        f"Местоположение: {user_data.get('user_data').get('car_location')}\n"
-        f"Продавец: {user_data.get('user_data').get('seller_name')}\n"
-        f"Телефон продавца: {user_data.get('user_data').get('seller_phone')}"
+        f"🛞 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
+        f"   <b>-Год:</b> {user_data.get('user_data').get('car_year')}г\n"
+        f"   <b>-Пробег:</b> {user_data.get('user_data').get('car_mileage')}км\n"
+        f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
+        f"   <b>-Кузов:</b> {user_data.get('user_data').get('car_body_type')}\n"
+        f"   <b>-Тип двигателя:</b> {user_data.get('user_data').get('car_engine_type')}\n"
+        f"   <b>-Объем двигателя (л):</b> {user_data.get('user_data').get('car_engine_volume')}л\n"
+        f"   <b>-Мощность:</b> {user_data.get('user_data').get('car_power')}л.с.\n"
+        f"   <b>-Цвет:</b> {user_data.get('user_data').get('car_color')}\n"
+        f"   <b>-Статус документов:</b> {user_data.get('user_data').get('car_document_status')}\n"
+        f"   <b>-Количество владельцев:</b> {user_data.get('user_data').get('car_owners')}\n"
+        f"   <b>-Растаможка:</b> {'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет'}\n"
+        f"   <b>-Состояние:</b> {user_data.get('user_data').get('car_condition')}\n\n"
+        f"ℹ️<b>Дополнительная информация:</b> {user_data.get('user_data').get('car_description')}\n\n"
+        f"🔥<b>Цена:</b> {user_data.get('user_data').get('car_price')} {user_data.get('user_data').get('currency')}\n\n"
+        f"📍<b>Местоположение:</b> {user_data.get('user_data').get('car_location')}\n"
+        f"👤<b>Продавец:</b> ||{user_data.get('user_data').get('seller_name')} ||\n"
+        f"📲<b>Телефон продавца:</b> ||{user_data.get('user_data').get('seller_phone')}||\n"
+        f"💬<b>Телеграм:</b> ||{user_data.get('user_data').get('seller_telegram')}||\n\n"
+        f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
     )
 
     print(user_data)
@@ -315,7 +337,7 @@ async def handle_photos(message: types.Message, state: FSMContext):
         user_data["sent_photos"] = []
 
     user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
-    buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption))
+    buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
     if len(buffered_photos) > 1:
         for i in range(len(buffered_photos) - 1):
             buffered_photos[i].caption = None
