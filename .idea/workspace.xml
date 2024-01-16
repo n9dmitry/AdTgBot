@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.5.5">
-      <change afterPath="$PROJECT_DIR$/oop test1.py" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.4.6">
+      <change afterPath="$PROJECT_DIR$/data.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_01_2024_12_08__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_01_2024_12_08__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_01_2024_14_53__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_01_2024_14_53__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_01_2024_10_54__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_01_2024_10_54__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_01_2024_9_33__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_01_2024_9_33__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_01_2024_9_56__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_01_2024_9_56__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v5.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v5.5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/oop test1.py" beforeDir="false" afterPath="$PROJECT_DIR$/oop test1.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +29,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="forkL" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -58,9 +63,6 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
     </key>
   </component>
   <component name="RunManager" selected="Python.oop test1">
@@ -199,10 +201,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.oop test1" />
+        <item itemvalue="Python.Mix function + bot v1" />
+        <item itemvalue="Python.botv5" />
         <item itemvalue="Python.bot v5.5 (1)" />
         <item itemvalue="Python.bot v5.5" />
-        <item itemvalue="Python.botv5" />
-        <item itemvalue="Python.Mix function + bot v1" />
       </list>
     </recent_temporary>
   </component>
@@ -226,7 +228,7 @@
       <workItem from="1703766256617" duration="27000" />
       <workItem from="1703774344150" duration="17478000" />
       <workItem from="1703828520093" duration="11301000" />
-      <workItem from="1705299654305" duration="8816000" />
+      <workItem from="1705299654305" duration="2136000" />
     </task>
     <task id="LOCAL-00001" summary="1.6">
       <created>1703595765616</created>
@@ -354,14 +356,7 @@
       <option name="project" value="LOCAL" />
       <updated>1705062400728</updated>
     </task>
-    <task id="LOCAL-00019" summary="v.5.5">
-      <created>1705302170348</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1705302170348</updated>
-    </task>
-    <option name="localTasksCounter" value="20" />
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -393,8 +388,7 @@
     <MESSAGE value="v3.6" />
     <MESSAGE value="v.4.6" />
     <MESSAGE value="v.4.7" />
-    <MESSAGE value="v.5.5" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.5.5" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.4.7" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -420,9 +414,10 @@
     <SUITE FILE_PATH="coverage/AdTgBot$botv3_5.coverage" NAME="botv3-5 Coverage Results" MODIFIED="1705042196145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$function_v2.coverage" NAME="function v2 Coverage Results" MODIFIED="1704792678066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$test_test_dima.coverage" NAME="test test dima Coverage Results" MODIFIED="1704882462816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches/TgAutoBot - Scratches" />
-    <SUITE FILE_PATH="coverage/AdTgBot$oop_test1.coverage" NAME="oop test1 Coverage Results" MODIFIED="1705319356994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AdTgBot$oop_test1.coverage" NAME="oop test1 Coverage Results" MODIFIED="1705387954920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$test_post_photoes.coverage" NAME="test post photoes Coverage Results" MODIFIED="1703581632670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches/TgAutoBot - Scratches" />
     <SUITE FILE_PATH="coverage/AdTgBot$caption__1_.coverage" NAME="caption (1) Coverage Results" MODIFIED="1704887826446" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AdTgBot$botv6.coverage" NAME="botv6 Coverage Results" MODIFIED="1705332615673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$bot_V3.coverage" NAME="bot V3 Coverage Results" MODIFIED="1704781713898" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$buttons.coverage" NAME="buttons Coverage Results" MODIFIED="1705057767109" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches/TgAutoBot - Scratches" />
     <SUITE FILE_PATH="coverage/AdTgBot$main.coverage" NAME="main Coverage Results" MODIFIED="1703579987501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
