@@ -22,6 +22,7 @@ dict_car_document_statuses = dicts.get("dict_car_document_statuses", {})
 dict_car_owners = dicts.get("dict_car_owners", {})
 dict_car_customs_cleared = dicts.get("dict_car_customs_cleared", {})
 dict_currency = dicts.get("dict_currency", {})
+dict_car_conditions = dicts.get("dict_car_conditions", {})
 # Конец импорта json словарей
 
 
@@ -172,6 +173,17 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_customs_cleared"] = event.text
 
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        keyboard.add(*dict_car_conditions)
+
+        await state.update_data(user_data=user_data)
+        await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
+        await state.set_state(STATE_CAR_CONDITION)
+
+    async def get_car_condition(self, event, state):
+        user_data = (await state.get_data()).get("user_data", {})
+        user_data["car_condition"] = event.text
+
         await state.update_data(user_data=user_data)
         await event.answer("Добавьте описание.")
         await state.set_state(STATE_CAR_DESCRIPTION)
@@ -224,12 +236,12 @@ class CarBotHandler:
         await state.set_state(STATE_CAR_PHOTO)
 
     async def handle_photos(self, message, state):
-        user_data = (await state.get_data()).get("user_data", {})
+        user_data = await state.get_data('user_data')
         photo_id = message.photo[-1].file_id
 
         caption = (
             f"🛞 <b>#{user_data.get('user_data').get('car_brand')}{user_data.get('user_data').get('car_model')}</b>\n\n"
-            f"   <b>-Год:</b> {user_data.get('user_data').get('car_year')}г\n"
+            f"   <b>-Год:</b> {user_data.get('user_data', {}).get('car_year')}г\n"
             f"   <b>-Пробег:</b> {user_data.get('user_data').get('car_mileage')}км\n"
             f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
             f"   <b>-Кузов:</b> {user_data.get('user_data').get('car_body_type')}\n"
@@ -250,6 +262,7 @@ class CarBotHandler:
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
 
+
         print(user_data)
         photo_uuid = str(uuid.uuid4())
 
@@ -257,7 +270,7 @@ class CarBotHandler:
             user_data["sent_photos"] = []
 
         user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
-        buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption))
+        buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
@@ -270,10 +283,10 @@ class CarBotHandler:
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
-    async def send_advertisement(self, message: types.Message, state: FSMContext):
+    async def send_advertisement(self, message, state):
         user_id = message.from_user.id
         user_data = await state.get_data()
-        await self.send_photos_to_channel(user_id, user_data)  # Вместо (user_data, user_id)
+        await self.send_photos_to_channel(user_id, user_data)
         await message.answer("Объявление отправлено в канал.")
 
     async def send_photos_to_channel(self, user_id, user_data):
@@ -345,6 +358,10 @@ async def get_car_owners(event: types.Message, state: FSMContext):
 @dp.message_handler(state=STATE_CAR_CUSTOMS_CLEARED)
 async def get_car_customs_cleared(event: types.Message, state: FSMContext):
     await car_bot.get_car_customs_cleared(event, state)
+
+@dp.message_handler(state=STATE_CAR_CONDITION)
+async def get_car_condition(event: types.Message, state: FSMContext):
+    await car_bot.get_car_condition(event, state)
 
 @dp.message_handler(state=STATE_CAR_DESCRIPTION)
 async def get_car_description(event: types.Message, state: FSMContext):
