@@ -1,5 +1,5 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import InputMediaPhoto
+from aiogram.types import InputMediaPhoto, ParseMode
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
@@ -23,6 +23,7 @@ dict_car_owners = dicts.get("dict_car_owners", {})
 dict_car_customs_cleared = dicts.get("dict_car_customs_cleared", {})
 dict_currency = dicts.get("dict_currency", {})
 dict_car_conditions = dicts.get("dict_car_conditions", {})
+dict_car_mileages = dicts.get("dict_car_mileages", {})
 # Конец импорта json словарей
 
 
@@ -30,9 +31,8 @@ dict_car_conditions = dicts.get("dict_car_conditions", {})
 # get_car_data_input
 
 class CarBotHandler:
-    def __init__(self, ):
+    def __init__(self):
         self.lock = asyncio.Lock()
-        self.buffered_photos = []
 
     async def start(self, event, state):
         user_id = event.from_user.id
@@ -111,7 +111,7 @@ class CarBotHandler:
 
         # Добавляем кнопки на основе словаря
         await state.update_data(user_data=user_data)
-        await event.answer("Отлично! Укажите мощность двигателя автомобиля.")
+        await event.answer("Отлично! Укажите мощность двигателя автомобиля (л.с.). Например: 200")
         await state.set_state(STATE_CAR_POWER)
 
     async def get_car_power(self, event, state):
@@ -128,15 +128,22 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_transmission_type"] = event.text
 
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        keyboard.add(*dict_car_colors)
+
         await state.update_data(user_data=user_data)
-        await event.answer("Какого цвета автомобиль?", )
+        await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_COLOR)
 
     async def get_car_color(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_color"] = event.text
+
+        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        keyboard.add(*dict_car_mileages)
+
         await state.update_data(user_data=user_data)
-        await event.answer("Каков пробег автомобиля?")
+        await event.answer("Каков пробег автомобиля? Введите пробег, например: 100 000. Если у авто нет пробега, нажмите 'Новый'", reply_markup=keyboard)
         await state.set_state(STATE_CAR_MILEAGE)
 
     async def get_car_mileage(self, event, state):
@@ -211,14 +218,14 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_price"] = event.text
         await state.update_data(user_data=user_data)
-        await event.answer("Прекрасно! Где находится автомобиль?")
+        await event.answer("Прекрасно! Где находится автомобиль? (Например: Харцызск)")
         await state.set_state(STATE_CAR_LOCATION)
 
     async def get_car_location(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_location"] = event.text
         await state.update_data(user_data=user_data)
-        await event.answer("Прекрасно! Укажите имя продавца.")
+        await event.answer("Прекрасно! Укажите имя продавца. (+7**********)")
         await state.set_state(STATE_SELLER_NAME)
 
     async def get_seller_name(self, event, state):
@@ -241,13 +248,13 @@ class CarBotHandler:
 
         caption = (
             f"🛞 <b>#{user_data.get('user_data').get('car_brand')}{user_data.get('user_data').get('car_model')}</b>\n\n"
-            f"   <b>-Год:</b> {user_data.get('user_data', {}).get('car_year')}г\n"
-            f"   <b>-Пробег:</b> {user_data.get('user_data').get('car_mileage')}км\n"
+            f"   <b>-Год:</b> {user_data.get('user_data', {}).get('car_year')}\n"
+            f"   <b>-Пробег (км.):</b> {user_data.get('user_data').get('car_mileage')}\n"
             f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
             f"   <b>-Кузов:</b> {user_data.get('user_data').get('car_body_type')}\n"
             f"   <b>-Тип двигателя:</b> {user_data.get('user_data').get('car_engine_type')}\n"
-            f"   <b>-Объем двигателя (л):</b> {user_data.get('user_data').get('car_engine_volume')}\n"
-            f"   <b>-Мощность:</b> {user_data.get('user_data').get('car_power')}л.с.\n"
+            f"   <b>-Объем двигателя (л.):</b> {user_data.get('user_data').get('car_engine_volume')}\n"
+            f"   <b>-Мощность (л.с.):</b> {user_data.get('user_data').get('car_power')}\n"
             f"   <b>-Цвет:</b> {user_data.get('user_data').get('car_color')}\n"
             f"   <b>-Статус документов:</b> {user_data.get('user_data').get('car_document_status')}\n"
             f"   <b>-Количество владельцев:</b> {user_data.get('user_data').get('car_owners')}\n"
@@ -258,7 +265,7 @@ class CarBotHandler:
             f"📍<b>Местоположение:</b> {user_data.get('user_data').get('car_location')}\n"
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
-            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username}</span>\n\n"
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"            
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
 
