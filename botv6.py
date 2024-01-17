@@ -10,6 +10,7 @@ import asyncio
 from aiogram import types
 from dicts import *
 
+
 # Загрузите все словари из файла JSON в начале вашего скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
     dicts = json.load(file)
@@ -27,8 +28,8 @@ dict_currency = dicts.get("dict_currency", {})
 
 
 
-API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
-CHANNEL_ID = '@autoxyibot1'
+API_TOKEN = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
+CHANNEL_ID = '@CarsTradeChannel'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
@@ -307,14 +308,15 @@ async def handle_photos(message: types.Message, state: FSMContext):
     #     f"Продавец: {user_data.get('user_data').get('seller_name')}\n"
     #     f"Телефон продавца: {user_data.get('user_data').get('seller_phone')}"
     # )
+
     caption = (
-        f"🛞 #{user_data.get('user_data').get('car_brand')} {user_data.get('user_data').get('car_model')}\n"
+        f"🛞 <b>#{user_data.get('user_data').get('car_brand')}</b> <b>{user_data.get('user_data').get('car_model')}</b>\n\n"
         f"   <b>-Год:</b> {user_data.get('user_data').get('car_year')}г\n"
         f"   <b>-Пробег:</b> {user_data.get('user_data').get('car_mileage')}км\n"
         f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
         f"   <b>-Кузов:</b> {user_data.get('user_data').get('car_body_type')}\n"
         f"   <b>-Тип двигателя:</b> {user_data.get('user_data').get('car_engine_type')}\n"
-        f"   <b>-Объем двигателя (л):</b> {user_data.get('user_data').get('car_engine_volume')}л\n"
+        f"   <b>-Объем двигателя (л):</b> {user_data.get('user_data').get('car_engine_volume')}\n"
         f"   <b>-Мощность:</b> {user_data.get('user_data').get('car_power')}л.с.\n"
         f"   <b>-Цвет:</b> {user_data.get('user_data').get('car_color')}\n"
         f"   <b>-Статус документов:</b> {user_data.get('user_data').get('car_document_status')}\n"
@@ -324,10 +326,11 @@ async def handle_photos(message: types.Message, state: FSMContext):
         f"ℹ️<b>Дополнительная информация:</b> {user_data.get('user_data').get('car_description')}\n\n"
         f"🔥<b>Цена:</b> {user_data.get('user_data').get('car_price')} {user_data.get('user_data').get('currency')}\n\n"
         f"📍<b>Местоположение:</b> {user_data.get('user_data').get('car_location')}\n"
-        f"👤<b>Продавец:</b> ||{user_data.get('user_data').get('seller_name')} ||\n"
-        f"📲<b>Телефон продавца:</b> ||{user_data.get('user_data').get('seller_phone')}||\n"
-        f"💬<b>Телеграм:</b> ||{user_data.get('user_data').get('seller_telegram')}||\n\n"
+        f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
+        f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
+        f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username}</span>\n\n"
         f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
+
     )
 
     print(user_data)
