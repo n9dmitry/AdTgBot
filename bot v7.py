@@ -228,7 +228,7 @@ class CarBotHandler:
         photo_id = message.photo[-1].file_id
 
         caption = (
-            f"🛞 <b>#{user_data.get('user_data').get('car_brand')}</b> <b>{user_data.get('user_data').get('car_model')}</b>\n\n"
+            f"🛞 <b>#{user_data.get('user_data').get('car_brand')}{user_data.get('user_data').get('car_model')}</b>\n\n"
             f"   <b>-Год:</b> {user_data.get('user_data').get('car_year')}г\n"
             f"   <b>-Пробег:</b> {user_data.get('user_data').get('car_mileage')}км\n"
             f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
@@ -270,15 +270,18 @@ class CarBotHandler:
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
-    async def send_advertisement(self, message, state):
+    async def send_advertisement(self, message: types.Message, state: FSMContext):
         user_id = message.from_user.id
         user_data = await state.get_data()
-        async with self.lock:
+        await self.send_photos_to_channel(user_id, user_data)  # Вместо (user_data, user_id)
+        await message.answer("Объявление отправлено в канал.")
+
+    async def send_photos_to_channel(self, user_id, user_data):
+        async with lock:
             if buffered_photos:
                 await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
                 await bot.send_message(user_id, "Фотографии отправлены в канал.")
                 buffered_photos.clear()
-        await message.answer("Объявление отправлено в канал.")
 
 
 car_bot = CarBotHandler()
@@ -372,10 +375,9 @@ async def handle_photos_handler(message: types.Message, state: FSMContext):
     await car_bot.handle_photos(message, state)
 
 @dp.message_handler(lambda message: message.text == "Отправить объявление")
-async def send_advertisement_handler(message: types.Message, state: FSMContext):
+async def send_advertisement(message: types.Message, state: FSMContext):
     await car_bot.send_advertisement(message, state)
-
-
+    await car_bot.send_photos_to_channel(message.from_user.id, await state.get_data())
 
 
 # старт бота
