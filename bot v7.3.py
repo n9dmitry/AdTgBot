@@ -6,7 +6,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
 from config import *
-from state import *
+from states import *
 import json
 
 # Загрузка JSON в начале скрипта
@@ -225,14 +225,14 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_location"] = event.text
         await state.update_data(user_data=user_data)
-        await event.answer("Прекрасно! Укажите имя продавца. (+7**********)")
+        await event.answer("Прекрасно! Укажите имя продавца.")
         await state.set_state(STATE_SELLER_NAME)
 
     async def get_seller_name(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         user_data["seller_name"] = event.text
         await state.update_data(user_data=user_data)
-        await event.answer("Отлично! Какой телефонный номер у продавца?")
+        await event.answer("Отлично! Какой телефонный номер у продавца? (например +7**********)")
         await state.set_state(STATE_SELLER_PHONE)
 
     async def get_seller_phone(self, event, state):
