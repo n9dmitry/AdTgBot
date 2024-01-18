@@ -33,6 +33,13 @@ dict_car_mileages = dicts.get("dict_car_mileages", {})
 class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
+        self.sent_message = None
+
+    async def delete_previous_question(self, event):
+        await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
+
+    async def delete_hello_question(self, event):
+        await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
 
     async def start(self, event, state):
         user_id = event.from_user.id
@@ -40,13 +47,13 @@ class CarBotHandler:
         user_data["user_id"] = user_id
         await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
 
+
         # Создаем ReplyKeyboardMarkup с вариантами выбора бренда
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         brands = list(dict_car_brands_and_models.keys())
         buttons = [KeyboardButton(text=brand) for brand in brands]
         keyboard.add(*buttons)
         keyboard.add(KeyboardButton(text='Ввести свою марку'))
-
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
 
@@ -56,7 +63,8 @@ class CarBotHandler:
 
         user_data["car_brand"] = selected_brand
         await state.update_data(user_data=user_data)
-
+        await self.delete_previous_question(event)
+        await self.delete_hello_question(event)
         # Создаем ReplyKeyboardMarkup с моделями выбранного бренда
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         models = dict_car_brands_and_models[selected_brand]
@@ -72,7 +80,7 @@ class CarBotHandler:
 
         user_data["car_model"] = selected_model
         await state.update_data(user_data=user_data)
-
+        await self.delete_previous_question(event)
         await event.answer("Отлично! Какой год выпуска у автомобиля?")
         await state.set_state(STATE_CAR_YEAR)
 
@@ -82,6 +90,7 @@ class CarBotHandler:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_body_types)  # Добавляем кнопки на основе словаря
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BODY_TYPE)
 
@@ -93,6 +102,7 @@ class CarBotHandler:
         keyboard.add(*dict_car_engine_types)  # Добавляем кнопки на основе словаря
 
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_ENGINE_TYPE)
 
@@ -102,6 +112,7 @@ class CarBotHandler:
 
         # Добавляем кнопки на основе словаря
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Хорошо! Какой объем двигателя у автомобиля?")
         await state.set_state(STATE_CAR_ENGINE_VOLUME)
 
@@ -111,6 +122,7 @@ class CarBotHandler:
 
         # Добавляем кнопки на основе словаря
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Отлично! Укажите мощность двигателя автомобиля (л.с.). Например: 200")
         await state.set_state(STATE_CAR_POWER)
 
@@ -121,6 +133,7 @@ class CarBotHandler:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_transmission_types)
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
 
@@ -130,8 +143,8 @@ class CarBotHandler:
 
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_colors)
-
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_COLOR)
 
@@ -143,6 +156,7 @@ class CarBotHandler:
         keyboard.add(*dict_car_mileages)
 
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Каков пробег автомобиля? Введите пробег, например: 100 000. Если у авто нет пробега, нажмите 'Новый'", reply_markup=keyboard)
         await state.set_state(STATE_CAR_MILEAGE)
 
@@ -153,6 +167,7 @@ class CarBotHandler:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_document_statuses)
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Каков статус документов у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_DOCUMENT_STATUS)
 
@@ -163,6 +178,7 @@ class CarBotHandler:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_owners)
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_OWNERS)
 
@@ -173,6 +189,7 @@ class CarBotHandler:
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         keyboard.add(*dict_car_customs_cleared)
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
         await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
 
@@ -184,6 +201,7 @@ class CarBotHandler:
         keyboard.add(*dict_car_conditions)
 
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_CONDITION)
 
@@ -192,6 +210,7 @@ class CarBotHandler:
         user_data["car_condition"] = event.text
 
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Добавьте описание.")
         await state.set_state(STATE_CAR_DESCRIPTION)
 
@@ -203,6 +222,7 @@ class CarBotHandler:
         keyboard.add(*dict_currency)
 
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Выберите валюту:", reply_markup=keyboard)
         await state.set_state(STATE_SELECT_CURRENCY)
 
@@ -210,7 +230,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["currency"] = event.text
         await state.update_data(user_data=user_data)
-
+        await self.delete_previous_question(event)
         await event.answer("Какова цена автомобиля?")
         await state.set_state(STATE_CAR_PRICE)
 
@@ -218,6 +238,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_price"] = event.text
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Прекрасно! Где находится автомобиль? (Например: Харцызск)")
         await state.set_state(STATE_CAR_LOCATION)
 
@@ -225,6 +246,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_location"] = event.text
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Прекрасно! Укажите имя продавца.")
         await state.set_state(STATE_SELLER_NAME)
 
@@ -232,6 +254,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["seller_name"] = event.text
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Отлично! Какой телефонный номер у продавца? (например +7**********)")
         await state.set_state(STATE_SELLER_PHONE)
 
@@ -239,6 +262,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["seller_phone"] = event.text
         await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
         await event.answer("Добавьте фотографии авто")
         await state.set_state(STATE_CAR_PHOTO)
 
