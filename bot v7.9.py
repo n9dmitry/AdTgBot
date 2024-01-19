@@ -47,11 +47,6 @@ class CarBotHandler:
     async def delete_hello(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
 
-    # async def validate_name(name):
-    #     return bool(re.match(r'^[A-Za-zА-Яа-я\s]+$', name))
-    #
-    # async def validate_phone_number(phone_number):
-    #     return bool(re.match(r'^\+?[0-9\s-]+$', phone_number))
 
     async def start(self, event, state):
         user_id = event.from_user.id

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.7.9 - name seller validation">
-      <change afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v7.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v7.9.py" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.7.9 -  validation">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v7.9.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v7.9.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +224,7 @@
       <workItem from="1705299654305" duration="2136000" />
       <workItem from="1705558108758" duration="12444000" />
       <workItem from="1705611388498" duration="16000" />
-      <workItem from="1705646342489" duration="14586000" />
+      <workItem from="1705646342489" duration="15514000" />
     </task>
     <task id="LOCAL-00001" summary="1.6">
       <created>1703595765616</created>
@@ -401,7 +401,14 @@
       <option name="project" value="LOCAL" />
       <updated>1705663850229</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="v.7.9 -  validation">
+      <created>1705664090853</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1705664090853</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -441,7 +448,8 @@
     <MESSAGE value="v.7.7 - engine volume validation" />
     <MESSAGE value="v.7.8 - name seller validation" />
     <MESSAGE value="v.7.9 - name seller validation" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.7.9 - name seller validation" />
+    <MESSAGE value="v.7.9 -  validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.7.9 -  validation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
