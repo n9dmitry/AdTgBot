@@ -125,9 +125,8 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_BODY_TYPE)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_YEAR:  # Добавлено условие проверки состояния
-                await event.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2022)")
-                await state.set_state(STATE_CAR_YEAR)
+            await event.answer("Пожалуйста, введите год в формате YYYY (например, 1990 ил   и 2022)")
+            await state.set_state(STATE_CAR_YEAR)
 
     async def get_car_body_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -164,9 +163,8 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_POWER)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_ENGINE_VOLUME:  # Добавлено условие проверки состояния
-                await event.answer("Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
-                await state.set_state(STATE_CAR_ENGINE_VOLUME)
+            await event.answer("Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
+            await state.set_state(STATE_CAR_ENGINE_VOLUME)
 
     async def get_car_power(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -182,9 +180,8 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_POWER:
-                await event.answer("Пожалуйста, введите корректную мощность двигателя (в пределах от 50 до 1000 л.с.).")
-                await state.set_state(STATE_CAR_POWER)
+            await event.answer("Пожалуйста, введите корректную мощность двигателя (в пределах от 50 до 1000 л.с.).")
+            await state.set_state(STATE_CAR_POWER)
 
     async def get_car_transmission_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -222,9 +219,8 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_DOCUMENT_STATUS)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_MILEAGE:
-                await event.answer("Пожалуйста, введите корректное значение пробега.")
-                await state.set_state(STATE_CAR_MILEAGE)
+            await event.answer("Пожалуйста, введите корректное значение пробега.")
+            await state.set_state(STATE_CAR_MILEAGE)
 
     async def get_car_document_status(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -283,9 +279,8 @@ class CarBotHandler:
             await state.set_state(STATE_SELECT_CURRENCY)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_DESCRIPTION:
-                await event.answer("Пожалуйста, введите корректное описание.")
-                await state.set_state(STATE_CAR_DESCRIPTION)
+            await event.answer("Пожалуйста, введите корректное описание.")
+            await state.set_state(STATE_CAR_DESCRIPTION)
 
     async def select_currency(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -307,9 +302,8 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_LOCATION)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_PRICE:
-                await event.answer("Пожалуйста, введите корректную цену.")
-                await state.set_state(STATE_CAR_PRICE)
+            await event.answer("Пожалуйста, введите корректную цену.")
+            await state.set_state(STATE_CAR_PRICE)
 
     async def get_car_location(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -321,9 +315,8 @@ class CarBotHandler:
             await state.set_state(STATE_SELLER_NAME)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_CAR_LOCATION:
-                await event.answer("Пожалуйста, введите корректные данные.")
-                await state.set_state(STATE_CAR_LOCATION)
+            await event.answer("Пожалуйста, введите корректные данные.")
+            await state.set_state(STATE_CAR_LOCATION)
 
     async def get_seller_name(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -336,9 +329,8 @@ class CarBotHandler:
             await state.set_state(STATE_SELLER_PHONE)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_SELLER_NAME:
-                await event.answer("Пожалуйста, введите корректное имя.")
-                await state.set_state(STATE_SELLER_NAME)
+            await event.answer("Пожалуйста, введите корректное имя.")
+            await state.set_state(STATE_SELLER_NAME)
 
     async def get_seller_phone(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -350,9 +342,8 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_PHOTO)
         else:
             await self.delete_previous_question(event)
-            if state.get_state() != STATE_SELLER_PHONE:
-                await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
-                await state.set_state(STATE_SELLER_PHONE)
+            await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
+            await state.set_state(STATE_SELLER_PHONE)
     async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
         photo_id = message.photo[-1].file_id
