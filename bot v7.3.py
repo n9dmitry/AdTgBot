@@ -9,6 +9,9 @@ from config import *
 from states import *
 import json
 import sys
+import re
+
+
 
 # Загрузка JSON в начале скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
@@ -34,6 +37,19 @@ dict_car_mileages = dicts.get("dict_car_mileages", {})
 async def send_startup_message(chat_id):
     await bot.send_message(chat_id, "Bot has been started!")
 
+async def validate_name(name):
+    return bool(re.match(r'^[A-Za-zА-Яа-я\s]+$', name, re.UNICODE))
+
+
+async def validate_phone_number(phone_number):
+    # Уберем все нецифровые символы и проверим, что остались только цифры
+    phone_digits = re.sub(r'\D', '', phone_number)
+
+    # Проверим, что номер содержит 10 или 11 цифр
+    if re.match(r'^\+?[78]\d{10}$', phone_digits) or re.match(r'^\+?\d{11}$', phone_digits):
+        return True
+    else:
+        return False
 
 
 class CarBotHandler:
@@ -46,6 +62,12 @@ class CarBotHandler:
 
     async def delete_hello(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
+
+    # async def validate_name(name):
+    #     return bool(re.match(r'^[A-Za-zА-Яа-я\s]+$', name))
+    #
+    # async def validate_phone_number(phone_number):
+    #     return bool(re.match(r'^\+?[0-9\s-]+$', phone_number))
 
     async def start(self, event, state):
         user_id = event.from_user.id
@@ -132,7 +154,7 @@ class CarBotHandler:
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
 
-        if 0.5 <= float(event.text) <= 8.0:
+        if 0.2 <= float(event.text) <= 10.0:
             user_data["car_engine_volume"] = event.text
 
             # Добавляем кнопки на основе словаря
@@ -143,19 +165,26 @@ class CarBotHandler:
         else:
             await self.delete_previous_question(event)
             if state.get_state() != STATE_CAR_ENGINE_VOLUME:  # Добавлено условие проверки состояния
-                await event.answer("Пожалуйста, корректный объем двигателя (в пределах от 0.5 до 8.0 литра) через точку(!).")
+                await event.answer("Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
                 await state.set_state(STATE_CAR_ENGINE_VOLUME)
 
     async def get_car_power(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_power"] = event.text
 
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_transmission_types)
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
+        if 50 <= int(event.text) <= 1000:
+            user_data["car_power"] = event.text
+
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+            keyboard.add(*dict_car_transmission_types)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_CAR_POWER:
+                await event.answer("Пожалуйста, введите корректную мощность двигателя (в пределах от 50 до 1000 л.с.).")
+                await state.set_state(STATE_CAR_POWER)
 
     async def get_car_transmission_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -182,14 +211,20 @@ class CarBotHandler:
 
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_mileage"] = event.text
+        if event.text == 'Новый' or 0 < int(event.text):
+            user_data["car_mileage"] = event.text
 
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_document_statuses)
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Каков статус документов у автомобиля?", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_DOCUMENT_STATUS)
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+            keyboard.add(*dict_car_document_statuses)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Каков статус документов у автомобиля?", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_DOCUMENT_STATUS)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_CAR_MILEAGE:
+                await event.answer("Пожалуйста, введите корректное значение пробега.")
+                await state.set_state(STATE_CAR_MILEAGE)
 
     async def get_car_document_status(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -236,15 +271,21 @@ class CarBotHandler:
 
     async def get_car_description(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_description"] = event.text
+        if not event.text.isdigit():
+            user_data["car_description"] = event.text
 
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_currency)
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+            keyboard.add(*dict_currency)
 
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Выберите валюту:", reply_markup=keyboard)
-        await state.set_state(STATE_SELECT_CURRENCY)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Выберите валюту:", reply_markup=keyboard)
+            await state.set_state(STATE_SELECT_CURRENCY)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_CAR_DESCRIPTION:
+                await event.answer("Пожалуйста, введите корректное описание.")
+                await state.set_state(STATE_CAR_DESCRIPTION)
 
     async def select_currency(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -256,36 +297,62 @@ class CarBotHandler:
 
     async def get_car_price(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_price"] = event.text
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
-        await state.set_state(STATE_CAR_LOCATION)
+
+        if event.text.isdigit() and int(event.text) > 0:
+            user_data["car_price"] = event.text
+
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+            await state.set_state(STATE_CAR_LOCATION)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_CAR_PRICE:
+                await event.answer("Пожалуйста, введите корректную цену.")
+                await state.set_state(STATE_CAR_PRICE)
 
     async def get_car_location(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_location"] = event.text
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Прекрасно! Укажите имя продавца. (напишите)")
-        await state.set_state(STATE_SELLER_NAME)
+        if not event.text.isdigit():
+            user_data["car_location"] = event.text
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Прекрасно! Укажите имя продавца. (напишите)")
+            await state.set_state(STATE_SELLER_NAME)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_CAR_LOCATION:
+                await event.answer("Пожалуйста, введите корректные данные.")
+                await state.set_state(STATE_CAR_LOCATION)
 
     async def get_seller_name(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["seller_name"] = event.text
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Отлично! Какой телефонный номер у продавца? (напишите)")
-        await state.set_state(STATE_SELLER_PHONE)
+
+        if await validate_name(event.text) is True:
+            user_data["seller_name"] = event.text
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
+            await state.set_state(STATE_SELLER_PHONE)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_SELLER_NAME:
+                await event.answer("Пожалуйста, введите корректное имя.")
+                await state.set_state(STATE_SELLER_NAME)
 
     async def get_seller_phone(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["seller_phone"] = event.text
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Добавьте фотографии авто")
-        await state.set_state(STATE_CAR_PHOTO)
-
+        if await validate_phone_number(event.text) is True:
+            user_data["seller_phone"] = event.text
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Добавьте фотографии авто")
+            await state.set_state(STATE_CAR_PHOTO)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_SELLER_PHONE:
+                await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
+                await state.set_state(STATE_SELLER_PHONE)
     async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
         photo_id = message.photo[-1].file_id
