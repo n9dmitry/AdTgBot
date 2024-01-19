@@ -92,6 +92,7 @@ class CarBotHandler:
 
     async def get_car_year(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
+        #запрос года выпуска и проверка на валидность
         if len(event.text) == 4 and (event.text.startswith('19') or event.text.startswith('20')):
             user_data["car_year"] = event.text
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -125,18 +126,25 @@ class CarBotHandler:
         # Добавляем кнопки на основе словаря
         await state.update_data(user_data=user_data)
         await self.delete_previous_question(event)
-        await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите)")
+        await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
         await state.set_state(STATE_CAR_ENGINE_VOLUME)
 
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_engine_volume"] = event.text
 
-        # Добавляем кнопки на основе словаря
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Отлично! Укажите мощность двигателя автомобиля (л.с.). (напишите)")
-        await state.set_state(STATE_CAR_POWER)
+        if 0.5 <= float(event.text) <= 8.0:
+            user_data["car_engine_volume"] = event.text
+
+            # Добавляем кнопки на основе словаря
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Отлично! Укажите мощность двигателя автомобиля (л.с.). (напишите)")
+            await state.set_state(STATE_CAR_POWER)
+        else:
+            await self.delete_previous_question(event)
+            if state.get_state() != STATE_CAR_ENGINE_VOLUME:  # Добавлено условие проверки состояния
+                await event.answer("Пожалуйста, корректный объем двигателя (в пределах от 0.5 до 8.0 литра) через точку(!).")
+                await state.set_state(STATE_CAR_ENGINE_VOLUME)
 
     async def get_car_power(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
