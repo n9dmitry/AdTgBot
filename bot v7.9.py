@@ -72,7 +72,7 @@ class CarBotHandler:
         else:
             await self.delete_previous_question(event)
             await self.delete_hello(event)
-            keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
+            keyboard = create_keyboard(dict_car_brands_and_models.keys())
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
             await state.set_state(STATE_CAR_BRAND)
 
@@ -89,7 +89,7 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_YEAR)
         else:
             await self.delete_previous_question(event)
-            keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
+            keyboard = create_keyboard(dict_car_brands_and_models.keys())
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите модель из предложенных вариантов.",
                                    reply_markup=keyboard)
             await state.set_state(STATE_CAR_MODEL)
@@ -99,8 +99,7 @@ class CarBotHandler:
 
         if await validate_year(event.text):
             user_data["car_year"] = event.text
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-            keyboard.add(*dict_car_body_types)  # Добавляем кнопки на основе словаря
+            keyboard = create_keyboard(dict_car_body_types)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
@@ -114,8 +113,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         user_data["car_body_type"] = event.text
 
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_engine_types)  # Добавляем кнопки на основе словаря
+        keyboard = create_keyboard(dict_car_engine_types)
 
         await state.update_data(user_data=user_data)
         await self.delete_previous_question(event)
