@@ -52,13 +52,8 @@ class CarBotHandler:
 # Начало работы бота
 
     async def start(self, event, state):
-        # user_id = event.from_user.id
-        user_data = await state.get_data() or {}
-        # user_data["user_id"] = user_id
         await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
-
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
 
