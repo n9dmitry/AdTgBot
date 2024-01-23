@@ -41,12 +41,14 @@ class CarBotHandler:
         self.lock = asyncio.Lock()
         self.sent_message = None
 
+# Удаление предыдущих ответов
     async def delete_previous_question(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
 
     async def delete_hello(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
 
+# Начало работы бота
 
     async def start(self, event, state):
         user_id = event.from_user.id
@@ -64,37 +66,58 @@ class CarBotHandler:
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
 
-    async def process_brand_selection(self, event, state):
+    async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         selected_brand = event.text
+        if selected_brand in dict_car_brands_and_models:
+            user_data["car_brand"] = selected_brand
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await self.delete_hello(event)
+            # Создаем ReplyKeyboardMarkup с моделями выбранного бренда
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+            models = dict_car_brands_and_models[selected_brand]
+            buttons = [KeyboardButton(text=model) for model in models]
+            keyboard.add(*buttons)
 
-        user_data["car_brand"] = selected_brand
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await self.delete_hello(event)
-        # Создаем ReplyKeyboardMarkup с моделями выбранного бренда
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        models = dict_car_brands_and_models[selected_brand]
-        buttons = [KeyboardButton(text=model) for model in models]
-        keyboard.add(*buttons)
+            await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_MODEL)
+        else:
+            await self.delete_previous_question(event)
+            await self.delete_hello(event)
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+            brands = list(dict_car_brands_and_models.keys())
+            buttons = [KeyboardButton(text=brand) for brand in brands]
+            keyboard.add(*buttons)
+            keyboard.add(KeyboardButton(text='Ввести свою марку'))
 
-        await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_MODEL)
+            await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_BRAND)
 
-    async def process_model(self, event, state):
+    async def get_car_model(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        selected_model = event.text
+        car_brand = user_data.get("car_brand", "")
+        models_for_brand = dict_car_brands_and_models.get(car_brand, [])
 
-        user_data["car_model"] = selected_model
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Какой год выпуска у автомобиля? (напишите)")
-        await state.set_state(STATE_CAR_YEAR)
+        if event.text.lower() in [model.lower() for model in models_for_brand]:
+            user_data["car_model"] = event.text
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Какой год выпуска у автомобиля? (напишите)")
+            await state.set_state(STATE_CAR_YEAR)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+            buttons = [KeyboardButton(text=model) for model in models_for_brand]
+            keyboard.add(*buttons)
+            await bot.send_message(event.from_user.id, "Пожалуйста, выберите модель из предложенных вариантов.",
+                                   reply_markup=keyboard)
+            await state.set_state(STATE_CAR_MODEL)
 
     async def get_car_year(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        #запрос года выпуска и проверка на валидность
-        if len(event.text) == 4 and (event.text.startswith('19') or event.text.startswith('20')):
+
+        if await validate_year(event.text):
             user_data["car_year"] = event.text
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
             keyboard.add(*dict_car_body_types)  # Добавляем кнопки на основе словаря
@@ -132,7 +155,7 @@ class CarBotHandler:
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
 
-        if 0.2 <= float(event.text) <= 10.0:
+        if await validate_engine_volume(event.text):
             user_data["car_engine_volume"] = event.text
 
             # Добавляем кнопки на основе словаря
@@ -148,7 +171,7 @@ class CarBotHandler:
     async def get_car_power(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
 
-        if 50 <= int(event.text) <= 1000:
+        if await validate_car_power(event.text):
             user_data["car_power"] = event.text
 
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -164,14 +187,14 @@ class CarBotHandler:
 
     async def get_car_transmission_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_transmission_type"] = event.text
-
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_colors)
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_COLOR)
+        if event.text in dict_car_transmission_types:
+            user_data["car_transmission_type"] = event.text
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+            keyboard.add(*dict_car_colors)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_COLOR)
 
     async def get_car_color(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -187,14 +210,14 @@ class CarBotHandler:
 
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        if event.text == 'Новый' or 0 < int(event.text):
+        if await validate_car_mileage(event.text):
             user_data["car_mileage"] = event.text
 
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
             keyboard.add(*dict_car_document_statuses)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Каков статус документов у автомобиля?", reply_markup=keyboard)
+            await event.answer("Каков статус документов у автомобиля (тыс. км.)? например 100 = 100 тыс. км.", reply_markup=keyboard)
             await state.set_state(STATE_CAR_DOCUMENT_STATUS)
         else:
             await self.delete_previous_question(event)
@@ -246,7 +269,8 @@ class CarBotHandler:
 
     async def get_car_description(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        if not event.text.isdigit():
+
+        if await validate_car_description(event.text):
             user_data["car_description"] = event.text
 
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -272,7 +296,7 @@ class CarBotHandler:
     async def get_car_price(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
 
-        if event.text.isdigit() and int(event.text) > 0:
+        if await validate_car_price(event.text):
             user_data["car_price"] = event.text
 
             await state.update_data(user_data=user_data)
@@ -286,7 +310,7 @@ class CarBotHandler:
 
     async def get_car_location(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        if not event.text.isdigit():
+        if await validate_car_location(event.text):
             user_data["car_location"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
@@ -397,11 +421,11 @@ async def cmd_start(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def process_brand_selection(event: types.Message, state: FSMContext):
-    await car_bot.process_brand_selection(event, state)
+    await car_bot.get_car_brand(event, state)
 
 @dp.message_handler(state=STATE_CAR_MODEL)
 async def process_model(event: types.Message, state: FSMContext):
-    await car_bot.process_model(event, state)
+    await car_bot.get_car_model(event, state)
 
 @dp.message_handler(state=STATE_CAR_YEAR)
 async def get_car_year_handler(event: types.Message, state: FSMContext):

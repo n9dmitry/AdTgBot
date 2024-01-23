@@ -1,5 +1,59 @@
 import re
 
+
+
+
+# get_car_brand - ВЫНЕСТИ
+# get_car_model - ВЫНЕСТИ
+async def validate_year(year):
+    return bool(re.match(r'^(19|20)\d{2}$', year))
+
+# get_car_body_type - КНОПКИ
+# get_car_engine_type - КНОПКИ
+
+async def validate_engine_volume(volume):
+    if "," in volume:
+        volume = volume.replace(',', '.')
+
+    if "." in volume:
+        volume_float = float(volume)
+        return 0.2 <= volume_float <= 10.0
+    else:
+        return False
+
+async def validate_car_power(power):
+    if power.isdigit():
+        power_int = int(power)
+        return 50 <= power_int <= 1000
+    return False
+
+# get_car_transmission_type - КНОПКИ
+# get_car_color - КНОПКИ
+async def validate_car_mileage(mileage):
+    if mileage.lower() == 'новый' or (mileage.isdigit() and 0 < int(mileage)):
+        return True
+    return False
+
+# get_car_document_status - КНОПКИ
+# get_car_owners - КНОПКИ
+# get_car_customs_cleared - КНОПКИ
+# get_car_condition - КНОПКИ
+async def validate_car_description(description):
+    return not description.isdigit()
+
+# select_currency - КНОПКИ
+async def validate_car_price(price):
+    return price.isdigit() and int(price) > 0
+async def validate_car_location(location):
+    return not location.isdigit()
+
+
+
+
+
+
+
+
 async def validate_name(name):
     return bool(re.match(r'^[A-Za-zА-Яа-я\s]+$', name, re.UNICODE))
 
