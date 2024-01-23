@@ -29,11 +29,12 @@ dict_car_mileages = dicts.get("dict_car_mileages", {})
 # Конец импорта json словарей
 
 
-# get_car_data
-# get_car_data_input
 
-async def send_startup_message(chat_id):
-    await bot.send_message(chat_id, "Bot has been started!")
+def create_keyboard(button_texts, resize_keyboard=True):
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=2)
+    buttons = [KeyboardButton(text=text) for text in button_texts]
+    keyboard.add(*buttons)
+    return keyboard
 
 
 class CarBotHandler:
@@ -51,18 +52,13 @@ class CarBotHandler:
 # Начало работы бота
 
     async def start(self, event, state):
-        user_id = event.from_user.id
+        # user_id = event.from_user.id
         user_data = await state.get_data() or {}
-        user_data["user_id"] = user_id
+        # user_data["user_id"] = user_id
         await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
 
+        keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
 
-        # Создаем ReplyKeyboardMarkup с вариантами выбора бренда
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        brands = list(dict_car_brands_and_models.keys())
-        buttons = [KeyboardButton(text=brand) for brand in brands]
-        keyboard.add(*buttons)
-        keyboard.add(KeyboardButton(text='Ввести свою марку'))
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
 
@@ -74,23 +70,14 @@ class CarBotHandler:
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await self.delete_hello(event)
-            # Создаем ReplyKeyboardMarkup с моделями выбранного бренда
-            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-            models = dict_car_brands_and_models[selected_brand]
-            buttons = [KeyboardButton(text=model) for model in models]
-            keyboard.add(*buttons)
-
+            # Создаем клавиатуру
+            keyboard = create_keyboard(dict_car_brands_and_models[selected_brand])
             await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
             await state.set_state(STATE_CAR_MODEL)
         else:
             await self.delete_previous_question(event)
             await self.delete_hello(event)
-            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-            brands = list(dict_car_brands_and_models.keys())
-            buttons = [KeyboardButton(text=brand) for brand in brands]
-            keyboard.add(*buttons)
-            keyboard.add(KeyboardButton(text='Ввести свою марку'))
-
+            keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
             await state.set_state(STATE_CAR_BRAND)
 
@@ -107,9 +94,7 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_YEAR)
         else:
             await self.delete_previous_question(event)
-            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-            buttons = [KeyboardButton(text=model) for model in models_for_brand]
-            keyboard.add(*buttons)
+            keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите модель из предложенных вариантов.",
                                    reply_markup=keyboard)
             await state.set_state(STATE_CAR_MODEL)
