@@ -4,15 +4,15 @@ import re
 async def validate_button_input(event_text, options):
     return event_text in options
 # Используется для:
-# car_body_type ✓
-# car_engine_type ✓
-# car_transmission_type ✓
-# car_color ✓
-# car_document_status ✓
-# car_owners ✓
-# car_customs_cleared ✓
-# car_condition ✓
-# select_currency ✓
+# car_body_type
+# car_engine_type
+# car_transmission_type
+# car_color
+# car_document_status
+# car_owners
+# car_customs_cleared
+# car_condition
+# select_currency
 # Конец функции
 
 async def validate_car_brand(car_brand, valid_brands):

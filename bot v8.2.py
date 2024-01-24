@@ -1,5 +1,5 @@
 from aiogram import Bot, Dispatcher, types, executor
-from aiogram.types import InputMediaPhoto, ParseMode
+from aiogram.types import InputMediaPhoto
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
@@ -9,7 +9,6 @@ from config import *
 from states import *
 from validation import *
 import json
-import sys
 
 # Загрузка JSON в начале скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
@@ -29,7 +28,7 @@ dict_car_mileages = dicts.get("dict_car_mileages", {})
 # Конец импорта json словарей
 
 
-
+# Создание клавиатуры
 def create_keyboard(button_texts, resize_keyboard=True):
     keyboard = ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=2)
     buttons = [KeyboardButton(text=text) for text in button_texts]

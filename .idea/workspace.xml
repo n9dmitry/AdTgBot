@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.1.1. -  validation updated">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.1.2. -  validation finished, keyboard finished, refactoring is complete">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v7.9.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.2.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -232,7 +232,7 @@
       <workItem from="1706003681116" duration="886000" />
       <workItem from="1706009990269" duration="5096000" />
       <workItem from="1706025717950" duration="16000" />
-      <workItem from="1706077192699" duration="14680000" />
+      <workItem from="1706077192699" duration="15610000" />
     </task>
     <task id="LOCAL-00001" summary="1.6">
       <created>1703595765616</created>
@@ -465,7 +465,14 @@
       <option name="project" value="LOCAL" />
       <updated>1706084855499</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="v.8.1.2. -  validation finished, keyboard finished, refactoring is complete">
+      <created>1706092572799</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1706092572799</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -483,7 +490,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1.9" />
     <MESSAGE value="v2.5" />
     <MESSAGE value="v.2.6" />
     <MESSAGE value="v.2.7" />
@@ -508,7 +514,8 @@
     <MESSAGE value="v.8.1. -  start def change" />
     <MESSAGE value="v.8.1.0 -  start def change" />
     <MESSAGE value="v.8.1.1. -  validation updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.1.1. -  validation updated" />
+    <MESSAGE value="v.8.1.2. -  validation finished, keyboard finished, refactoring is complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.1.2. -  validation finished, keyboard finished, refactoring is complete" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
