@@ -107,29 +107,39 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_BODY_TYPE)
         else:
             await self.delete_previous_question(event)
-            await event.answer("Пожалуйста, введите год в формате YYYY (например, 1990 ил   и 2022)")
+            await event.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2024)")
             await state.set_state(STATE_CAR_YEAR)
 
     async def get_car_body_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_body_type"] = event.text
 
-        keyboard = create_keyboard(dict_car_engine_types)
-
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_ENGINE_TYPE)
+        if await validate_button_input(event.text, dict_car_body_types):
+            user_data["car_body_type"] = event.text
+            keyboard = create_keyboard(dict_car_engine_types)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_ENGINE_TYPE)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_body_types)
+            await event.answer("Пожалуйста, выберите корректный тип кузова.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_BODY_TYPE)
 
     async def get_car_engine_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_engine_type"] = event.text
-
-        # Добавляем кнопки на основе словаря
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
-        await state.set_state(STATE_CAR_ENGINE_VOLUME)
+        if await validate_button_input(event.text, dict_car_engine_types):
+            user_data["car_engine_type"] = event.text
+            # Добавляем кнопки на основе словаря
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+            await state.set_state(STATE_CAR_ENGINE_VOLUME)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_engine_types)
+            await event.answer("Пожалуйста, выберите корректный тип двигателя.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_ENGINE_TYPE)
 
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
@@ -140,7 +150,7 @@ class CarBotHandler:
             # Добавляем кнопки на основе словаря
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Отлично! Укажите мощность двигателя автомобиля (л.с.). (напишите)")
+            await event.answer("Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
             await state.set_state(STATE_CAR_POWER)
         else:
             await self.delete_previous_question(event)
@@ -152,9 +162,7 @@ class CarBotHandler:
 
         if await validate_car_power(event.text):
             user_data["car_power"] = event.text
-
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-            keyboard.add(*dict_car_transmission_types)
+            keyboard = create_keyboard(dict_car_transmission_types)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
@@ -166,95 +174,113 @@ class CarBotHandler:
 
     async def get_car_transmission_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        if event.text in dict_car_transmission_types:
+        if await validate_button_input(event.text, dict_car_transmission_types):
             user_data["car_transmission_type"] = event.text
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-            keyboard.add(*dict_car_colors)
+            keyboard = create_keyboard(dict_car_colors)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_COLOR)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_transmission_types)
+            await event.answer("Пожалуйста, выберите корректный тип трансмиссии.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
 
     async def get_car_color(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_color"] = event.text
-
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_mileages)
-
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Каков пробег автомобиля? (напишите пробег в км. или выберите 'Новый')", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_MILEAGE)
-
+        if await validate_button_input(event.text, dict_car_colors):
+            user_data["car_color"] = event.text
+            keyboard = create_keyboard(dict_car_mileages)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Каков пробег автомобиля? (напишите пробег в км. или выберите 'Новый')", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_MILEAGE)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_colors)
+            await event.answer("Пожалуйста, выберите корректный цвет автомобиля.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_COLOR)
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         if await validate_car_mileage(event.text):
             user_data["car_mileage"] = event.text
-
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-            keyboard.add(*dict_car_document_statuses)
+            keyboard = create_keyboard(dict_car_document_statuses)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Каков статус документов у автомобиля (тыс. км.)? например 100 = 100 тыс. км.", reply_markup=keyboard)
             await state.set_state(STATE_CAR_DOCUMENT_STATUS)
         else:
             await self.delete_previous_question(event)
-            await event.answer("Пожалуйста, введите корректное значение пробега.")
+            keyboard = create_keyboard(dict_car_mileages)
+            await event.answer("Пожалуйста, введите корректное значение пробега.", reply_markup=keyboard)
             await state.set_state(STATE_CAR_MILEAGE)
 
     async def get_car_document_status(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_document_status"] = event.text
+        if await validate_button_input(event.text, dict_car_document_statuses):
 
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_owners)
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_OWNERS)
+            user_data["car_document_status"] = event.text
+            keyboard = create_keyboard(dict_car_owners)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_OWNERS)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_document_statuses)
+            await event.answer("Пожалуйста, выберите корректный статус документов автомобиля.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_DOCUMENT_STATUS)
 
     async def get_car_owners(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_owners"] = event.text
-
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_customs_cleared)
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
+        if await validate_button_input(event.text, dict_car_owners):
+            user_data["car_owners"] = event.text
+            keyboard = create_keyboard(dict_car_customs_cleared)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_owners)
+            await event.answer("Пожалуйста, выберите корректное количество владельцев автомобиля.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_OWNERS)
 
     async def get_car_customs_cleared(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_customs_cleared"] = event.text
-
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        keyboard.add(*dict_car_conditions)
-
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
-        await state.set_state(STATE_CAR_CONDITION)
+        if await validate_button_input(event.text, dict_car_customs_cleared):
+            user_data["car_customs_cleared"] = event.text
+            keyboard = create_keyboard(dict_car_conditions)
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_CONDITION)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_customs_cleared)
+            await event.answer("Пожалуйста, выберите корректный статус растаможки автомобиля.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
 
     async def get_car_condition(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["car_condition"] = event.text
-
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Описание автомобиля. (напишите)")
-        await state.set_state(STATE_CAR_DESCRIPTION)
+        if await validate_button_input(event.text, dict_car_conditions):
+            user_data["car_condition"] = event.text
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Описание автомобиля. (напишите)")
+            await state.set_state(STATE_CAR_DESCRIPTION)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_car_conditions)
+            await event.answer("Пожалуйста, выберите корректное состояние автомобиля.", reply_markup=keyboard)
+            await state.set_state(STATE_CAR_CONDITION)
 
     async def get_car_description(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-
         if await validate_car_description(event.text):
             user_data["car_description"] = event.text
-
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-            keyboard.add(*dict_currency)
-
+            keyboard = create_keyboard(dict_currency)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Выберите валюту:", reply_markup=keyboard)
@@ -266,18 +292,23 @@ class CarBotHandler:
 
     async def select_currency(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        user_data["currency"] = event.text
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await event.answer("Цена автомобиля?")
-        await state.set_state(STATE_CAR_PRICE)
+        if await validate_button_input(event.text, dict_currency):
+            user_data["currency"] = event.text
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await event.answer("Цена автомобиля?")
+            await state.set_state(STATE_CAR_PRICE)
+        else:
+            await self.delete_previous_question(event)
+            keyboard = create_keyboard(dict_currency)
+            await event.answer("Пожалуйста, выберите корректную валюту.", reply_markup=keyboard)
+            await state.set_state(STATE_SELECT_CURRENCY)
 
     async def get_car_price(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
 
         if await validate_car_price(event.text):
             user_data["car_price"] = event.text
-
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")

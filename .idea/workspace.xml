@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.1.0 -  start def change">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.1.1. -  validation updated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v7.9.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v7.9.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v7.9.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -59,8 +59,8 @@
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bot v7.9 (1)">
-    <configuration name="bot v7.9 (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager">
+    <configuration name="bot v8.2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -73,7 +73,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot v7.9.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot\bot v8.2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -82,7 +82,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="bot v7.9" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="bot v8.2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -95,7 +95,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot\bot v7.9.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot\bot v8.2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -194,10 +194,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.bot v7.9 (1)" />
+        <item itemvalue="Python.bot v8.2" />
         <item itemvalue="Python.validation" />
         <item itemvalue="Python.config" />
-        <item itemvalue="Python.bot v7.9" />
+        <item itemvalue="Python.bot v8.2" />
         <item itemvalue="Python.stepik" />
       </list>
     </recent_temporary>
@@ -232,7 +232,7 @@
       <workItem from="1706003681116" duration="886000" />
       <workItem from="1706009990269" duration="5096000" />
       <workItem from="1706025717950" duration="16000" />
-      <workItem from="1706077192699" duration="7077000" />
+      <workItem from="1706077192699" duration="14680000" />
     </task>
     <task id="LOCAL-00001" summary="1.6">
       <created>1703595765616</created>
@@ -458,7 +458,14 @@
       <option name="project" value="LOCAL" />
       <updated>1706077222674</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="v.8.1.1. -  validation updated">
+      <created>1706084855499</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1706084855499</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -476,7 +483,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1.8" />
     <MESSAGE value="1.9" />
     <MESSAGE value="v2.5" />
     <MESSAGE value="v.2.6" />
@@ -501,7 +507,8 @@
     <MESSAGE value="v.8.1. -  keyboard funk" />
     <MESSAGE value="v.8.1. -  start def change" />
     <MESSAGE value="v.8.1.0 -  start def change" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.1.0 -  start def change" />
+    <MESSAGE value="v.8.1.1. -  validation updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.1.1. -  validation updated" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -516,7 +523,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/AdTgBot$main_aiogram.coverage" NAME="main aiogram Coverage Results" MODIFIED="1703676010080" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/AdTgBot$bot_v7_9__1_.coverage" NAME="bot v7.9 (1) Coverage Results" MODIFIED="1706081584234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AdTgBot$bot_v7_9__1_.coverage" NAME="bot v8.2 Coverage Results" MODIFIED="1706092274372" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$botv5.coverage" NAME="botv5 Coverage Results" MODIFIED="1705054295289" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches/TgAutoBot - Scratches" />
     <SUITE FILE_PATH="coverage/AdTgBot$botv3_5.coverage" NAME="botv3-5 Coverage Results" MODIFIED="1705042196145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AdTgBot$test_post_photoes.coverage" NAME="test post photoes Coverage Results" MODIFIED="1703581632670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$APPLICATION_CONFIG_DIR$/scratches/TgAutoBot - Scratches" />

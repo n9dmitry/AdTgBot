@@ -4,15 +4,15 @@ import re
 async def validate_button_input(event_text, options):
     return event_text in options
 # Используется для:
-# car_body_type
-# car_engine_type
-# car_transmission_type
-# car_color
-# car_document_status
-# car_owners
-# car_customs_cleared
-# car_condition
-# select_currency
+# car_body_type ✓
+# car_engine_type ✓
+# car_transmission_type ✓
+# car_color ✓
+# car_document_status ✓
+# car_owners ✓
+# car_customs_cleared ✓
+# car_condition ✓
+# select_currency ✓
 # Конец функции
 
 async def validate_car_brand(car_brand, valid_brands):
@@ -20,7 +20,8 @@ async def validate_car_brand(car_brand, valid_brands):
 async def validate_car_model(selected_model, valid_models):
     return selected_model.lower() in [model.lower() for model in valid_models]
 async def validate_year(year):
-    return bool(re.match(r'^(19|20)\d{2}$', year))
+    return bool(re.match(r'^(19|20)\d{2}$', year)) and int(year) <= 2024
+
 
 # get_car_body_type - КНОПКИ
 # get_car_engine_type - КНОПКИ
@@ -39,33 +40,20 @@ async def validate_car_power(power):
     if power.isdigit():
         power_int = int(power)
         return 50 <= power_int <= 1000
-    return False
 
 # get_car_transmission_type - КНОПКИ
 # get_car_color - КНОПКИ
 async def validate_car_mileage(mileage):
-    if mileage.lower() == 'новый' or (mileage.isdigit() and 0 < int(mileage)):
-        return True
-    return False
+    return mileage.lower() == 'новый' or (mileage.isdigit() and 0 < int(mileage))
 
-# get_car_document_status - КНОПКИ
-# get_car_owners - КНОПКИ
-# get_car_customs_cleared - КНОПКИ
-# get_car_condition - КНОПКИ
+
 async def validate_car_description(description):
     return not description.isdigit()
 
-# select_currency - КНОПКИ
 async def validate_car_price(price):
     return price.isdigit() and int(price) > 0
 async def validate_car_location(location):
     return not location.isdigit()
-
-
-
-
-
-
 
 
 async def validate_name(name):
