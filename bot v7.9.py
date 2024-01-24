@@ -60,7 +60,8 @@ class CarBotHandler:
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         selected_brand = event.text
-        if selected_brand in dict_car_brands_and_models:
+        valid_brands = dict_car_brands_and_models
+        if await validate_car_brand(selected_brand, valid_brands):
             user_data["car_brand"] = selected_brand
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
@@ -79,9 +80,9 @@ class CarBotHandler:
     async def get_car_model(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         car_brand = user_data.get("car_brand", "")
-        models_for_brand = dict_car_brands_and_models.get(car_brand, [])
+        valid_models = dict_car_brands_and_models.get(car_brand, [])
 
-        if event.text.lower() in [model.lower() for model in models_for_brand]:
+        if await validate_car_model(event.text, valid_models):
             user_data["car_model"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
@@ -89,7 +90,7 @@ class CarBotHandler:
             await state.set_state(STATE_CAR_YEAR)
         else:
             await self.delete_previous_question(event)
-            keyboard = create_keyboard(dict_car_brands_and_models.keys())
+            keyboard = create_keyboard(valid_models)
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите модель из предложенных вариантов.",
                                    reply_markup=keyboard)
             await state.set_state(STATE_CAR_MODEL)

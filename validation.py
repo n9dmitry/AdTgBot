@@ -1,10 +1,24 @@
 import re
 
+# Функция полиморфная
+async def validate_button_input(event_text, options):
+    return event_text in options
+# Используется для:
+# car_body_type
+# car_engine_type
+# car_transmission_type
+# car_color
+# car_document_status
+# car_owners
+# car_customs_cleared
+# car_condition
+# select_currency
+# Конец функции
 
-
-
-# get_car_brand - ВЫНЕСТИ
-# get_car_model - ВЫНЕСТИ
+async def validate_car_brand(car_brand, valid_brands):
+    return car_brand in valid_brands
+async def validate_car_model(selected_model, valid_models):
+    return selected_model.lower() in [model.lower() for model in valid_models]
 async def validate_year(year):
     return bool(re.match(r'^(19|20)\d{2}$', year))
 
