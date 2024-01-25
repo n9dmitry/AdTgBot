@@ -27,9 +27,6 @@ async def validate_year(year):
 # get_car_engine_type - КНОПКИ
 
 async def validate_engine_volume(volume):
-    if "," in volume:
-        volume = volume.replace(',', '.')
-
     if "." in volume:
         volume_float = float(volume)
         return 0.2 <= volume_float <= 10.0

@@ -59,46 +59,29 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
-        if await validate_car_brand(selected_brand, valid_brands):
-            user_data["car_brand"] = selected_brand
-            await state.update_data(user_data=user_data)
-            await self.delete_previous_question(event)
-            await self.delete_hello(event)
-            # Создаем клавиатуру
-            keyboard = create_keyboard(dict_car_brands_and_models[selected_brand])
-            await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
-            await state.set_state(STATE_CAR_MODEL)
-        else:
-            await self.delete_previous_question(event)
-            await self.delete_hello(event)
-            keyboard = create_keyboard(dict_car_brands_and_models.keys())
-            await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
-            await state.set_state(STATE_CAR_BRAND)
+        # if await validate_car_brand(selected_brand, valid_brands):
+        user_data["car_brand"] = selected_brand
+        await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
+        await self.delete_hello(event)
+        # Создаем клавиатуру
+        # keyboard = create_keyboard(dict_car_brands_and_models[selected_brand])
+        # await event.answer("Отлично! Перетащите фото:", reply_markup=keyboard)
+        await event.answer("Отлично! Перетащите фото:")
+        await state.set_state(STATE_CAR_PHOTO)
+        # else:
+        #     await self.delete_previous_question(event)
+        #     await self.delete_hello(event)
+        #     keyboard = create_keyboard(dict_car_brands_and_models.keys())
+        #     await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
+        #     await state.set_state(STATE_CAR_PHOTO)
 
-    async def handle_photos(self, message, state, user_id):
+    async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
         photo_id = message.photo[-1].file_id
-
         # Construct the caption
         caption = (
             f"🛞 <b>#{user_data.get('user_data').get('car_brand')}{user_data.get('user_data').get('car_model')}</b>\n\n"
-            f"   <b>-Год:</b> {user_data.get('user_data', {}).get('car_year')}\n"
-            f"   <b>-Пробег (км.):</b> {user_data.get('user_data').get('car_mileage')}\n"
-            f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
-            f"   <b>-Кузов:</b> {user_data.get('user_data').get('car_body_type')}\n"
-            f"   <b>-Тип двигателя:</b> {user_data.get('user_data').get('car_engine_type')}\n"
-            f"   <b>-Объем двигателя (л.):</b> {user_data.get('user_data').get('car_engine_volume')}\n"
-            f"   <b>-Мощность (л.с.):</b> {user_data.get('user_data').get('car_power')}\n"
-            f"   <b>-Цвет:</b> {user_data.get('user_data').get('car_color')}\n"
-            f"   <b>-Статус документов:</b> {user_data.get('user_data').get('car_document_status')}\n"
-            f"   <b>-Количество владельцев:</b> {user_data.get('user_data').get('car_owners')}\n"
-            f"   <b>-Растаможка:</b> {'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет'}\n"
-            f"   <b>-Состояние:</b> {user_data.get('user_data').get('car_condition')}\n\n"
-            f"ℹ️<b>Дополнительная информация:</b> {user_data.get('user_data').get('car_description')}\n\n"
-            f"🔥<b>Цена:</b> {user_data.get('user_data').get('car_price')} {user_data.get('user_data').get('currency')}\n\n"
-            f"📍<b>Местоположение:</b> {user_data.get('user_data').get('car_location')}\n"
-            f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
-            f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
@@ -117,19 +100,30 @@ class CarBotHandler:
             last_photo.caption = caption
 
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
-            KeyboardButton("Отправить объявление")
+            KeyboardButton("Следущий шаг"),
         )
-
-        if buffered_photos.append:
-            await message.bot.send_media_group(message.chat.id, media=buffered_photos, disable_notification=True)
-            buffered_photos.clear()
-
-        await message.reply("Фото добавлено", reply_markup=keyboard)
+        await message.reply("Фото в обработке", reply_markup=keyboard)
         await state.finish()
 
-    async def send_advertisement(self, message, state):
-        await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-        await message.reply("Объявление отправлено в канал.")
+    async def preview_advertisement(self, message):
+        try:
+            await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+                KeyboardButton("Отправить в канал"),
+                KeyboardButton("Редактировать"),
+            )
+            await message.reply("Так будет выглядеть ваше объявление. Вы можете либо отредактировать либо разместить.", reply_markup=keyboard)
+
+        except Exception as e:
+            print(f"Произошла ошибка: {e}")
+
+    async def send_advertisement(self, message):
+        user_id = message.from_user.id
+        async with lock:
+            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
+            await bot.send_message(user_id, "Объявление отправлено в канал.")
+            buffered_photos.clear()
+
 
 car_bot = CarBotHandler()
 bot = Bot(token=API_TOKEN)
@@ -145,3 +139,19 @@ async def cmd_start(event: types.Message, state: FSMContext):
 async def process_brand_selection(event: types.Message, state: FSMContext):
     await car_bot.get_car_brand(event, state)
 
+@dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
+async def handle_photos_handler(message: types.Message, state: FSMContext):
+    await car_bot.handle_photos(message, state)
+
+@dp.message_handler(lambda message: message.text == "Следущий шаг")
+async def preview_advertisement(message: types.Message):
+    await car_bot.preview_advertisement(message)
+
+@dp.message_handler(lambda message: message.text == "Отправить в канал")
+async def send_advertisement(message: types.Message):
+    await car_bot.send_advertisement(message)
+
+
+# старт бота
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)

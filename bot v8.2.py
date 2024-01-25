@@ -142,8 +142,11 @@ class CarBotHandler:
 
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
+        if "," in event.text:
+            event.text = event.text.replace(',', '.')
 
         if await validate_engine_volume(event.text):
+
             user_data["car_engine_volume"] = event.text
 
             # Добавляем кнопки на основе словаря
@@ -162,6 +165,7 @@ class CarBotHandler:
         if await validate_car_power(event.text):
             user_data["car_power"] = event.text
             keyboard = create_keyboard(dict_car_transmission_types)
+            
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
@@ -193,7 +197,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_mileages)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Каков пробег автомобиля? (напишите пробег в км. или выберите 'Новый')", reply_markup=keyboard)
+            await event.answer("Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", reply_markup=keyboard)
             await state.set_state(STATE_CAR_MILEAGE)
         else:
             await self.delete_previous_question(event)
@@ -207,7 +211,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_document_statuses)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Каков статус документов у автомобиля (тыс. км.)? например 100 = 100 тыс. км.", reply_markup=keyboard)
+            await event.answer("Каков статус документов у автомобиля ?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_DOCUMENT_STATUS)
         else:
             await self.delete_previous_question(event)
@@ -399,24 +403,25 @@ class CarBotHandler:
             last_photo.caption = caption
 
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
-            KeyboardButton("Отправить объявление")
+            KeyboardButton("Следущий шаг")
         )
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
-    async def send_advertisement(self, message, state):
+    async def preview_advertisement(self, message):
+        await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+            KeyboardButton("Отправить в канал"),
+            KeyboardButton("Редактировать"),
+        )
+        await message.reply("Так будет выглядеть ваше объявление. Вы можете либо отредактировать либо разместить.", reply_markup=keyboard)
+
+    async def send_advertisement(self, message):
         user_id = message.from_user.id
-        user_data = await state.get_data()
-        await self.send_photos_to_channel(user_id, user_data)
-        await message.answer("Объявление отправлено в канал.")
-
-    async def send_photos_to_channel(self, user_id, user_data):
         async with lock:
-            if buffered_photos:
-                await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-                await bot.send_message(user_id, "Фотографии отправлены в канал.")
-                buffered_photos.clear()
-
+            await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
+            await bot.send_message(user_id, "Объявление отправлено в канал.")
+            buffered_photos.clear()
 
 car_bot = CarBotHandler()
 bot = Bot(token=API_TOKEN)
@@ -512,10 +517,13 @@ async def get_seller_phone_handler(event: types.Message, state: FSMContext):
 async def handle_photos_handler(message: types.Message, state: FSMContext):
     await car_bot.handle_photos(message, state)
 
-@dp.message_handler(lambda message: message.text == "Отправить объявление")
-async def send_advertisement(message: types.Message, state: FSMContext):
-    await car_bot.send_advertisement(message, state)
-    await car_bot.send_photos_to_channel(message.from_user.id, await state.get_data())
+@dp.message_handler(lambda message: message.text == "Следущий шаг")
+async def preview_advertisement(message: types.Message):
+    await car_bot.preview_advertisement(message)
+
+@dp.message_handler(lambda message: message.text == "Отправить в канал")
+async def send_advertisement(message: types.Message):
+    await car_bot.send_advertisement(message)
 
 
 
