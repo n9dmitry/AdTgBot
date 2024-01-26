@@ -31,7 +31,8 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 
 # Создание клавиатуры
 def create_keyboard(button_texts, resize_keyboard=True):
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=2)
+    keyboard = ReplyKeyboardMarkup(
+        resize_keyboard=resize_keyboard, row_width=2)
     buttons = [KeyboardButton(text=text) for text in button_texts]
     keyboard.add(*buttons)
     return keyboard
@@ -67,7 +68,8 @@ class CarBotHandler:
             await self.delete_previous_question(event)
             await self.delete_hello(event)
             # Создаем клавиатуру
-            keyboard = create_keyboard(dict_car_brands_and_models[selected_brand])
+            keyboard = create_keyboard(
+                dict_car_brands_and_models[selected_brand])
             await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
             await state.set_state(STATE_CAR_MODEL)
         else:
@@ -165,7 +167,7 @@ class CarBotHandler:
         if await validate_car_power(event.text):
             user_data["car_power"] = event.text
             keyboard = create_keyboard(dict_car_transmission_types)
-            
+
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
             await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
@@ -204,6 +206,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_colors)
             await event.answer("Пожалуйста, выберите корректный цвет автомобиля.", reply_markup=keyboard)
             await state.set_state(STATE_CAR_COLOR)
+
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         if await validate_car_mileage(event.text):
@@ -360,6 +363,7 @@ class CarBotHandler:
             await self.delete_previous_question(event)
             await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
             await state.set_state(STATE_SELLER_PHONE)
+
     async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
         photo_id = message.photo[-1].file_id
@@ -383,10 +387,9 @@ class CarBotHandler:
             f"📍<b>Местоположение:</b> {user_data.get('user_data').get('car_location')}\n"
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
-            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"            
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
-
 
         print(user_data)
         photo_uuid = str(uuid.uuid4())
@@ -394,8 +397,10 @@ class CarBotHandler:
         if "sent_photos" not in user_data:
             user_data["sent_photos"] = []
 
-        user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
-        buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
+        user_data["sent_photos"].append(
+            {"file_id": photo_id, "uuid": photo_uuid})
+        buffered_photos.append(InputMediaPhoto(
+            media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
@@ -407,7 +412,6 @@ class CarBotHandler:
         )
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
-
 
     async def preview_advertisement(self, message):
         await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
@@ -432,108 +436,132 @@ class CarBotHandler:
         await state.set_state(STATE_CAR_BRAND)
 
 
-
 car_bot = CarBotHandler()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 buffered_photos = []
 
+
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
     await car_bot.start(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def process_brand_selection(event: types.Message, state: FSMContext):
     await car_bot.get_car_brand(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_MODEL)
 async def process_model(event: types.Message, state: FSMContext):
     await car_bot.get_car_model(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_YEAR)
 async def get_car_year_handler(event: types.Message, state: FSMContext):
     await car_bot.get_car_year(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_BODY_TYPE)
 async def get_car_body_type(event: types.Message, state: FSMContext):
     await car_bot.get_car_body_type(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_ENGINE_TYPE)
 async def get_car_engine_type(event: types.Message, state: FSMContext):
     await car_bot.get_car_engine_type(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_ENGINE_VOLUME)
 async def get_car_engine_volume(event: types.Message, state: FSMContext):
     await car_bot.get_car_engine_volume(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_POWER)
 async def get_car_power(event: types.Message, state: FSMContext):
     await car_bot.get_car_power(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_TRANSMISSION_TYPE)
 async def get_car_transmission_type(event: types.Message, state: FSMContext):
     await car_bot.get_car_transmission_type(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_COLOR)
 async def get_car_color(event: types.Message, state: FSMContext):
     await car_bot.get_car_color(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_MILEAGE)
 async def get_car_mileage(event: types.Message, state: FSMContext):
     await car_bot.get_car_mileage(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_DOCUMENT_STATUS)
 async def get_car_document_status(event: types.Message, state: FSMContext):
     await car_bot.get_car_document_status(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_OWNERS)
 async def get_car_owners(event: types.Message, state: FSMContext):
     await car_bot.get_car_owners(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_CUSTOMS_CLEARED)
 async def get_car_customs_cleared(event: types.Message, state: FSMContext):
     await car_bot.get_car_customs_cleared(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_CONDITION)
 async def get_car_condition(event: types.Message, state: FSMContext):
     await car_bot.get_car_condition(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_DESCRIPTION)
 async def get_car_description(event: types.Message, state: FSMContext):
     await car_bot.get_car_description(event, state)
 
+
 @dp.message_handler(state=STATE_SELECT_CURRENCY)
 async def select_currency(event: types.Message, state: FSMContext):
     await car_bot.select_currency(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_PRICE)
 async def get_car_price(event: types.Message, state: FSMContext):
     await car_bot.get_car_price(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_LOCATION)
 async def get_car_location_handler(event: types.Message, state: FSMContext):
     await car_bot.get_car_location(event, state)
+
 
 @dp.message_handler(state=STATE_SELLER_NAME)
 async def get_seller_name_handler(event: types.Message, state: FSMContext):
     await car_bot.get_seller_name(event, state)
 
+
 @dp.message_handler(state=STATE_SELLER_PHONE)
 async def get_seller_phone_handler(event: types.Message, state: FSMContext):
     await car_bot.get_seller_phone(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(message: types.Message, state: FSMContext):
     await car_bot.handle_photos(message, state)
 
+
 @dp.message_handler(lambda message: message.text == "Следущий шаг")
 async def preview_advertisement(message: types.Message):
     await car_bot.preview_advertisement(message)
 
+
 @dp.message_handler(lambda message: message.text == "Отправить в канал")
 async def send_advertisement(message: types.Message):
     await car_bot.send_advertisement(message)
+
 
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(message: types.Message, state: FSMContext):

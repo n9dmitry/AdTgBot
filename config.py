@@ -1,5 +1,5 @@
-API_TOKEN = '6803723279:AAGEujzpCZq3nMCidAt0MsZjBEMKkQUDw9M'
-CHANNEL_ID = '@autoxyibot1'
+API_TOKEN = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
+CHANNEL_ID = '@CarsTradeChannel'
 
 
 # Токены

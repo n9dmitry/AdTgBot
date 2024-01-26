@@ -18,8 +18,7 @@ STATE_SELECT_CURRENCY = "state_select_currency"
 STATE_CAR_LOCATION = 'state_car_location'
 STATE_SELLER_NAME = 'state_seller_name'
 STATE_SELLER_PHONE = 'state_seller_phone'
+STATE_PREVIEW_PHOTO = 'state_preview_photo'
 STATE_CAR_PHOTO = 'state_car_photo'
 STATE_SEND = 'state_send'
 
-
-STATE_PREVIEW_PHOTO = 'state_preview_photo'
