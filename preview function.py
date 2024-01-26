@@ -25,6 +25,7 @@ dict_car_customs_cleared = dicts.get("dict_car_customs_cleared", {})
 dict_currency = dicts.get("dict_currency", {})
 dict_car_conditions = dicts.get("dict_car_conditions", {})
 dict_car_mileages = dicts.get("dict_car_mileages", {})
+dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 # Конец импорта json словарей
 
 
@@ -39,6 +40,7 @@ class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
         self.sent_message = None
+        self.bot = Bot
 
 # Удаление предыдущих ответов
     async def delete_previous_question(self, event):
@@ -57,24 +59,24 @@ class CarBotHandler:
 
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        selected_brand = event.text
-        valid_brands = dict_car_brands_and_models
-        # if await validate_car_brand(selected_brand, valid_brands):
-        user_data["car_brand"] = selected_brand
-        await state.update_data(user_data=user_data)
-        await self.delete_previous_question(event)
-        await self.delete_hello(event)
-        # Создаем клавиатуру
-        # keyboard = create_keyboard(dict_car_brands_and_models[selected_brand])
-        # await event.answer("Отлично! Перетащите фото:", reply_markup=keyboard)
-        await event.answer("Отлично! Перетащите фото:")
-        await state.set_state(STATE_CAR_PHOTO)
-        # else:
-        #     await self.delete_previous_question(event)
-        #     await self.delete_hello(event)
-        #     keyboard = create_keyboard(dict_car_brands_and_models.keys())
-        #     await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
-        #     await state.set_state(STATE_CAR_PHOTO)
+        if user_data.get('car_brand') is None:
+            print(user_data.get('car_brand'))
+            selected_brand = event.text
+            user_data["car_brand"] = selected_brand
+            await state.update_data(user_data=user_data)
+            await self.delete_previous_question(event)
+            await self.delete_hello(event)
+
+            await event.answer("Отлично! Перетащите фото:")
+            await state.set_state(STATE_CAR_PHOTO)
+            # редкатирование
+        else:
+            keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
+            await event.answer(f"Ваше значение бренда: '{user_data.get('user_data').get('car_brand')}'. Введите новое значение:", reply_markup=keyboard)
+            selected_brand = event.text
+            user_data["car_brand"] = selected_brand
+            # await self.delete_previous_question(event)
+
 
     async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
@@ -122,7 +124,20 @@ class CarBotHandler:
         async with lock:
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
             await bot.send_message(user_id, "Объявление отправлено в канал.")
-            buffered_photos.clear()
+            # buffered_photos.clear()
+
+    async def edit_advertisement(self, message, state):
+        user_data = await state.get_data()
+        keyboard = create_keyboard(dict_edit_buttons)
+        await message.answer("Выберите кнопку:", reply_markup=keyboard)
+        # response = await state.wait_for_message()
+        # if response.text == "Редактировать бренд автомобиля":
+        #     await self.edit_car_brand(response, state)
+        # Пример функции редактирования бренда автомобиля
+
+
+
+
 
 
 car_bot = CarBotHandler()
@@ -140,7 +155,7 @@ async def process_brand_selection(event: types.Message, state: FSMContext):
     await car_bot.get_car_brand(event, state)
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
-async def handle_photos_handler(message: types.Message, state: FSMContext):
+async def handle_photos(message: types.Message, state: FSMContext):
     await car_bot.handle_photos(message, state)
 
 @dp.message_handler(lambda message: message.text == "Следущий шаг")
@@ -151,6 +166,26 @@ async def preview_advertisement(message: types.Message):
 async def send_advertisement(message: types.Message):
     await car_bot.send_advertisement(message)
 
+@dp.message_handler(lambda message: message.text == "Редактировать")
+async def edit_advertisement(message: types.Message, state: FSMContext):
+    await car_bot.edit_advertisement(message, state)
+
+
+
+@dp.message_handler(lambda message: message.text == "Редактировать бренд автомобиля")
+async def edit_car_brand(message, state):
+    await car_bot.get_car_brand(message, state)
+    # user_data = await state.get_data()
+    #
+    # if user_data.get('car_brand'):
+    #     print({user_data.get('user_data').get('car_brand')})
+    #     keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
+    #     await message.answer(f"Ваше значение бренда: '{user_data.get('user_data').get('car_brand')}'. Введите новое значение:", reply_markup=keyboard)
+    #     selected_brand = message.text
+    #     user_data["car_brand"] = selected_brand
+    # else:
+    #     print({user_data.get('user_data').get('car_brand')})
+    #     await message.answer("Какой год выпуска у автомобиля? (напишите)")
 
 # старт бота
 if __name__ == '__main__':

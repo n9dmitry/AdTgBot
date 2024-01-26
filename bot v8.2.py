@@ -25,6 +25,7 @@ dict_car_customs_cleared = dicts.get("dict_car_customs_cleared", {})
 dict_currency = dicts.get("dict_currency", {})
 dict_car_conditions = dicts.get("dict_car_conditions", {})
 dict_car_mileages = dicts.get("dict_car_mileages", {})
+dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 # Конец импорта json словарей
 
 
@@ -111,7 +112,6 @@ class CarBotHandler:
 
     async def get_car_body_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-
         if await validate_button_input(event.text, dict_car_body_types):
             user_data["car_body_type"] = event.text
             keyboard = create_keyboard(dict_car_engine_types)
@@ -408,11 +408,13 @@ class CarBotHandler:
         await message.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
+
     async def preview_advertisement(self, message):
         await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
+
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),
-            KeyboardButton("Редактировать"),
+            KeyboardButton("Отменить и заполнить заново"),
         )
         await message.reply("Так будет выглядеть ваше объявление. Вы можете либо отредактировать либо разместить.", reply_markup=keyboard)
 
@@ -421,7 +423,15 @@ class CarBotHandler:
         async with lock:
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
             await bot.send_message(user_id, "Объявление отправлено в канал.")
+
             buffered_photos.clear()
+
+    async def fill_again(self, event, state):
+        keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
+        await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        await state.set_state(STATE_CAR_BRAND)
+
+
 
 car_bot = CarBotHandler()
 bot = Bot(token=API_TOKEN)
@@ -514,7 +524,7 @@ async def get_seller_phone_handler(event: types.Message, state: FSMContext):
     await car_bot.get_seller_phone(event, state)
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
-async def handle_photos_handler(message: types.Message, state: FSMContext):
+async def handle_photos(message: types.Message, state: FSMContext):
     await car_bot.handle_photos(message, state)
 
 @dp.message_handler(lambda message: message.text == "Следущий шаг")
@@ -525,7 +535,9 @@ async def preview_advertisement(message: types.Message):
 async def send_advertisement(message: types.Message):
     await car_bot.send_advertisement(message)
 
-
+@dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
+async def fill_again(message: types.Message, state: FSMContext):
+    await car_bot.fill_again(message, state)
 
 # старт бота
 if __name__ == '__main__':
