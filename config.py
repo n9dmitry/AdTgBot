@@ -11,6 +11,7 @@ CHANNEL_ID = '@CarsTradeChannel'
 # API_fttlolbot = '6986960778:AAGzuNdkvAfgrr5Gc2oVHfEwrWYY7NvRqJE'
 
 # Каналы
+# @autobotxyi2bot
 # @autoxyibot1
 # @fttlolbot
 # @CarsTradeChannel

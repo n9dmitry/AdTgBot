@@ -3,7 +3,6 @@ from aiogram.types import InputMediaPhoto
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.methods.set_my_description import SetMyDescription
 import uuid
 import asyncio
 from config import *
@@ -11,6 +10,8 @@ from states import *
 from validation import *
 import json
 import logging
+import os
+
 
 # Загрузка JSON в начале скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
@@ -43,7 +44,6 @@ def create_keyboard(button_texts, resize_keyboard=True):
 class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
-        self.sent_message = None
         self.bot = Bot
 
 # Удаление предыдущих ответов
@@ -57,29 +57,29 @@ class CarBotHandler:
 
     async def start(self, event, state):
         await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
+        image_path = "img/1.jpg"  # Путь к вашему изображению
+
+
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+
+        with open(image_path, "rb") as image:
+            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+
+        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
 
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        if user_data.get('car_brand') is None:
-            print(user_data.get('car_brand'))
-            selected_brand = event.text
-            user_data["car_brand"] = selected_brand
-            await state.update_data(user_data=user_data)
-            await self.delete_previous_question(event)
-            await self.delete_hello(event)
+        selected_brand = event.text
 
-            await event.answer("Отлично! Перетащите фото:")
-            await state.set_state(STATE_CAR_PHOTO)
-            # редкатирование
-        else:
-            keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-            await event.answer(f"Ваше значение бренда: '{user_data.get('user_data').get('car_brand')}'. Введите новое значение:", reply_markup=keyboard)
-            selected_brand = event.text
-            user_data["car_brand"] = selected_brand
-            # await self.delete_previous_question(event)
+        user_data["car_brand"] = selected_brand
+        await state.update_data(user_data=user_data)
+        await self.delete_previous_question(event)
+        await self.delete_hello(event)
+
+        await event.answer("Отлично! Перетащите фото:")
+        await state.set_state(STATE_CAR_PHOTO)
+
 
     async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
