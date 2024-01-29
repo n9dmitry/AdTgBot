@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.7.3">
-      <change afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/img/image.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.1. - question with image">
+      <change afterPath="$PROJECT_DIR$/enum.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.2.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/preview function.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +31,20 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "n9dmitry"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="b57fdc0c-b212-4717-a7df-4abee2acc219" />
+        <option name="url" value="https://github.com/n9dmitry/AdTgBot.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/use not/caption.py" root0="SKIP_INSPECTION" />
   </component>
@@ -59,7 +68,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "forkN",
-    "last_opened_file_path": "/home/dev/Development/AdTgBot",
+    "last_opened_file_path": "/home/dev/Development/adsynch",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
   "keyToStringList": {
@@ -399,7 +408,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="v.8.3.1. - question with image">
+      <option name="closed" value="true" />
+      <created>1706528423930</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1706528423930</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -433,7 +450,8 @@
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
     <MESSAGE value="v.7.3" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.7.3" />
+    <MESSAGE value="v.8.3.1. - question with image" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.1. - question with image" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
