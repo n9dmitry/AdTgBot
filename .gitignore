@@ -1,1 +1,1 @@
-config.py
+git rm --cached config.py
