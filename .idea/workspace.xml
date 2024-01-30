@@ -5,8 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.1. - question with image">
-      <change afterPath="$PROJECT_DIR$/enum.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/enum1.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_body_type.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_brand.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_color.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_condition.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_currency.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_customs_cleared.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_description.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_document_status.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_engine_type.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_engine_volume.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_location.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_mileage.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_model.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_owners.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_photos.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_power.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_price.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_transmission_type.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/car_year.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/say_hi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/seller_name.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/seller_phone.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/enum.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/1.jpg" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,12 +57,12 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "n9dmitry"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;n9dmitry&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings">
     <option name="selectedUrlAndAccountId">
       <UrlAndAccount>
@@ -51,10 +77,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="2ZnmbA3W6EYiEE67yucMxrBafle" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -68,7 +94,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "forkN",
-    "last_opened_file_path": "/home/dev/Development/adsynch",
+    "last_opened_file_path": "/home/dev/Development/AdTgBot/img",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
   "keyToStringList": {
@@ -79,6 +105,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/img" />
       <recent name="$PROJECT_DIR$" />
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
