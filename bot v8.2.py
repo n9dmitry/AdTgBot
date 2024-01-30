@@ -433,6 +433,7 @@ class CarBotHandler:
     async def fill_again(self, event, state):
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        buffered_photos.clear()
         await state.set_state(STATE_CAR_BRAND)
 
 
