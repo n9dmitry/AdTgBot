@@ -11,7 +11,7 @@ from validation import *
 import json
 
 # Загрузка JSON в начале скрипта
-with open('dicts.json', 'r', encoding='utf-8') as file:
+with open('../dicts.json', 'r', encoding='utf-8') as file:
     dicts = json.load(file)
 
 dict_car_brands_and_models = dicts.get("dict_car_brands_and_models", {})

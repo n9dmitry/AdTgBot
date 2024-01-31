@@ -4,10 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.2. - pictures">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.3. - git ignore">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.2.py" beforeDir="false" afterPath="$PROJECT_DIR$/stable/bot v8.2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/stable/botv6.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/bot v5.5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/botv3-5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/botv4.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/botv5.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/buttons.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/caption.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/dict.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/dicts.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/use not/oop test1.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,10 +90,13 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/img" />
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/img" />
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/stable" />
     </key>
   </component>
   <component name="RunManager" selected="Python.bot v8.3">
@@ -418,7 +431,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706528423930</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="v.8.3.3. - git ignore">
+      <option name="closed" value="true" />
+      <created>1706699519872</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1706699519872</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -453,7 +474,8 @@
     <MESSAGE value="v.7.2" />
     <MESSAGE value="v.7.3" />
     <MESSAGE value="v.8.3.1. - question with image" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.1. - question with image" />
+    <MESSAGE value="v.8.3.3. - git ignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.3. - git ignore" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
