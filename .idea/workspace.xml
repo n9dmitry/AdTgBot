@@ -4,20 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.3. - git ignore">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.4. - deleted unnessesary">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.2.py" beforeDir="false" afterPath="$PROJECT_DIR$/stable/bot v8.2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/stable/botv6.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/bot v5.5.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/botv3-5.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/botv4.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/botv5.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/buttons.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/caption.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/dict.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/dicts.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/use not/oop test1.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,22 +60,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.bot v8.3.executor": "Debug",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "forkN",
-    "last_opened_file_path": "/home/dev/Development/AdTgBot",
-    "settings.editor.selected.configurable": "advanced.settings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.bot v8.3.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;forkN&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/dev/Development/AdTgBot&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "PLAIN_TEXT"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;PLAIN_TEXT&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -439,7 +427,23 @@
       <option name="project" value="LOCAL" />
       <updated>1706699519872</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="v.8.3.4. - deletet unnessesary">
+      <option name="closed" value="true" />
+      <created>1706700850944</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1706700850944</updated>
+    </task>
+    <task id="LOCAL-00025" summary="v.8.3.4. - deleted unnessesary">
+      <option name="closed" value="true" />
+      <created>1706700868486</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1706700868487</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -475,7 +479,9 @@
     <MESSAGE value="v.7.3" />
     <MESSAGE value="v.8.3.1. - question with image" />
     <MESSAGE value="v.8.3.3. - git ignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.3. - git ignore" />
+    <MESSAGE value="v.8.3.4. - deletet unnessesary" />
+    <MESSAGE value="v.8.3.4. - deleted unnessesary" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.4. - deleted unnessesary" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
