@@ -47,7 +47,7 @@ class CarBotHandler:
 # Удаление предыдущих ответов
     async def delete_previous_question(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
-
+#
     async def delete_hello(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
 
@@ -169,6 +169,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         if "," in event.text:
             event.text = event.text.replace(',', '.')
+        event.text = float(event.text)
 
         if await validate_engine_volume(event.text):
 
@@ -424,7 +425,7 @@ class CarBotHandler:
             await self.delete_previous_question(event)
             image_path = ImageDirectory.car_photos
             with open(image_path, "rb") as image:
-                await event.answer_photo(image, caption="Добавьте фотографии авто")
+                await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук")
             # await event.answer("Добавьте фотографии авто")
             await state.set_state(STATE_CAR_PHOTO)
         else:
@@ -474,12 +475,11 @@ class CarBotHandler:
                 buffered_photos[i].caption = None
             last_photo = buffered_photos[-1]
             last_photo.caption = caption
-
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Следущий шаг")
-        )
-        await message.reply("Фото добавлено", reply_markup=keyboard)
-        await state.finish()
+            )
+            await message.reply("Фото добавлено", reply_markup=keyboard)
+            await state.finish()
 
     async def preview_advertisement(self, message):
         await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
