@@ -9,6 +9,7 @@ from config import *
 from states import *
 from validation import *
 import json
+from enumlist import *
 
 # Загрузка JSON в начале скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
@@ -31,7 +32,8 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 
 # Создание клавиатуры
 def create_keyboard(button_texts, resize_keyboard=True):
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=2)
+    keyboard = ReplyKeyboardMarkup(
+        resize_keyboard=resize_keyboard, row_width=2)
     buttons = [KeyboardButton(text=text) for text in button_texts]
     keyboard.add(*buttons)
     return keyboard
@@ -45,16 +47,23 @@ class CarBotHandler:
 # Удаление предыдущих ответов
     async def delete_previous_question(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
-
+#
     async def delete_hello(self, event):
         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
 
 # Начало работы бота
 
     async def start(self, event, state):
-        await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
+        image_hello_path = ImageDirectory.say_hi
+        with open(image_hello_path, "rb") as image_hello:
+            await event.answer_photo(image_hello,
+                                     caption=f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем!")
+        # await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        image_path = ImageDirectory.car_brand  # Путь к вашему изображению
+        with open(image_path, "rb") as image:
+            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
 
     async def get_car_brand(self, event, state):
@@ -67,8 +76,12 @@ class CarBotHandler:
             await self.delete_previous_question(event)
             await self.delete_hello(event)
             # Создаем клавиатуру
-            keyboard = create_keyboard(dict_car_brands_and_models[selected_brand])
-            await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
+            keyboard = create_keyboard(
+                dict_car_brands_and_models[selected_brand])
+            image_path = ImageDirectory.car_model
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
+            # await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
             await state.set_state(STATE_CAR_MODEL)
         else:
             await self.delete_previous_question(event)
@@ -86,7 +99,10 @@ class CarBotHandler:
             user_data["car_model"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Какой год выпуска у автомобиля? (напишите)")
+            image_path = ImageDirectory.car_year
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
+            # await event.answer("Какой год выпуска у автомобиля? (напишите)")
             await state.set_state(STATE_CAR_YEAR)
         else:
             await self.delete_previous_question(event)
@@ -103,7 +119,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_body_types)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_body_type
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
+            # await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_BODY_TYPE)
         else:
             await self.delete_previous_question(event)
@@ -117,7 +136,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_engine_types)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_engine_type
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
+            # await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_ENGINE_TYPE)
         else:
             await self.delete_previous_question(event)
@@ -132,7 +154,10 @@ class CarBotHandler:
             # Добавляем кнопки на основе словаря
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+            image_path = ImageDirectory.car_engine_volume
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+            # await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
             await state.set_state(STATE_CAR_ENGINE_VOLUME)
         else:
             await self.delete_previous_question(event)
@@ -144,6 +169,7 @@ class CarBotHandler:
         user_data = (await state.get_data()).get("user_data", {})
         if "," in event.text:
             event.text = event.text.replace(',', '.')
+        event.text = float(event.text)
 
         if await validate_engine_volume(event.text):
 
@@ -152,7 +178,10 @@ class CarBotHandler:
             # Добавляем кнопки на основе словаря
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            image_path = ImageDirectory.car_power
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            # await event.answer("Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
             await state.set_state(STATE_CAR_POWER)
         else:
             await self.delete_previous_question(event)
@@ -165,10 +194,13 @@ class CarBotHandler:
         if await validate_car_power(event.text):
             user_data["car_power"] = event.text
             keyboard = create_keyboard(dict_car_transmission_types)
-            
+
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_transmission_type
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
+            # await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_TRANSMISSION_TYPE)
         else:
             await self.delete_previous_question(event)
@@ -182,7 +214,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_colors)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_color
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Какого цвета автомобиль?", reply_markup=keyboard)
+            # await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_COLOR)
         else:
             await self.delete_previous_question(event)
@@ -197,13 +232,17 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_mileages)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", reply_markup=keyboard)
+            image_path = ImageDirectory.car_mileage
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", reply_markup=keyboard)
+            # await event.answer("Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", reply_markup=keyboard)
             await state.set_state(STATE_CAR_MILEAGE)
         else:
             await self.delete_previous_question(event)
             keyboard = create_keyboard(dict_car_colors)
             await event.answer("Пожалуйста, выберите корректный цвет автомобиля.", reply_markup=keyboard)
             await state.set_state(STATE_CAR_COLOR)
+
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         if await validate_car_mileage(event.text):
@@ -211,7 +250,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_document_statuses)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Каков статус документов у автомобиля ?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_document_status
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Каков статус документов у автомобиля ?", reply_markup=keyboard)
+            # await event.answer("Каков статус документов у автомобиля ?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_DOCUMENT_STATUS)
         else:
             await self.delete_previous_question(event)
@@ -227,7 +269,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_owners)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_owners
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Сколько владельцев у автомобиля?", reply_markup=keyboard)
+            # await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_OWNERS)
         else:
             await self.delete_previous_question(event)
@@ -242,7 +287,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_customs_cleared)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
+            image_path = ImageDirectory.car_customs_cleared
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Растаможен ли автомобиль?", reply_markup=keyboard)
+            # await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
             await state.set_state(STATE_CAR_CUSTOMS_CLEARED)
         else:
             await self.delete_previous_question(event)
@@ -257,7 +305,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_conditions)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
+            image_path = ImageDirectory.car_condition
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Выберите состояние автомобиля:", reply_markup=keyboard)
+            # await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
             await state.set_state(STATE_CAR_CONDITION)
         else:
             await self.delete_previous_question(event)
@@ -271,7 +322,10 @@ class CarBotHandler:
             user_data["car_condition"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Описание автомобиля. (напишите)")
+            image_path = ImageDirectory.car_description
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Описание автомобиля. (напишите)")
+            # await event.answer("Описание автомобиля. (напишите)")
             await state.set_state(STATE_CAR_DESCRIPTION)
         else:
             await self.delete_previous_question(event)
@@ -286,7 +340,10 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_currency)
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Выберите валюту:", reply_markup=keyboard)
+            image_path = ImageDirectory.car_currency
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Выберите валюту:", reply_markup=keyboard)
+            # await event.answer("Выберите валюту:", reply_markup=keyboard)
             await state.set_state(STATE_SELECT_CURRENCY)
         else:
             await self.delete_previous_question(event)
@@ -299,7 +356,10 @@ class CarBotHandler:
             user_data["currency"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Цена автомобиля?")
+            image_path = ImageDirectory.car_price
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Цена автомобиля?")
+            # await event.answer("Цена автомобиля?")
             await state.set_state(STATE_CAR_PRICE)
         else:
             await self.delete_previous_question(event)
@@ -314,7 +374,10 @@ class CarBotHandler:
             user_data["car_price"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+            image_path = ImageDirectory.car_location
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+            # await event.answer("Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
             await state.set_state(STATE_CAR_LOCATION)
         else:
             await self.delete_previous_question(event)
@@ -327,7 +390,10 @@ class CarBotHandler:
             user_data["car_location"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Прекрасно! Укажите имя продавца. (напишите)")
+            image_path = ImageDirectory.seller_name
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Прекрасно! Укажите имя продавца. (напишите)")
+            # await event.answer("Прекрасно! Укажите имя продавца. (напишите)")
             await state.set_state(STATE_SELLER_NAME)
         else:
             await self.delete_previous_question(event)
@@ -341,7 +407,10 @@ class CarBotHandler:
             user_data["seller_name"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
+            image_path = ImageDirectory.seller_phone
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
+            # await event.answer("Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
             await state.set_state(STATE_SELLER_PHONE)
         else:
             await self.delete_previous_question(event)
@@ -354,18 +423,22 @@ class CarBotHandler:
             user_data["seller_phone"] = event.text
             await state.update_data(user_data=user_data)
             await self.delete_previous_question(event)
-            await event.answer("Добавьте фотографии авто")
+            image_path = ImageDirectory.car_photos
+            with open(image_path, "rb") as image:
+                await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук")
+            # await event.answer("Добавьте фотографии авто")
             await state.set_state(STATE_CAR_PHOTO)
         else:
             await self.delete_previous_question(event)
             await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
             await state.set_state(STATE_SELLER_PHONE)
+
     async def handle_photos(self, message, state):
         user_data = await state.get_data('user_data')
         photo_id = message.photo[-1].file_id
 
         caption = (
-            f"🛞 <b>#{user_data.get('user_data').get('car_brand')}{user_data.get('user_data').get('car_model')}</b>\n\n"
+            f"🛞 <b>#{user_data.get('user_data').get('car_brand')}-{user_data.get('user_data').get('car_model')}</b>\n\n"
             f"   <b>-Год:</b> {user_data.get('user_data', {}).get('car_year')}\n"
             f"   <b>-Пробег (км.):</b> {user_data.get('user_data').get('car_mileage')}\n"
             f"   <b>-Тип КПП:</b> {user_data.get('user_data').get('car_transmission_type')}\n"
@@ -383,10 +456,9 @@ class CarBotHandler:
             f"📍<b>Местоположение:</b> {user_data.get('user_data').get('car_location')}\n"
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
-            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"            
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
-
 
         print(user_data)
         photo_uuid = str(uuid.uuid4())
@@ -394,20 +466,20 @@ class CarBotHandler:
         if "sent_photos" not in user_data:
             user_data["sent_photos"] = []
 
-        user_data["sent_photos"].append({"file_id": photo_id, "uuid": photo_uuid})
-        buffered_photos.append(InputMediaPhoto(media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
+        user_data["sent_photos"].append(
+            {"file_id": photo_id, "uuid": photo_uuid})
+        buffered_photos.append(InputMediaPhoto(
+            media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
             last_photo = buffered_photos[-1]
             last_photo.caption = caption
-
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Следущий шаг")
-        )
-        await message.reply("Фото добавлено", reply_markup=keyboard)
-        await state.finish()
-
+            )
+            await message.reply("Фото добавлено", reply_markup=keyboard)
+            await state.finish()
 
     async def preview_advertisement(self, message):
         await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
@@ -416,21 +488,23 @@ class CarBotHandler:
             KeyboardButton("Отправить в канал"),
             KeyboardButton("Отменить и заполнить заново"),
         )
-        await message.reply("Так будет выглядеть ваше объявление. Вы можете либо отредактировать либо разместить.", reply_markup=keyboard)
+        await message.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=keyboard)
 
     async def send_advertisement(self, message):
         user_id = message.from_user.id
         async with lock:
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            await bot.send_message(user_id, "Объявление отправлено в канал.")
+            await bot.send_message(user_id, "Объявление отправлено в канал!")
 
             buffered_photos.clear()
 
     async def fill_again(self, event, state):
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        image_path = ImageDirectory.car_brand # Путь к вашему изображению
+        with open(image_path, "rb") as image:
+            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(STATE_CAR_BRAND)
-
 
 
 car_bot = CarBotHandler()
@@ -439,101 +513,126 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 buffered_photos = []
 
+
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
     await car_bot.start(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_BRAND)
 async def process_brand_selection(event: types.Message, state: FSMContext):
     await car_bot.get_car_brand(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_MODEL)
 async def process_model(event: types.Message, state: FSMContext):
     await car_bot.get_car_model(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_YEAR)
 async def get_car_year_handler(event: types.Message, state: FSMContext):
     await car_bot.get_car_year(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_BODY_TYPE)
 async def get_car_body_type(event: types.Message, state: FSMContext):
     await car_bot.get_car_body_type(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_ENGINE_TYPE)
 async def get_car_engine_type(event: types.Message, state: FSMContext):
     await car_bot.get_car_engine_type(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_ENGINE_VOLUME)
 async def get_car_engine_volume(event: types.Message, state: FSMContext):
     await car_bot.get_car_engine_volume(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_POWER)
 async def get_car_power(event: types.Message, state: FSMContext):
     await car_bot.get_car_power(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_TRANSMISSION_TYPE)
 async def get_car_transmission_type(event: types.Message, state: FSMContext):
     await car_bot.get_car_transmission_type(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_COLOR)
 async def get_car_color(event: types.Message, state: FSMContext):
     await car_bot.get_car_color(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_MILEAGE)
 async def get_car_mileage(event: types.Message, state: FSMContext):
     await car_bot.get_car_mileage(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_DOCUMENT_STATUS)
 async def get_car_document_status(event: types.Message, state: FSMContext):
     await car_bot.get_car_document_status(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_OWNERS)
 async def get_car_owners(event: types.Message, state: FSMContext):
     await car_bot.get_car_owners(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_CUSTOMS_CLEARED)
 async def get_car_customs_cleared(event: types.Message, state: FSMContext):
     await car_bot.get_car_customs_cleared(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_CONDITION)
 async def get_car_condition(event: types.Message, state: FSMContext):
     await car_bot.get_car_condition(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_DESCRIPTION)
 async def get_car_description(event: types.Message, state: FSMContext):
     await car_bot.get_car_description(event, state)
 
+
 @dp.message_handler(state=STATE_SELECT_CURRENCY)
 async def select_currency(event: types.Message, state: FSMContext):
     await car_bot.select_currency(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_PRICE)
 async def get_car_price(event: types.Message, state: FSMContext):
     await car_bot.get_car_price(event, state)
 
+
 @dp.message_handler(state=STATE_CAR_LOCATION)
 async def get_car_location_handler(event: types.Message, state: FSMContext):
     await car_bot.get_car_location(event, state)
+
 
 @dp.message_handler(state=STATE_SELLER_NAME)
 async def get_seller_name_handler(event: types.Message, state: FSMContext):
     await car_bot.get_seller_name(event, state)
 
+
 @dp.message_handler(state=STATE_SELLER_PHONE)
 async def get_seller_phone_handler(event: types.Message, state: FSMContext):
     await car_bot.get_seller_phone(event, state)
+
 
 @dp.message_handler(state=STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(message: types.Message, state: FSMContext):
     await car_bot.handle_photos(message, state)
 
+
 @dp.message_handler(lambda message: message.text == "Следущий шаг")
 async def preview_advertisement(message: types.Message):
     await car_bot.preview_advertisement(message)
 
+
 @dp.message_handler(lambda message: message.text == "Отправить в канал")
 async def send_advertisement(message: types.Message):
     await car_bot.send_advertisement(message)
+
 
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(message: types.Message, state: FSMContext):
