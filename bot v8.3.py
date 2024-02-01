@@ -44,7 +44,6 @@ class CarBotHandler:
         self.lock = asyncio.Lock()
         self.sent_message = None
 
-# Удаление предыдущих ответов
 #     async def delete_previous_question(self, event):
 #         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
 # #
@@ -84,8 +83,8 @@ class CarBotHandler:
             # await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
             await state.set_state(User.STATE_CAR_MODEL)
         else:
-            # await self.delete_previous_question(event)
-            # await self.delete_hello(event)
+#             await self.delete_previous_question(event)
+#             await self.delete_hello(event)
             keyboard = create_keyboard(dict_car_brands_and_models.keys())
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
             await state.set_state(User.STATE_CAR_BRAND)
@@ -98,14 +97,14 @@ class CarBotHandler:
         if await validate_car_model(event.text, valid_models):
             user_data["car_model"] = event.text
             await state.update_data(user_data=user_data)
-            # await self.delete_previous_question(event)
+#             await self.delete_previous_question(event)
             image_path = ImageDirectory.car_year
             with open(image_path, "rb") as image:
                 await event.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
             # await event.answer("Какой год выпуска у автомобиля? (напишите)")
             await state.set_state(User.STATE_CAR_YEAR)
         else:
-            # await self.delete_previous_question(event)
+#             await self.delete_previous_question(event)
             keyboard = create_keyboard(valid_models)
             await bot.send_message(event.from_user.id, "Пожалуйста, выберите модель из предложенных вариантов.",
                                    reply_markup=keyboard)
