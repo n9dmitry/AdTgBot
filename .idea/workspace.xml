@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.6. - fix states and engine volume bug">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.7. - fix states, event and delete message">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -429,7 +428,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706791695918</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="v.8.3.7. - fix states, event and delete message">
+      <option name="closed" value="true" />
+      <created>1706861559284</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1706861559284</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -466,7 +473,8 @@
     <MESSAGE value="v.8.3.5. - hz" />
     <MESSAGE value="v.8.3.5. - fix git ignore" />
     <MESSAGE value="v.8.3.6. - fix states and engine volume bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.6. - fix states and engine volume bug" />
+    <MESSAGE value="v.8.3.7. - fix states, event and delete message" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.7. - fix states, event and delete message" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

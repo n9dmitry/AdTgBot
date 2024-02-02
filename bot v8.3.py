@@ -61,7 +61,9 @@ class CarBotHandler:
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         await self.m.delete()
-        await self.m_hello.delete()
+        if self.m_hello != None:
+            await self.m_hello.delete()
+
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
         if await validate_car_brand(selected_brand, valid_brands):
@@ -451,7 +453,6 @@ class CarBotHandler:
 
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
-        await self.m.delete()
         photo_id = event.photo[-1].file_id
 
         caption = (
@@ -495,6 +496,8 @@ class CarBotHandler:
             keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Следущий шаг")
             )
+        # await self.m.delete()
+
         self.m = await event.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
