@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.7.3">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_01_2024_15_29__Changes_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_01_2024_15_29__Changes_1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_26_12_2023_14_34__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_26_12_2023_14_34__Changes_.xml" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.6. - fix states and engine volume bug">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,36 +32,39 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/use not/caption.py" root0="SKIP_INSPECTION" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 5
-}</component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 5
+}]]></component>
   <component name="ProjectId" id="2ZnmbA3W6EYiEE67yucMxrBafle" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.bot v8.3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.short_code_test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Rebasing forkN&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/git/AdTgBot&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.bot v8.3.executor": "Run",
+    "Python.short_code_test.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "Rebasing forkN",
+    "last_opened_file_path": "D:/git/AdTgBot",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;,
-      &quot;PLAIN_TEXT&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python",
+      "PLAIN_TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
@@ -73,6 +77,7 @@
   <component name="RunManager" selected="Python.short_code_test">
     <configuration name="Mix function + bot v1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -95,6 +100,7 @@
     </configuration>
     <configuration name="bot v8.3" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -116,6 +122,7 @@
     </configuration>
     <configuration name="function photo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -138,6 +145,7 @@
     </configuration>
     <configuration name="function v2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -160,6 +168,7 @@
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -182,6 +191,7 @@
     </configuration>
     <configuration name="short_code_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -411,14 +421,7 @@
       <option name="project" value="LOCAL" />
       <updated>1706788261928</updated>
     </task>
-    <task id="LOCAL-00025" summary="v.7.3">
-      <created>1706860937788</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1706860937788</updated>
-    </task>
-    <option name="localTasksCounter" value="26" />
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -451,11 +454,11 @@
     <MESSAGE value="v.4.6" />
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
+    <MESSAGE value="v.7.3" />
     <MESSAGE value="v.8.3.5. - hz" />
     <MESSAGE value="v.8.3.5. - fix git ignore" />
     <MESSAGE value="v.8.3.6. - fix states and engine volume bug" />
-    <MESSAGE value="v.7.3" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.7.3" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.6. - fix states and engine volume bug" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
