@@ -42,7 +42,7 @@ def create_keyboard(button_texts, resize_keyboard=True):
 class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
-        self.sent_message = None
+        self.msg = []
 
 #     async def delete_previous_question(self, event):
 #         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
@@ -61,17 +61,21 @@ class CarBotHandler:
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         image_path = ImageDirectory.car_brand  # Путь к вашему изображению
         with open(image_path, "rb") as image:
-            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
-        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+            self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+        # await asyncio.sleep(5)
+
         await state.set_state(User.STATE_CAR_BRAND)
 
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
+        await self.m.delete()
+        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
         if await validate_car_brand(selected_brand, valid_brands):
             user_data["car_brand"] = selected_brand
             await state.update_data(user_data=user_data)
+
             # await self.delete_previous_question(event)
             # await self.delete_hello(event)
             # Создаем клавиатуру
