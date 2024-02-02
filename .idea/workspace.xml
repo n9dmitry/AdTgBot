@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.9. - fix message bug">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.0, Data Base">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +75,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bot v8.3">
+  <component name="RunManager" selected="Python.short_code_test">
     <configuration name="Mix function + bot v1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -212,8 +214,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.bot v8.3" />
         <item itemvalue="Python.short_code_test" />
+        <item itemvalue="Python.bot v8.3" />
         <item itemvalue="Python.Mix function + bot v1" />
         <item itemvalue="Python.function v2" />
         <item itemvalue="Python.function photo" />
@@ -452,7 +454,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706865703125</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="v.8.4.0, Data Base">
+      <option name="closed" value="true" />
+      <created>1706868520963</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1706868520963</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -492,7 +502,8 @@
     <MESSAGE value="v.8.3.7. - fix states, event and delete message" />
     <MESSAGE value="v.8.3.8. - final" />
     <MESSAGE value="v.8.3.9. - fix message bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.9. - fix message bug" />
+    <MESSAGE value="v.8.4.0, Data Base" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.0, Data Base" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
