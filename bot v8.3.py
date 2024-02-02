@@ -60,9 +60,17 @@ class CarBotHandler:
 
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
-        if self.m_hello != None:
-            await self.m_hello.delete()
+
+        if self.m:
+            try:
+                await self.m.delete()
+            except:
+                pass
+        if self.m_hello:
+            try:
+                await self.m_hello.delete()
+            except:
+                pass
 
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
