@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.6. - fix states and engine volume bug">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.7.3">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_01_2024_15_29__Changes_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_01_2024_15_29__Changes_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_26_12_2023_14_34__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_26_12_2023_14_34__Changes_.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,9 +30,6 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/use not/caption.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -415,7 +411,14 @@
       <option name="project" value="LOCAL" />
       <updated>1706788261928</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="v.7.3">
+      <created>1706860937788</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1706860937788</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -448,11 +451,11 @@
     <MESSAGE value="v.4.6" />
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
-    <MESSAGE value="v.7.3" />
     <MESSAGE value="v.8.3.5. - hz" />
     <MESSAGE value="v.8.3.5. - fix git ignore" />
     <MESSAGE value="v.8.3.6. - fix states and engine volume bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.6. - fix states and engine volume bug" />
+    <MESSAGE value="v.7.3" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.7.3" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
