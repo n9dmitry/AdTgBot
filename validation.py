@@ -34,10 +34,12 @@ async def validate_year(year):
 # get_car_engine_type - КНОПКИ
 
 async def validate_engine_volume(volume):
-    if volume == float(volume):
-        return 0.2 <= volume<= 10.0
-    else:
+    try:
+        volume = float(volume)
+        return 0.2 <= volume <= 10.0
+    except ValueError:
         return False
+
 
 
 async def validate_car_power(power):

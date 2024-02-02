@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.5. - all is ok" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.7. - fix states, event and delete message">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,24 +26,10 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="forkN" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;n9dmitry&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">
-    <option name="selectedUrlAndAccountId">
-      <UrlAndAccount>
-        <option name="accountId" value="b57fdc0c-b212-4717-a7df-4abee2acc219" />
-        <option name="url" value="https://github.com/n9dmitry/AdTgBot.git" />
-      </UrlAndAccount>
-    </option>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/use not/caption.py" root0="SKIP_INSPECTION" />
@@ -49,8 +38,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 3
+  &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="2ZnmbA3W6EYiEE67yucMxrBafle" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -60,29 +48,29 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;Python.bot v8.3.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.bot v8.3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.short_code_test.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;forkN&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/dev/Development/AdTgBot&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
+    &quot;git-widget-placeholder&quot;: &quot;Rebasing forkN&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/git/AdTgBot&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
       &quot;PLAIN_TEXT&quot;
     ]
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/img" />
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/stable" />
+      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunManager" selected="Python.bot v8.3">
@@ -101,29 +89,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Mix function + bot v1.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot v7" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AdTgBot" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot v7.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -223,13 +188,35 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="short_code_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/short_code_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.bot v8.3" />
+        <item itemvalue="Python.short_code_test" />
         <item itemvalue="Python.Mix function + bot v1" />
         <item itemvalue="Python.function v2" />
         <item itemvalue="Python.function photo" />
-        <item itemvalue="Python.bot v7" />
       </list>
     </recent_temporary>
   </component>
@@ -409,45 +396,45 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <task id="LOCAL-00022" summary="v.8.3.1. - question with image">
+    <task id="LOCAL-00022" summary="v.8.3.5. - hz">
       <option name="closed" value="true" />
-      <created>1706528423930</created>
+      <created>1706704287867</created>
       <option name="number" value="00022" />
       <option name="presentableId" value="LOCAL-00022" />
       <option name="project" value="LOCAL" />
-      <updated>1706528423930</updated>
+      <updated>1706704287867</updated>
     </task>
-    <task id="LOCAL-00023" summary="v.8.3.3. - git ignore">
+    <task id="LOCAL-00023" summary="v.8.3.5. - fix git ignore">
       <option name="closed" value="true" />
-      <created>1706699519872</created>
+      <created>1706704473707</created>
       <option name="number" value="00023" />
       <option name="presentableId" value="LOCAL-00023" />
       <option name="project" value="LOCAL" />
-      <updated>1706699519872</updated>
+      <updated>1706704473707</updated>
     </task>
-    <task id="LOCAL-00024" summary="v.8.3.4. - deletet unnessesary">
+    <task id="LOCAL-00024" summary="v.8.3.6. - fix states and engine volume bug">
       <option name="closed" value="true" />
-      <created>1706700850944</created>
+      <created>1706788261928</created>
       <option name="number" value="00024" />
       <option name="presentableId" value="LOCAL-00024" />
       <option name="project" value="LOCAL" />
-      <updated>1706700850944</updated>
+      <updated>1706788261928</updated>
     </task>
-    <task id="LOCAL-00025" summary="v.8.3.4. - deleted unnessesary">
+    <task id="LOCAL-00025" summary="v.8.3.6. - fix states and engine volume bug">
       <option name="closed" value="true" />
-      <created>1706700868486</created>
+      <created>1706791695918</created>
       <option name="number" value="00025" />
       <option name="presentableId" value="LOCAL-00025" />
       <option name="project" value="LOCAL" />
-      <updated>1706700868487</updated>
+      <updated>1706791695918</updated>
     </task>
-    <task id="LOCAL-00026" summary="v.8.3.5. - all is ok">
+    <task id="LOCAL-00026" summary="v.8.3.7. - fix states, event and delete message">
       <option name="closed" value="true" />
-      <created>1706703139563</created>
+      <created>1706861559284</created>
       <option name="number" value="00026" />
       <option name="presentableId" value="LOCAL-00026" />
       <option name="project" value="LOCAL" />
-      <updated>1706703139563</updated>
+      <updated>1706861559284</updated>
     </task>
     <option name="localTasksCounter" value="27" />
     <servers />
@@ -483,12 +470,11 @@
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
     <MESSAGE value="v.7.3" />
-    <MESSAGE value="v.8.3.1. - question with image" />
-    <MESSAGE value="v.8.3.3. - git ignore" />
-    <MESSAGE value="v.8.3.4. - deletet unnessesary" />
-    <MESSAGE value="v.8.3.4. - deleted unnessesary" />
-    <MESSAGE value="v.8.3.5. - all is ok" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.5. - all is ok" />
+    <MESSAGE value="v.8.3.5. - hz" />
+    <MESSAGE value="v.8.3.5. - fix git ignore" />
+    <MESSAGE value="v.8.3.6. - fix states and engine volume bug" />
+    <MESSAGE value="v.8.3.7. - fix states, event and delete message" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.7. - fix states, event and delete message" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
