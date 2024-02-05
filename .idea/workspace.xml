@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.1, Data Base fucking">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.2, fix bug engine_volume validation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -470,7 +470,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706877213846</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="v.8.4.2, fix bug engine_volume validation">
+      <option name="closed" value="true" />
+      <created>1707116856507</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1707116856507</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -512,7 +520,8 @@
     <MESSAGE value="v.8.3.9. - fix message bug" />
     <MESSAGE value="v.8.4.0, Data Base" />
     <MESSAGE value="v.8.4.1, Data Base fucking" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.1, Data Base fucking" />
+    <MESSAGE value="v.8.4.2, fix bug engine_volume validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.2, fix bug engine_volume validation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
