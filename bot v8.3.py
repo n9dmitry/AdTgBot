@@ -5,6 +5,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
+import openpyxl
+import os
 from config import *
 from states import *
 from validation import *
@@ -60,8 +62,18 @@ class CarBotHandler:
 
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
-        await self.m_hello.delete()
+
+        if self.m:
+            try:
+                await self.m.delete()
+            except:
+                pass
+        if self.m_hello:
+            try:
+                await self.m_hello.delete()
+            except:
+                pass
+
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
         if await validate_car_brand(selected_brand, valid_brands):
@@ -492,16 +504,57 @@ class CarBotHandler:
                 buffered_photos[i].caption = None
             last_photo = buffered_photos[-1]
             last_photo.caption = caption
-            keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+
+        # await self.m.delete()
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Следущий шаг")
-            )
+        )
+
+        def check_duplicate_rows(ws, data_row):
+            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(data_row)):
+                if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
+                    return True
+            return False
+
+        # Save user_data to Excel file
+        excel_file_path = "db.xlsx"
+        wb = openpyxl.load_workbook(excel_file_path) if os.path.exists(excel_file_path) else openpyxl.Workbook()
+        ws = wb.active
+        sheet = wb.active
+        column_headers = [
+            'Название', 'Модель', 'Год', 'Пробег (км.)', 'Тип КПП', 'Кузов', 'Тип двигателя',
+            'Объем двигателя (л.)', 'Мощность (л.с.)', 'Цвет', 'Статус документов', 'Количество владельцев',
+            'Растаможка', 'Состояние', 'Дополнительная информация', 'Цена', 'Местоположение',
+            'Продавец', 'Телефон продавца', 'Телеграм'
+        ]
+
+        data_row = [user_data['user_data'].get(field, '') for field in [
+            'car_brand', 'car_model', 'car_year', 'car_mileage', 'car_transmission_type',
+            'car_body_type', 'car_engine_type', 'car_engine_volume', 'car_power', 'car_color',
+            'car_document_status', 'car_owners', 'car_customs_cleared', 'car_condition',
+            'car_description', 'car_price', 'car_location', 'seller_name', 'seller_phone'
+        ]]
+        data_row.append(event.from_user.username if event.from_user.username is not None else 'по номеру телефона')
+
+        if not ws['A1'].value:  # Check if the headers are not already written
+            for i, header in enumerate(column_headers, start=1):
+                ws.cell(row=1, column=i).value = header
+
+        # Check for duplicate rows before appending
+        if not check_duplicate_rows(ws, data_row):
+            sheet.append(data_row)
+
+        # Specify the path and filename for the Excel file
+        wb.save(excel_file_path)
+
+
         self.m = await event.reply("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
     async def preview_advertisement(self, event):
         await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
 
-        await self.m.delete()
+
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),
             KeyboardButton("Отменить и заполнить заново"),
@@ -510,7 +563,7 @@ class CarBotHandler:
 
     async def send_advertisement(self, event):
         user_id = event.from_user.id
-
+        await self.m.delete()
         async with lock:
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
             await bot.send_message(user_id, "Объявление отправлено в канал!")
@@ -523,6 +576,7 @@ class CarBotHandler:
         with open(image_path, "rb") as image:
             self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        buffered_photos.clear()
         await state.set_state(User.STATE_CAR_BRAND)
 
 
