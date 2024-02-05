@@ -175,24 +175,24 @@ class CarBotHandler:
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         await self.m.delete()
-        try:
+
+
+        if await validate_engine_volume(event.text):
             if "," in event.text:
                 event.text = event.text.replace(',', '.')
             event.text = float(event.text)
+            user_data["car_engine_volume"] = event.text
 
-            if await validate_engine_volume(event.text):
-                user_data["car_engine_volume"] = event.text
-
-                # Добавляем кнопки на основе словаря
-                await state.update_data(user_data=user_data)
-                # await self.delete_previous_question(event)
-                image_path = ImageDirectory.car_power
-                with open(image_path, "rb") as image:
-                    self.m = await event.answer_photo(image,
-                                             caption="Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
-                # self.m = await event.answer("Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
-                await state.set_state(User.STATE_CAR_POWER)
-        except ValueError:
+            # Добавляем кнопки на основе словаря
+            await state.update_data(user_data=user_data)
+            # await self.delete_previous_question(event)
+            image_path = ImageDirectory.car_power
+            with open(image_path, "rb") as image:
+                self.m = await event.answer_photo(image,
+                                         caption="Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            # self.m = await event.answer("Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            await state.set_state(User.STATE_CAR_POWER)
+        else:
             # Если не удалось преобразовать введенный текст в число
             self.m = await event.answer(
                 "Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
