@@ -25,6 +25,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 # STATE_SEND = 'state_send'
 
 class User(StatesGroup):
+    STATE_FIRST_QUESTION = State()
     STATE_CAR_BRAND = State()
     STATE_CAR_MODEL = State()
     STATE_CAR_YEAR = State()

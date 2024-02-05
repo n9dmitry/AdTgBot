@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
+import openpyxl
 from config import *
 from states import *
 from validation import *
@@ -39,43 +40,42 @@ def create_keyboard(button_texts, resize_keyboard=True):
     return keyboard
 
 
+
+
 class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
-        self.msg = []
 
-#     async def delete_previous_question(self, event):
-#         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 1)
-# #
-#     async def delete_hello(self, event):
-#         await event.bot.delete_message(chat_id=event.chat.id, message_id=event.message_id - 2)
+
 
 # Начало работы бота
 
     async def start(self, event, state):
         image_hello_path = ImageDirectory.say_hi
         with open(image_hello_path, "rb") as image_hello:
-            await event.answer_photo(image_hello,
-                                     caption=f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем!")
-        # await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
+            self.m = await event.answer_photo(image_hello,
+                                     caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+        await asyncio.sleep(2)
+        await self.m.delete()
+        # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         image_path = ImageDirectory.car_brand  # Путь к вашему изображению
         with open(image_path, "rb") as image:
             self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
-        # await asyncio.sleep(5)
-
+        # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BRAND)
+
+
 
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         await self.m.delete()
-        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
         if await validate_car_brand(selected_brand, valid_brands):
             user_data["car_brand"] = selected_brand
             await state.update_data(user_data=user_data)
-
             # await self.delete_previous_question(event)
             # await self.delete_hello(event)
             # Создаем клавиатуру
@@ -83,19 +83,19 @@ class CarBotHandler:
             #     dict_car_brands_and_models[selected_brand])
             # image_path = ImageDirectory.car_model
             # with open(image_path, "rb") as image:
-            #     await event.answer_photo(image, caption="Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
-            await event.answer("Отлично! Добавьте фото")
-            await state.set_state(User.STATE_CAR_MODEL)
+            #     self.m = await event.answer_photo(image, caption="Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
+            self.m = await event.answer("Отлично! Теперь фото:")
+            await state.set_state(User.STATE_CAR_PHOTO)
         else:
 #             await self.delete_previous_question(event)
 #             await self.delete_hello(event)
             keyboard = create_keyboard(dict_car_brands_and_models.keys())
-            await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
+            self.m = await bot.send_message(event.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
             await state.set_state(User.STATE_CAR_BRAND)
-
 
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
+        user_id = event.from_user.id
         photo_id = event.photo[-1].file_id
 
         caption = (
@@ -121,6 +121,9 @@ class CarBotHandler:
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
 
+
+
+
         print(user_data)
         photo_uuid = str(uuid.uuid4())
 
@@ -131,28 +134,81 @@ class CarBotHandler:
             {"file_id": photo_id, "uuid": photo_uuid})
         buffered_photos.append(InputMediaPhoto(
             media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
+        # await self.m.delete()
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
             last_photo = buffered_photos[-1]
             last_photo.caption = caption
-            keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
-            KeyboardButton("Следущий шаг")
-            )
-            await event.reply("Фото добавлено", reply_markup=keyboard)
-            await state.finish()
 
-    async def preview_advertisement(self, message):
-        await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
+
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+            KeyboardButton("Следущий шаг")
+        )
+
+
+
+
+        def check_duplicate_rows(ws, data_row):
+            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(data_row)):
+                if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
+                    return True
+            return False
+
+        # Save user_data to Excel file
+        excel_file_path = "db.xlsx"
+        wb = openpyxl.load_workbook(excel_file_path) if os.path.exists(excel_file_path) else openpyxl.Workbook()
+        ws = wb.active
+        sheet = wb.active
+        column_headers = [
+            'Название', 'Модель', 'Год', 'Пробег (км.)', 'Тип КПП', 'Кузов', 'Тип двигателя',
+            'Объем двигателя (л.)', 'Мощность (л.с.)', 'Цвет', 'Статус документов', 'Количество владельцев',
+            'Растаможка', 'Состояние', 'Дополнительная информация', 'Цена', 'Местоположение',
+            'Продавец', 'Телефон продавца', 'Телеграм'
+        ]
+        data_row = []
+        if data_row == []:
+            data_row = [user_data['user_data'].get(field, '') for field in [
+                'car_brand', 'car_model', 'car_year', 'car_mileage', 'car_transmission_type',
+                'car_body_type', 'car_engine_type', 'car_engine_volume', 'car_power', 'car_color',
+                'car_document_status', 'car_owners', 'car_customs_cleared', 'car_condition',
+                'car_description', 'car_price', 'car_location', 'seller_name', 'seller_phone'
+            ]]
+            data_row.append(event.from_user.username if event.from_user.username is not None else 'по номеру телефона')
+        else:
+            pass
+
+        if not ws['A1'].value:  # Check if the headers are not already written
+            for i, header in enumerate(column_headers, start=1):
+                ws.cell(row=1, column=i).value = header
+
+        # Check for duplicate rows before appending
+        if not check_duplicate_rows(ws, data_row):
+            sheet.append(data_row)
+
+
+
+        # Сохранение книги
+        wb.save(excel_file_path)
+
+
+        self.m = await event.reply("Фото добавлено", reply_markup=keyboard)
+        await state.finish()
+
+
+    async def preview_advertisement(self, event):
+        await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
+
 
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),
             KeyboardButton("Отменить и заполнить заново"),
         )
-        await message.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=keyboard)
+        await event.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=keyboard)
 
-    async def send_advertisement(self, message):
-        user_id = message.from_user.id
+    async def send_advertisement(self, event):
+        user_id = event.from_user.id
+        await self.m.delete()
         async with lock:
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
             await bot.send_message(user_id, "Объявление отправлено в канал!")
@@ -163,8 +219,9 @@ class CarBotHandler:
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         image_path = ImageDirectory.car_brand # Путь к вашему изображению
         with open(image_path, "rb") as image:
-            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
-        # await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+            self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+        # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        buffered_photos.clear()
         await state.set_state(User.STATE_CAR_BRAND)
 
 
@@ -202,6 +259,10 @@ async def send_advertisement(event: types.Message):
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(event: types.Message, state: FSMContext):
     await car_bot.fill_again(event, state)
+
+
+
+
 
 # старт бота
 if __name__ == '__main__':

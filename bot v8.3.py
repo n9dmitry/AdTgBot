@@ -6,7 +6,6 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
 import openpyxl
-import os
 from config import *
 from states import *
 from validation import *
@@ -41,17 +40,23 @@ def create_keyboard(button_texts, resize_keyboard=True):
     return keyboard
 
 
+
+
 class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
+
+
 
 # Начало работы бота
 
     async def start(self, event, state):
         image_hello_path = ImageDirectory.say_hi
         with open(image_hello_path, "rb") as image_hello:
-            self.m_hello = await event.answer_photo(image_hello,
-                                     caption=f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем!")
+            self.m = await event.answer_photo(image_hello,
+                                     caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+        await asyncio.sleep(2)
+        await self.m.delete()
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         image_path = ImageDirectory.car_brand  # Путь к вашему изображению
@@ -60,19 +65,11 @@ class CarBotHandler:
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BRAND)
 
+
+
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-
-        if self.m:
-            try:
-                await self.m.delete()
-            except:
-                pass
-        if self.m_hello:
-            try:
-                await self.m_hello.delete()
-            except:
-                pass
+        await self.m.delete()
 
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
@@ -463,7 +460,6 @@ class CarBotHandler:
 
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
-        await self.m.delete()
         photo_id = event.photo[-1].file_id
 
         caption = (
@@ -489,6 +485,9 @@ class CarBotHandler:
             f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
 
+
+
+
         print(user_data)
         photo_uuid = str(uuid.uuid4())
 
@@ -499,19 +498,21 @@ class CarBotHandler:
             {"file_id": photo_id, "uuid": photo_uuid})
         buffered_photos.append(InputMediaPhoto(
             media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
+        # await self.m.delete()
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
             last_photo = buffered_photos[-1]
             last_photo.caption = caption
 
-        # await self.m.delete()
+
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Следущий шаг")
         )
 
+
         def check_duplicate_rows(ws, data_row):
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(data_row)):
+            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=len(data_row)):
                 if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
                     return True
             return False
@@ -710,6 +711,10 @@ async def send_advertisement(event: types.Message):
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(event: types.Message, state: FSMContext):
     await car_bot.fill_again(event, state)
+
+
+
+
 
 # старт бота
 if __name__ == '__main__':

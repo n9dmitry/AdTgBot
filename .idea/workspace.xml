@@ -75,7 +75,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bot v8.3">
+  <component name="RunManager" selected="Python.short_code_test">
     <configuration name="Mix function + bot v1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -209,6 +209,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.short_code_test" />
+        <item itemvalue="Python.bot v8.3" />
         <item itemvalue="Python.Mix function + bot v1" />
         <item itemvalue="Python.function v2" />
         <item itemvalue="Python.function photo" />
