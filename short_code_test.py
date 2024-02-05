@@ -147,49 +147,49 @@ class CarBotHandler:
         )
 
 
-
-
-        def check_duplicate_rows(ws, data_row):
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(data_row)):
-                if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
-                    return True
-            return False
-
-        # Save user_data to Excel file
-        excel_file_path = "db.xlsx"
-        wb = openpyxl.load_workbook(excel_file_path) if os.path.exists(excel_file_path) else openpyxl.Workbook()
-        ws = wb.active
-        sheet = wb.active
-        column_headers = [
-            'Название', 'Модель', 'Год', 'Пробег (км.)', 'Тип КПП', 'Кузов', 'Тип двигателя',
-            'Объем двигателя (л.)', 'Мощность (л.с.)', 'Цвет', 'Статус документов', 'Количество владельцев',
-            'Растаможка', 'Состояние', 'Дополнительная информация', 'Цена', 'Местоположение',
-            'Продавец', 'Телефон продавца', 'Телеграм'
-        ]
-        data_row = []
-        if data_row == []:
-            data_row = [user_data['user_data'].get(field, '') for field in [
-                'car_brand', 'car_model', 'car_year', 'car_mileage', 'car_transmission_type',
-                'car_body_type', 'car_engine_type', 'car_engine_volume', 'car_power', 'car_color',
-                'car_document_status', 'car_owners', 'car_customs_cleared', 'car_condition',
-                'car_description', 'car_price', 'car_location', 'seller_name', 'seller_phone'
-            ]]
-            data_row.append(event.from_user.username if event.from_user.username is not None else 'по номеру телефона')
-        else:
-            pass
-
-        if not ws['A1'].value:  # Check if the headers are not already written
-            for i, header in enumerate(column_headers, start=1):
-                ws.cell(row=1, column=i).value = header
-
-        # Check for duplicate rows before appending
-        if not check_duplicate_rows(ws, data_row):
-            sheet.append(data_row)
-
-
-
-        # Сохранение книги
-        wb.save(excel_file_path)
+        #
+        #
+        # def check_duplicate_rows(ws, data_row):
+        #     for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=len(data_row)):
+        #         if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
+        #             return True
+        #     return False
+        #
+        # # Save user_data to Excel file
+        # excel_file_path = "db.xlsx"
+        # wb = openpyxl.load_workbook(excel_file_path) if os.path.exists(excel_file_path) else openpyxl.Workbook()
+        # ws = wb.active
+        # sheet = wb.active
+        # column_headers = [
+        #     'Название', 'Модель', 'Год', 'Пробег (км.)', 'Тип КПП', 'Кузов', 'Тип двигателя',
+        #     'Объем двигателя (л.)', 'Мощность (л.с.)', 'Цвет', 'Статус документов', 'Количество владельцев',
+        #     'Растаможка', 'Состояние', 'Дополнительная информация', 'Цена', 'Местоположение',
+        #     'Продавец', 'Телефон продавца', 'Телеграм'
+        # ]
+        # data_row = []
+        # if data_row == []:
+        #     data_row = [user_data['user_data'].get(field, '') for field in [
+        #         'car_brand', 'car_model', 'car_year', 'car_mileage', 'car_transmission_type',
+        #         'car_body_type', 'car_engine_type', 'car_engine_volume', 'car_power', 'car_color',
+        #         'car_document_status', 'car_owners', 'car_customs_cleared', 'car_condition',
+        #         'car_description', 'car_price', 'car_location', 'seller_name', 'seller_phone'
+        #     ]]
+        #     data_row.append(event.from_user.username if event.from_user.username is not None else 'по номеру телефона')
+        # else:
+        #     pass
+        #
+        # if not ws['A1'].value:  # Check if the headers are not already written
+        #     for i, header in enumerate(column_headers, start=1):
+        #         ws.cell(row=1, column=i).value = header
+        #
+        # # Check for duplicate rows before appending
+        # if not check_duplicate_rows(ws, data_row):
+        #     sheet.append(data_row)
+        #
+        #
+        #
+        # # Сохранение книги
+        # wb.save(excel_file_path)
 
 
         self.m = await event.reply("Фото добавлено", reply_markup=keyboard)
