@@ -3,6 +3,7 @@ from aiogram.types import InputMediaPhoto
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+import random
 import uuid
 import asyncio
 import openpyxl
@@ -47,6 +48,50 @@ class CarBotHandler:
         self.lock = asyncio.Lock()
 
 
+# Команды
+
+    async def restart(self, event, state):
+        # В этом методе вы должны определить логику перезапуска вашего бота
+        # await self.m.delete()
+        await state.finish()  # Завершаем текущее состояние FSM
+        await event.answer("Бот перезапущен.")  # Отправляем сообщение о перезапуске
+        await self.start(event, state)  # Запускаем начальное действие вашего бота
+
+    async def support(self, event, state):
+        # В этом методе вы должны определить логику перезапуска вашего бота
+        # await self.m.delete()
+        await state.finish()  # Завершаем текущее состояние FSM
+
+        # Генерируем случайное число из трех цифр
+        secret_number = str(random.randint(100, 999))
+
+        await event.answer(f"Нашли баг? Давайте отправим сообщение разработчикам! "
+                             f"Но перед этим введите проверку. Докажите что вы не робот. Напишите число {secret_number}:")
+
+        @dp.message_handler(lambda event: event.text.isdigit())  # Ждем только текстовых сообщений, содержащих только цифры
+        async def handle_user_response(event: types.Message):
+            user_message = event.text  # Получаем текст сообщения от пользователя
+            if user_message == secret_number:
+                await event.answer(f"Проверка пройдена успешно!")
+                await asyncio.sleep(1)
+                await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
+
+
+                @dp.message_handler(lambda event: event.text == 'Перезагрузить бота')
+                async def handle_technical_issue():
+                    print(event.text)
+                    keyboard = create_keyboard(['Перезагрузить бота'])
+                    await event.answer("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!",
+                                               reply_markup=keyboard)
+                    @dp.message_handler(lambda go_back_message: go_back_message.text == 'Перезагрузить бота')
+                    async def go_back():
+                       await cmd_restart()
+
+            else:
+                await event.answer(f"Попробуйте ещё раз!")
+                await asyncio.sleep(2)
+                await cmd_support(event, state)
+
 
 # Начало работы бота
 
@@ -64,6 +109,7 @@ class CarBotHandler:
             self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BRAND)
+
 
 
 
@@ -485,7 +531,7 @@ class CarBotHandler:
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{event.from_user.username if event.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-            f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
+            # f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
 
 
@@ -590,6 +636,18 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 buffered_photos = []
 
+# @dp.message_handler(commands=['restart'])
+# async def cmd_restart(event: types.Message, state):
+#     await car_bot.restart(event, state)
+
+
+#
+@dp.message_handler(commands=['support'], state='*')
+async def cmd_support(event: types.Message, state: FSMContext):
+    await car_bot.support(event, state)
+@dp.message_handler(commands=['restart'], state='*')
+async def cmd_restart(event: types.Message, state: FSMContext):
+    await car_bot.restart(event, state)
 
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
