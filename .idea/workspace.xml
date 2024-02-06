@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.3, number starts with +7">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.4. - support partly">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
     </list>
@@ -484,7 +484,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707127641885</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="v.8.4.4. - support partly">
+      <option name="closed" value="true" />
+      <created>1707221294646</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1707221294646</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -502,7 +510,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1.7" />
     <MESSAGE value="1.8" />
     <MESSAGE value="1.9" />
     <MESSAGE value="v2.5" />
@@ -527,7 +534,8 @@
     <MESSAGE value="v.8.4.1, Data Base fucking" />
     <MESSAGE value="v.8.4.2, fix bug engine_volume validation" />
     <MESSAGE value="v.8.4.3, number starts with +7" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.3, number starts with +7" />
+    <MESSAGE value="v.8.4.4. - support partly" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.4. - support partly" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

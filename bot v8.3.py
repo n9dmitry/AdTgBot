@@ -75,22 +75,25 @@ class CarBotHandler:
                 await event.answer(f"Проверка пройдена успешно!")
                 await asyncio.sleep(1)
                 await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
-
-
-                @dp.message_handler(lambda event: event.text == 'Перезагрузить бота')
-                async def handle_technical_issue():
-                    print(event.text)
-                    keyboard = create_keyboard(['Перезагрузить бота'])
-                    await event.answer("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!",
-                                               reply_markup=keyboard)
-                    @dp.message_handler(lambda go_back_message: go_back_message.text == 'Перезагрузить бота')
-                    async def go_back():
-                       await cmd_restart()
-
+                await handle_technical_issue()
+                await go_back()
             else:
                 await event.answer(f"Попробуйте ещё раз!")
                 await asyncio.sleep(2)
                 await cmd_support(event, state)
+
+
+        @dp.message_handler(event)
+        async def handle_technical_issue():
+            print(event.text)
+            keyboard = create_keyboard(['Перезагрузить бота'])
+            await event.answer("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!",
+                                       reply_markup=keyboard)
+        @dp.message_handler(lambda go_back_message: go_back_message.text == 'Перезагрузить бота')
+        async def go_back():
+           await cmd_restart()
+
+
 
 
 # Начало работы бота
