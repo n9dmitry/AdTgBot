@@ -68,9 +68,7 @@ class CarBotHandler:
         await state.set_state(User.STATE_SUPPORT_VALIDATION)
 
     async def support_validation(self, event, state):
-        print(event.text)
-
-        if event.text == self.secret_number:
+        if event.text.isdigit() and event.text == self.secret_number:
             await event.reply(f"Проверка пройдена успешно!")
             await asyncio.sleep(1)
             await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
@@ -656,7 +654,7 @@ lock = asyncio.Lock()
 buffered_photos = []
 
 
-@dp.message_handler(lambda message: message.text == 'Перезагрузить бота', commands=['restart'],  state='*')
+@dp.message_handler(commands=['restart'], state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
@@ -669,7 +667,7 @@ async def cmd_start(event: types.Message, state: FSMContext):
 async def cmd_support(event: types.Message, state: FSMContext):
     await car_bot.support(event, state)
 
-@dp.message_handler(lambda event: event.text.isdigit(), state=User.STATE_SUPPORT_VALIDATION)
+@dp.message_handler(state=User.STATE_SUPPORT_VALIDATION)
 async def support_validation(event: types.Message, state: FSMContext):
     await car_bot.support_validation(event, state)
 
