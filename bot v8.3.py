@@ -87,7 +87,7 @@ class CarBotHandler:
         # Формируем строку для записи в файл
         message_to_write = f"""
         Дата: {current_time}
-        Имя: , {event.from_user.full_name}
+        Имя: {event.from_user.full_name}
         Telegram @{event.from_user.username or event.from_user.id} 
       
         Сообщение: {event.text}

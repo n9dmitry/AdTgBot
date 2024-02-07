@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.4. - support partly">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
-    </list>
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.5. - support FULL" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -501,7 +497,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707223262877</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="v.8.4.5. - support FULL">
+      <option name="closed" value="true" />
+      <created>1707297732387</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1707297732387</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -519,7 +523,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1.8" />
     <MESSAGE value="1.9" />
     <MESSAGE value="v2.5" />
     <MESSAGE value="v.2.6" />
@@ -544,7 +547,8 @@
     <MESSAGE value="v.8.4.2, fix bug engine_volume validation" />
     <MESSAGE value="v.8.4.3, number starts with +7" />
     <MESSAGE value="v.8.4.4. - support partly" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.4. - support partly" />
+    <MESSAGE value="v.8.4.5. - support FULL" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.5. - support FULL" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
