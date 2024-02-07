@@ -4,6 +4,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import random
+import datetime
 import uuid
 import asyncio
 import openpyxl
@@ -57,41 +58,54 @@ class CarBotHandler:
         await event.answer("Бот перезапущен.")  # Отправляем сообщение о перезапуске
         await self.start(event, state)  # Запускаем начальное действие вашего бота
 
-    async def support(self, event, state):
-        # В этом методе вы должны определить логику перезапуска вашего бота
-        # await self.m.delete()
-        await state.finish()  # Завершаем текущее состояние FSM
 
-        # Генерируем случайное число из трех цифр
-        secret_number = str(random.randint(100, 999))
+    async def support(self, event, state):
+        await state.finish()
+        self.secret_number = str(random.randint(100, 999))
 
         await event.answer(f"Нашли баг? Давайте отправим сообщение разработчикам! "
-                             f"Но перед этим введите проверку. Докажите что вы не робот. Напишите число {secret_number}:")
+                             f"Но перед этим введите проверку. Докажите что вы не робот. Напишите число {self.secret_number}:")
+        await state.set_state(User.STATE_SUPPORT_VALIDATION)
 
-        @dp.message_handler(lambda event: event.text.isdigit())  # Ждем только текстовых сообщений, содержащих только цифры
-        async def handle_user_response(event: types.Message):
-            user_message = event.text  # Получаем текст сообщения от пользователя
-            if user_message == secret_number:
-                await event.answer(f"Проверка пройдена успешно!")
-                await asyncio.sleep(1)
-                await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
-                await handle_technical_issue()
-                await go_back()
-            else:
-                await event.answer(f"Попробуйте ещё раз!")
-                await asyncio.sleep(2)
-                await cmd_support(event, state)
+    async def support_validation(self, event, state):
+        user_message = event.text  # Получаем текст сообщения от пользователя
+        if user_message == self.secret_number:
+            await event.reply(f"Проверка пройдена успешно!")
+            await asyncio.sleep(1)
+            await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
+            await state.set_state(User.STATE_SUPPORT_MESSAGE)
+
+        else:
+            await event.answer(f"Попробуйте ещё раз!")
+            await asyncio.sleep(1)
+            await cmd_support(event, state)
+
+    async def support_message(self, event: types.Message, state):
+        # Получаем текущую дату и время
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Формируем строку для записи в файл
+        message_to_write = f"""
+        Дата: {current_time}
+        Имя: , {event.from_user.full_name}
+        Telegram @{event.from_user.username or event.from_user.id} 
+      
+        Сообщение: {event.text}
+        ...
+            """
+
+        # Открываем файл для записи и записываем сообщение
+        with open("support.txt", "a") as file:
+            file.write(message_to_write)
+        keyboard = create_keyboard(['Перезагрузить бота'])
+        await event.reply("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!", reply_markup=keyboard)
+        await state.set_state(User.STATE_SUPPORT_END)
+    async def support_end(selfself, event, state):
+        if event.text == 'Перезагрузить бота':
+            await cmd_restart(event, state)
+        await state.finish()
 
 
-        @dp.message_handler(event)
-        async def handle_technical_issue():
-            print(event.text)
-            keyboard = create_keyboard(['Перезагрузить бота'])
-            await event.answer("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!",
-                                       reply_markup=keyboard)
-        @dp.message_handler(lambda go_back_message: go_back_message.text == 'Перезагрузить бота')
-        async def go_back():
-           await cmd_restart()
 
 
 
@@ -600,8 +614,10 @@ class CarBotHandler:
         # Specify the path and filename for the Excel file
         wb.save(excel_file_path)
 
-
-        self.m = await event.reply("Фото добавлено", reply_markup=keyboard)
+        if self.m == "Фото добавлено":
+            pass
+        else:
+            self.m = await event.answer("Фото добавлено", reply_markup=keyboard)
         await state.finish()
 
     async def preview_advertisement(self, event):
@@ -639,22 +655,35 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
 buffered_photos = []
 
-# @dp.message_handler(commands=['restart'])
-# async def cmd_restart(event: types.Message, state):
-#     await car_bot.restart(event, state)
 
-
-#
-@dp.message_handler(commands=['support'], state='*')
-async def cmd_support(event: types.Message, state: FSMContext):
-    await car_bot.support(event, state)
-@dp.message_handler(commands=['restart'], state='*')
+@dp.message_handler(lambda message: message.text == 'Перезагрузить бота', commands=['restart'],  state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
     await car_bot.start(event, state)
+
+#support
+@dp.message_handler(commands=['support'], state='*')
+async def cmd_support(event: types.Message, state: FSMContext):
+    await car_bot.support(event, state)
+
+@dp.message_handler(lambda event: event.text.isdigit(), state=User.STATE_SUPPORT_VALIDATION)
+async def support_validation(event: types.Message, state: FSMContext):
+    await car_bot.support_validation(event, state)
+
+@dp.message_handler(state=User.STATE_SUPPORT_MESSAGE)
+async def support_message(event: types.Message, state: FSMContext):
+    await car_bot.support_message(event, state)
+
+@dp.message_handler(state=User.STATE_SUPPORT_END)
+async def support_end(event: types.Message, state: FSMContext):
+    await car_bot.restart(event, state)
+
+
+# end support
+
 
 
 @dp.message_handler(state=User.STATE_CAR_BRAND)
@@ -759,6 +788,7 @@ async def get_seller_phone_handler(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=User.STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(event: types.Message, state: FSMContext):
+    print('STATE:', state, event)
     await car_bot.handle_photos(event, state)
 
 
