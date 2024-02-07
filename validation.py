@@ -80,3 +80,12 @@ async def validate_phone_number(phone_number):
         return True
     else:
         return False
+
+async def validate_length(event, state, user_data):
+    user_data = (await state.get_data()).get("user_data", {})
+    caption_length = 361
+    max_caption_length = 1024
+
+    user_data_length = sum(len(str(value)) for value in user_data.values())
+    print(user_data_length)
+    return (user_data_length + caption_length) >= max_caption_length

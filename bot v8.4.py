@@ -511,12 +511,19 @@ class CarBotHandler:
             event.text = '+7' + event.text[1:] if event.text.startswith('8') else event.text
             user_data["seller_phone"] = event.text
             await state.update_data(user_data=user_data)
-#             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_photos
-            with open(image_path, "rb") as image:
-                self.m = await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук")
-            # self.m = await event.answer("Добавьте фотографии авто")
-            await state.set_state(User.STATE_CAR_PHOTO)
+            print(user_data)
+            print(validate_length(event, state, user_data))
+            if await validate_length(event, state, user_data):
+
+    #             await self.delete_previous_question(event)
+                image_path = ImageDirectory.car_photos
+                with open(image_path, "rb") as image:
+                    self.m = await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук")
+                # self.m = await event.answer("Добавьте фотографии авто")
+                await state.set_state(User.STATE_CAR_PHOTO)
+            else:
+                await event.reply("Ваше сообщение получилось сильно большим! Вы можете добавить 663 символа суммарно в описании и характеристике. </br> Перезагрузите бота и напишите объявление заново.")
+
         else:
 #             await self.delete_previous_question(event)
             self.m = await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
@@ -546,7 +553,7 @@ class CarBotHandler:
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{event.from_user.username if event.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-            # f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
+            f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
         )
 
 
