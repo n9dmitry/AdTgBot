@@ -68,14 +68,14 @@ class CarBotHandler:
         await state.set_state(User.STATE_SUPPORT_VALIDATION)
 
     async def support_validation(self, event, state):
-        user_message = event.text  # Получаем текст сообщения от пользователя
-        if user_message == self.secret_number:
+        print(event.text)
+
+        if event.text.isdigit() and event.text == self.secret_number:
             await event.reply(f"Проверка пройдена успешно!")
             await asyncio.sleep(1)
             await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
             await state.set_state(User.STATE_SUPPORT_MESSAGE)
-
-        else:
+        elif not event.text.isdigit():
             await event.answer(f"Попробуйте ещё раз!")
             await asyncio.sleep(1)
             await cmd_support(event, state)
