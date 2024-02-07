@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.5. - support FULL">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.3.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.3.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -516,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707297871817</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="v.8.4.5. - support FULL">
+      <option name="closed" value="true" />
+      <created>1707301218925</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1707301218925</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
