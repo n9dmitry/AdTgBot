@@ -105,9 +105,6 @@ class CarBotHandler:
 
 
 
-
-
-
 # Начало работы бота
 
     async def start(self, event, state):
@@ -415,19 +412,24 @@ class CarBotHandler:
     async def get_car_description(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
         await self.m.delete()
-        if await validate_car_description(event.text):
-            user_data["car_description"] = event.text
-            keyboard = create_keyboard(dict_currency)
-            await state.update_data(user_data=user_data)
-#             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_currency
-            with open(image_path, "rb") as image:
-                self.m = await event.answer_photo(image, caption="Выберите валюту:", reply_markup=keyboard)
-            # self.m = await event.answer("Выберите валюту:", reply_markup=keyboard)
-            await state.set_state(User.STATE_SELECT_CURRENCY)
+
+        if await validate_length_text(event):
+            if await validate_car_description(event.text):
+                user_data["car_description"] = event.text
+                keyboard = create_keyboard(dict_currency)
+                await state.update_data(user_data=user_data)
+    #             await self.delete_previous_question(event)
+                image_path = ImageDirectory.car_currency
+                with open(image_path, "rb") as image:
+                    self.m = await event.answer_photo(image, caption="Выберите валюту:", reply_markup=keyboard)
+                # self.m = await event.answer("Выберите валюту:", reply_markup=keyboard)
+                await state.set_state(User.STATE_SELECT_CURRENCY)
+            else:
+    #             await self.delete_previous_question(event)
+                self.m = await event.answer("Пожалуйста, введите корректное описание.")
+                await state.set_state(User.STATE_CAR_DESCRIPTION)
         else:
-#             await self.delete_previous_question(event)
-            self.m = await event.answer("Пожалуйста, введите корректное описание.")
+            self.m = await event.answer("Ваше описание сильно большое. Напишите до ~500 символов:")
             await state.set_state(User.STATE_CAR_DESCRIPTION)
 
     async def select_currency(self, event, state):
@@ -512,9 +514,9 @@ class CarBotHandler:
             user_data["seller_phone"] = event.text
             await state.update_data(user_data=user_data)
             print(user_data)
-            print(validate_length(event, state, user_data))
-            if await validate_length(event, state, user_data):
-
+            print(await validate_final_length(event, state, user_data))
+            if await validate_final_length(event, state, user_data):
+                print(validate_final_length)
     #             await self.delete_previous_question(event)
                 image_path = ImageDirectory.car_photos
                 with open(image_path, "rb") as image:
@@ -522,7 +524,7 @@ class CarBotHandler:
                 # self.m = await event.answer("Добавьте фотографии авто")
                 await state.set_state(User.STATE_CAR_PHOTO)
             else:
-                await event.reply("Ваше сообщение получилось сильно большим! Вы можете добавить 663 символа суммарно в описании и характеристике. </br> Перезагрузите бота и напишите объявление заново.")
+                await event.reply(f"Ваше сообщение получилось сильно большим! \nПерезагрузите бота и напишите объявление заново.")
 
         else:
 #             await self.delete_previous_question(event)
@@ -560,6 +562,7 @@ class CarBotHandler:
 
 
         print(user_data)
+        print(len(caption))
         photo_uuid = str(uuid.uuid4())
 
         if "sent_photos" not in user_data:

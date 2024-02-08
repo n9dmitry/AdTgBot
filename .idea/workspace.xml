@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.6. - support capcha fix">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.7. - validation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.4.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.4.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
@@ -53,7 +53,7 @@
     "Python.bot v8.4.executor": "Run",
     "Python.config.executor": "Run",
     "Python.short_code_test.executor": "Run",
-    "Python.validation.executor": "Debug",
+    "Python.validation.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
@@ -542,7 +542,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707302750953</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="v.8.4.7. - validation">
+      <option name="closed" value="true" />
+      <created>1707310391849</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1707310391849</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -560,7 +568,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v2.5" />
     <MESSAGE value="v.2.6" />
     <MESSAGE value="v.2.7" />
     <MESSAGE value="v.2.8" />
@@ -585,7 +592,8 @@
     <MESSAGE value="v.8.4.4. - support partly" />
     <MESSAGE value="v.8.4.5. - support FULL" />
     <MESSAGE value="v.8.4.6. - support capcha fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.6. - support capcha fix" />
+    <MESSAGE value="v.8.4.7. - validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.7. - validation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
