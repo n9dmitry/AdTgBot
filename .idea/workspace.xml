@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.8. - validation full">
-      <change afterPath="$PROJECT_DIR$/short_code_test2.py" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.9. - db test2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.4.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.4.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/short_code_test2.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +79,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.short_code_test2">
+  <component name="RunManager" selected="Python.bot v8.4">
     <configuration name="bot v8.4" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -216,9 +215,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.bot v8.4" />
         <item itemvalue="Python.short_code_test2" />
         <item itemvalue="Python.short_code_test" />
-        <item itemvalue="Python.bot v8.4" />
         <item itemvalue="Python.validation" />
         <item itemvalue="Python.config" />
       </list>
@@ -568,7 +567,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707396003250</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="v.8.4.9. - db test2">
+      <option name="closed" value="true" />
+      <created>1707467204835</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1707467204835</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -586,7 +593,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.2.8" />
     <MESSAGE value="v.3.0" />
     <MESSAGE value="v.3.1" />
     <MESSAGE value="v3.5" />
@@ -611,7 +617,8 @@
     <MESSAGE value="v.8.4.7. - validation" />
     <MESSAGE value="v.8.4.7. - validation full" />
     <MESSAGE value="v.8.4.8. - validation full" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.8. - validation full" />
+    <MESSAGE value="v.8.4.9. - db test2" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.9. - db test2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

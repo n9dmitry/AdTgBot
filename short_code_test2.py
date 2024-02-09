@@ -44,6 +44,8 @@ def create_keyboard(button_texts, resize_keyboard=True):
     return keyboard
 
 
+
+
 class CarBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
@@ -113,9 +115,9 @@ class CarBotHandler:
         await self.m.delete()
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        image_path = ImageDirectory.car_brand  # Путь к вашему изображению
+        image_path = ImageDirectory.car_brand  # Путь к вашему изобрению
         with open(image_path, "rb") as image:
-            self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+            self.m = await event.answer_photo(image, caption="Выбери бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BRAND)
 
@@ -150,56 +152,56 @@ class CarBotHandler:
                                             reply_markup=keyboard)
             await state.set_state(User.STATE_CAR_BRAND)
 
-    async def write_to_excel(self, event):
-        file_path = 'db.xlsx'
-
-        # Проверяем, существует ли файл Excel
-        if os.path.exists(file_path):
-            workbook = openpyxl.load_workbook(file_path)
-        else:
-            workbook = openpyxl.Workbook()
-
-        sheet = workbook.active
-
-        # Проверяем, нужно ли добавить заголовки
-        if sheet.max_row == 1:
-            headers = [
-                'Car Brand-Model', 'Year', 'Mileage (km)', 'Transmission Type',
-                'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
-                'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
-                'Condition', 'Additional Description', 'Price', 'Currency',
-                'Location', 'Seller Name', 'Seller Phone', 'Telegram'
-            ]
-            sheet.append(headers)
-
-        row_data = [
-            self.a.get('user_data').get('car_brand', ''),
-            # + '-' + user_data.get('user_data').get('car_model', ''),
-            # user_data.get('user_data').get('car_year', ''),
-            # user_data.get('user_data').get('car_mileage', ''),
-            # user_data.get('user_data').get('car_transmission_type', ''),
-            # user_data.get('user_data').get('car_body_type', ''),
-            # user_data.get('user_data').get('car_engine_type', ''),
-            # user_data.get('user_data').get('car_engine_volume', ''),
-            # user_data.get('user_data').get('car_power', ''),
-            # user_data.get('user_data').get('car_color', ''),
-            # user_data.get('user_data').get('car_document_status', ''),
-            # user_data.get('user_data').get('car_owners', ''),
-            # 'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет',
-            # user_data.get('user_data').get('car_condition', ''),
-            # user_data.get('user_data').get('car_description', ''),
-            # user_data.get('user_data').get('car_price', ''),
-            # user_data.get('user_data').get('currency', ''),
-            # user_data.get('user_data').get('car_location', ''),
-            # user_data.get('user_data').get('seller_name', ''),
-            # user_data.get('user_data').get('seller_phone', ''),
-            event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
-        ]
-
-        sheet.append(row_data)
-
-        # Сохраняем файл
-        workbook.save(file_path)
+    # async def write_to_excel(self, event):
+    #     file_path = 'db.xlsx'
+    #
+    #     # Проверяем, существует ли файл Excel
+    #     if os.path.exists(file_path):
+    #         workbook = openpyxl.load_workbook(file_path)
+    #     else:
+    #         workbook = openpyxl.Workbook()
+    #
+    #     sheet = workbook.active
+    #
+    #     # Проверяем, нужно ли добавить заголовки
+    #     if sheet.max_row == 1:
+    #         headers = [
+    #             'Car Brand-Model', 'Year', 'Mileage (km)', 'Transmission Type',
+    #             'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
+    #             'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
+    #             'Condition', 'Additional Description', 'Price', 'Currency',
+    #             'Location', 'Seller Name', 'Seller Phone', 'Telegram'
+    #         ]
+    #         sheet.append(headers)
+    #
+    #     row_data = [
+    #         self.a.get('user_data').get('car_brand', ''),
+    #         # + '-' + user_data.get('user_data').get('car_model', ''),
+    #         # user_data.get('user_data').get('car_year', ''),
+    #         # user_data.get('user_data').get('car_mileage', ''),
+    #         # user_data.get('user_data').get('car_transmission_type', ''),
+    #         # user_data.get('user_data').get('car_body_type', ''),
+    #         # user_data.get('user_data').get('car_engine_type', ''),
+    #         # user_data.get('user_data').get('car_engine_volume', ''),
+    #         # user_data.get('user_data').get('car_power', ''),
+    #         # user_data.get('user_data').get('car_color', ''),
+    #         # user_data.get('user_data').get('car_document_status', ''),
+    #         # user_data.get('user_data').get('car_owners', ''),
+    #         # 'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет',
+    #         # user_data.get('user_data').get('car_condition', ''),
+    #         # user_data.get('user_data').get('car_description', ''),
+    #         # user_data.get('user_data').get('car_price', ''),
+    #         # user_data.get('user_data').get('currency', ''),
+    #         # user_data.get('user_data').get('car_location', ''),
+    #         # user_data.get('user_data').get('seller_name', ''),
+    #         # user_data.get('user_data').get('seller_phone', ''),
+    #         event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
+    #     ]
+    #
+    #     sheet.append(row_data)
+    #
+    #     # Сохраняем файл
+    #     workbook.save(file_path)
 
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
@@ -258,23 +260,26 @@ class CarBotHandler:
         self.a = user_data
         await state.finish()
 
-    async def preview_advertisement(self, event):
-        await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
-        print(self.a)
+
+    async def add_data_to_excel(self, event):
         file_path = 'db.xlsx'
+
+        row_data = [
+            self.a.get('user_data').get('car_brand', ''),
+            event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
+        ]
 
         # Проверяем, существует ли файл Excel
         if os.path.exists(file_path):
             workbook = openpyxl.load_workbook(file_path)
         else:
             workbook = openpyxl.Workbook()
-
         sheet = workbook.active
 
         # Проверяем, нужно ли добавить заголовки
         if sheet.max_row == 1:
             headers = [
-                'Car Brand-Model', 'Year', 'Mileage (km)', 'Transmission Type',
+                'Brand', 'Model', 'Year', 'Mileage (km)', 'Transmission Type',
                 'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
                 'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
                 'Condition', 'Additional Description', 'Price', 'Currency',
@@ -282,38 +287,38 @@ class CarBotHandler:
             ]
             sheet.append(headers)
 
-        row_data = [
-            self.a.get('car_brand', ''),
-            # + '-' + user_data.get('user_data').get('car_model', ''),
-            # user_data.get('user_data').get('car_year', ''),
-            # user_data.get('user_data').get('car_mileage', ''),
-            # user_data.get('user_data').get('car_transmission_type', ''),
-            # user_data.get('user_data').get('car_body_type', ''),
-            # user_data.get('user_data').get('car_engine_type', ''),
-            # user_data.get('user_data').get('car_engine_volume', ''),
-            # user_data.get('user_data').get('car_power', ''),
-            # user_data.get('user_data').get('car_color', ''),
-            # user_data.get('user_data').get('car_document_status', ''),
-            # user_data.get('user_data').get('car_owners', ''),
-            # 'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет',
-            # user_data.get('user_data').get('car_condition', ''),
-            # user_data.get('user_data').get('car_description', ''),
-            # user_data.get('user_data').get('car_price', ''),
-            # user_data.get('user_data').get('currency', ''),
-            # user_data.get('user_data').get('car_location', ''),
-            # user_data.get('user_data').get('seller_name', ''),
-            # user_data.get('user_data').get('seller_phone', ''),
-            event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
-        ]
-
         sheet.append(row_data)
-
-        # Сохраняем файл
         workbook.save(file_path)
 
-
-        # await self.write_to_excel(event, self.a)
-
+    async def preview_advertisement(self, event):
+        await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
+        print(self.a)
+        # file_path = 'db.xlsx'
+        #
+        # # Проверяем, существует ли файл Excel
+        # if os.path.exists(file_path):
+        #     workbook = openpyxl.load_workbook(file_path)
+        # else:
+        #     workbook = openpyxl.Workbook()
+        # sheet = workbook.active
+        # # Проверяем, нужно ли добавить заголовки
+        # if sheet.max_row == 1:
+        #     headers = [
+        #         'Brand' 'Model', 'Year', 'Mileage (km)', 'Transmission Type',
+        #         'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
+        #         'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
+        #         'Condition', 'Additional Description', 'Price', 'Currency',
+        #         'Location', 'Seller Name', 'Seller Phone', 'Telegram'
+        #     ]
+        #     sheet.append(headers)
+        #
+        # row_data = [
+        #     self.a.get('user_data').get('car_brand', ''),
+        #     event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
+        # ]
+        #
+        # sheet.append(row_data)
+        # workbook.save(file_path)
 
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),
@@ -327,9 +332,9 @@ class CarBotHandler:
         user_id = event.from_user.id
         await self.m.delete()
         async with lock:
+            await self.add_data_to_excel(event)
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
             await bot.send_message(user_id, "Объявление отправлено в канал!")
-
             buffered_photos.clear()
 
     async def fill_again(self, event, state):
