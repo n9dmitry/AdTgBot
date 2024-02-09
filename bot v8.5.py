@@ -704,9 +704,11 @@ class CarBotHandler:
             user_id = event.from_user.id
             await self.add_data_to_excel(event)
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            await bot.send_message(user_id, "Объявление отправлено в канал!")
+            keyboard = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
+            await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=keyboard)
 
             buffered_photos.clear()
+
 
     async def fill_again(self, event, state):
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
@@ -726,7 +728,7 @@ lock = asyncio.Lock()
 buffered_photos = []
 
 
-@dp.message_handler(commands=['restart'], state='*')
+@dp.message_handler(lambda message: message.text == "Добавить ещё объявление", commands=['restart'], state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
@@ -870,8 +872,6 @@ async def preview_advertisement(event: types.Message):
 @dp.message_handler(lambda message: message.text == "Отправить в канал")
 async def send_advertisement(event: types.Message, state: FSMContext):
     await car_bot.send_advertisement(event)
-    await car_bot.fill_again(event, state)
-
 
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(event: types.Message, state: FSMContext):
