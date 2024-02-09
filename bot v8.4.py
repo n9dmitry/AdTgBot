@@ -530,7 +530,55 @@ class CarBotHandler:
 #             await self.delete_previous_question(event)
             self.m = await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
             await state.set_state(User.STATE_SELLER_PHONE)
+    async def write_to_excel(self, event, user_data):
+        file_path = 'db.xlsx'
 
+        # Проверяем, существует ли файл Excel
+        if os.path.exists(file_path):
+            workbook = openpyxl.load_workbook(file_path)
+        else:
+            workbook = openpyxl.Workbook()
+
+        sheet = workbook.active
+
+        # Проверяем, нужно ли добавить заголовки
+        if sheet.max_row == 1:
+            headers = [
+                'Car Brand-Model', 'Year', 'Mileage (km)', 'Transmission Type',
+                'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
+                'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
+                'Condition', 'Additional Description', 'Price', 'Currency',
+                'Location', 'Seller Name', 'Seller Phone', 'Telegram'
+            ]
+            sheet.append(headers)
+
+        row_data = [
+            user_data.get('user_data').get('car_brand', '') + '-' + user_data.get('user_data').get('car_model', ''),
+            user_data.get('user_data').get('car_year', ''),
+            user_data.get('user_data').get('car_mileage', ''),
+            user_data.get('user_data').get('car_transmission_type', ''),
+            user_data.get('user_data').get('car_body_type', ''),
+            user_data.get('user_data').get('car_engine_type', ''),
+            user_data.get('user_data').get('car_engine_volume', ''),
+            user_data.get('user_data').get('car_power', ''),
+            user_data.get('user_data').get('car_color', ''),
+            user_data.get('user_data').get('car_document_status', ''),
+            user_data.get('user_data').get('car_owners', ''),
+            'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет',
+            user_data.get('user_data').get('car_condition', ''),
+            user_data.get('user_data').get('car_description', ''),
+            user_data.get('user_data').get('car_price', ''),
+            user_data.get('user_data').get('currency', ''),
+            user_data.get('user_data').get('car_location', ''),
+            user_data.get('user_data').get('seller_name', ''),
+            user_data.get('user_data').get('seller_phone', ''),
+            event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
+        ]
+
+        sheet.append(row_data)
+
+        # Сохраняем файл
+        workbook.save(file_path)
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
         photo_id = event.photo[-1].file_id
@@ -585,42 +633,6 @@ class CarBotHandler:
         )
 
 
-        def check_duplicate_rows(ws, data_row):
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=len(data_row)):
-                if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
-                    return True
-            return False
-
-        # Save user_data to Excel file
-        excel_file_path = "db.xlsx"
-        wb = openpyxl.load_workbook(excel_file_path) if os.path.exists(excel_file_path) else openpyxl.Workbook()
-        ws = wb.active
-        sheet = wb.active
-        column_headers = [
-            'Название', 'Модель', 'Год', 'Пробег (км.)', 'Тип КПП', 'Кузов', 'Тип двигателя',
-            'Объем двигателя (л.)', 'Мощность (л.с.)', 'Цвет', 'Статус документов', 'Количество владельцев',
-            'Растаможка', 'Состояние', 'Дополнительная информация', 'Цена', 'Местоположение',
-            'Продавец', 'Телефон продавца', 'Телеграм'
-        ]
-
-        data_row = [user_data['user_data'].get(field, '') for field in [
-            'car_brand', 'car_model', 'car_year', 'car_mileage', 'car_transmission_type',
-            'car_body_type', 'car_engine_type', 'car_engine_volume', 'car_power', 'car_color',
-            'car_document_status', 'car_owners', 'car_customs_cleared', 'car_condition',
-            'car_description', 'car_price', 'car_location', 'seller_name', 'seller_phone'
-        ]]
-        data_row.append(event.from_user.username if event.from_user.username is not None else 'по номеру телефона')
-
-        if not ws['A1'].value:  # Check if the headers are not already written
-            for i, header in enumerate(column_headers, start=1):
-                ws.cell(row=1, column=i).value = header
-
-        # Check for duplicate rows before appending
-        if not check_duplicate_rows(ws, data_row):
-            sheet.append(data_row)
-
-        # Specify the path and filename for the Excel file
-        wb.save(excel_file_path)
 
         if self.m == "Фото добавлено":
             pass
@@ -630,7 +642,6 @@ class CarBotHandler:
 
     async def preview_advertisement(self, event):
         await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
-
 
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),

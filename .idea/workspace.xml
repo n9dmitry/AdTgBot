@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.7. - validation full">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.4.8. - validation full">
+      <change afterPath="$PROJECT_DIR$/short_code_test2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.4.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.4.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/short_code_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/short_code_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -52,12 +54,13 @@
     "Python.bot v8.4.executor": "Run",
     "Python.config.executor": "Run",
     "Python.short_code_test.executor": "Run",
+    "Python.short_code_test2.executor": "Run",
     "Python.validation.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "Rebasing forkN",
-    "last_opened_file_path": "D:/git/AdTgBot",
+    "last_opened_file_path": "/home/dev/Development/AdTgBot",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
   "keyToStringList": {
@@ -69,6 +72,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
     </key>
@@ -76,30 +80,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.short_code_test">
-    <configuration name="Mix function + bot v1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AdTgBot" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Mix function + bot v1.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.short_code_test2">
     <configuration name="bot v8.4" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -189,6 +170,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="short_code_test2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/short_code_test2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="validation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -213,11 +216,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.short_code_test2" />
         <item itemvalue="Python.short_code_test" />
         <item itemvalue="Python.bot v8.4" />
         <item itemvalue="Python.validation" />
         <item itemvalue="Python.config" />
-        <item itemvalue="Python.Mix function + bot v1" />
       </list>
     </recent_temporary>
   </component>
@@ -557,7 +560,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707388986612</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="v.8.4.8. - validation full">
+      <option name="closed" value="true" />
+      <created>1707396003250</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1707396003250</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -575,7 +586,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.2.7" />
     <MESSAGE value="v.2.8" />
     <MESSAGE value="v.3.0" />
     <MESSAGE value="v.3.1" />
@@ -600,7 +610,8 @@
     <MESSAGE value="v.8.4.6. - support capcha fix" />
     <MESSAGE value="v.8.4.7. - validation" />
     <MESSAGE value="v.8.4.7. - validation full" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.7. - validation full" />
+    <MESSAGE value="v.8.4.8. - validation full" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.4.8. - validation full" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
