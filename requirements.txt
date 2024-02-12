@@ -1,0 +1,9 @@
+certifi==2024.2.2
+charset-normalizer==3.3.2
+idna==3.6
+requests==2.31.0
+urllib3==2.2.0
+aiogram==2.24
+async-timeout==4.0.2
+asyncio==3.4.3
+
