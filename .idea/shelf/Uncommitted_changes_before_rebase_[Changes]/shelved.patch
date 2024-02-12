@@ -1,0 +1,15 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>git rm --cached config.py\nconfig.py\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision 473984fdd474766975661b55edda0dffd420962d)
++++ b/.gitignore	(date 1706704188176)
+@@ -1,2 +1,2 @@
+-git rm --cached config.py
+-config.py
++#git rm --cached config.py
++#config.py
