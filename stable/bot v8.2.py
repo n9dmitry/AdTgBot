@@ -5,7 +5,6 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import uuid
 import asyncio
-from config import *
 from states import *
 from validation import *
 import json

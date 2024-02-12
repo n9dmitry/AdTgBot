@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.3.5. - all is ok" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.1. - Beta">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,20 +31,6 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;n9dmitry&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">
-    <option name="selectedUrlAndAccountId">
-      <UrlAndAccount>
-        <option name="accountId" value="b57fdc0c-b212-4717-a7df-4abee2acc219" />
-        <option name="url" value="https://github.com/n9dmitry/AdTgBot.git" />
-      </UrlAndAccount>
-    </option>
-  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/use not/caption.py" root0="SKIP_INSPECTION" />
   </component>
@@ -49,8 +38,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 3
+  &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="2ZnmbA3W6EYiEE67yucMxrBafle" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -60,16 +48,23 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;Python.bot v8.3.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.bot v8.3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bot v8.4.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bot v8.5.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.short_code_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.short_code_test2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.validation.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;forkN&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Rebasing forkN&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/dev/Development/AdTgBot&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
       &quot;PLAIN_TEXT&quot;
     ]
   }
@@ -77,16 +72,15 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/img" />
       <recent name="C:\Users\Дмитрий\Desktop\Code Projects\AdTgBot" />
       <recent name="C:\Users\Дмитрий\AppData\Roaming\JetBrains\PyCharm2022.2\scratches\TgAutoBot - Scratches" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/stable" />
+      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bot v8.3">
-    <configuration name="Mix function + bot v1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.bot v8.5">
+    <configuration name="bot v8.5" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -99,8 +93,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Mix function + bot v1.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot v8.5.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -109,7 +102,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="bot v7" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="config" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -122,76 +115,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot v7.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot v8.3" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AdTgBot" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot v8.3.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="function photo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AdTgBot" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/function photo.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="function v2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AdTgBot" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/function v2.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/config.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -223,13 +147,79 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="short_code_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/short_code_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="short_code_test2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/short_code_test2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="validation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/validation.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.bot v8.3" />
-        <item itemvalue="Python.Mix function + bot v1" />
-        <item itemvalue="Python.function v2" />
-        <item itemvalue="Python.function photo" />
-        <item itemvalue="Python.bot v7" />
+        <item itemvalue="Python.bot v8.5" />
+        <item itemvalue="Python.short_code_test2" />
+        <item itemvalue="Python.short_code_test" />
+        <item itemvalue="Python.validation" />
+        <item itemvalue="Python.config" />
       </list>
     </recent_temporary>
   </component>
@@ -409,47 +399,231 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <task id="LOCAL-00022" summary="v.8.3.1. - question with image">
+    <task id="LOCAL-00022" summary="v.8.3.5. - hz">
       <option name="closed" value="true" />
-      <created>1706528423930</created>
+      <created>1706704287867</created>
       <option name="number" value="00022" />
       <option name="presentableId" value="LOCAL-00022" />
       <option name="project" value="LOCAL" />
-      <updated>1706528423930</updated>
+      <updated>1706704287867</updated>
     </task>
-    <task id="LOCAL-00023" summary="v.8.3.3. - git ignore">
+    <task id="LOCAL-00023" summary="v.8.3.5. - fix git ignore">
       <option name="closed" value="true" />
-      <created>1706699519872</created>
+      <created>1706704473707</created>
       <option name="number" value="00023" />
       <option name="presentableId" value="LOCAL-00023" />
       <option name="project" value="LOCAL" />
-      <updated>1706699519872</updated>
+      <updated>1706704473707</updated>
     </task>
-    <task id="LOCAL-00024" summary="v.8.3.4. - deletet unnessesary">
+    <task id="LOCAL-00024" summary="v.8.3.6. - fix states and engine volume bug">
       <option name="closed" value="true" />
-      <created>1706700850944</created>
+      <created>1706788261928</created>
       <option name="number" value="00024" />
       <option name="presentableId" value="LOCAL-00024" />
       <option name="project" value="LOCAL" />
-      <updated>1706700850944</updated>
+      <updated>1706788261928</updated>
     </task>
-    <task id="LOCAL-00025" summary="v.8.3.4. - deleted unnessesary">
+    <task id="LOCAL-00025" summary="v.8.3.6. - fix states and engine volume bug">
       <option name="closed" value="true" />
-      <created>1706700868486</created>
+      <created>1706791695918</created>
       <option name="number" value="00025" />
       <option name="presentableId" value="LOCAL-00025" />
       <option name="project" value="LOCAL" />
-      <updated>1706700868487</updated>
+      <updated>1706791695918</updated>
     </task>
-    <task id="LOCAL-00026" summary="v.8.3.5. - all is ok">
+    <task id="LOCAL-00026" summary="v.8.3.7. - fix states, event and delete message">
       <option name="closed" value="true" />
-      <created>1706703139563</created>
+      <created>1706861559284</created>
       <option name="number" value="00026" />
       <option name="presentableId" value="LOCAL-00026" />
       <option name="project" value="LOCAL" />
-      <updated>1706703139563</updated>
+      <updated>1706861559284</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="v.8.3.8. - final">
+      <option name="closed" value="true" />
+      <created>1706863896815</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1706863896815</updated>
+    </task>
+    <task id="LOCAL-00028" summary="v.8.3.9. - fix message bug">
+      <option name="closed" value="true" />
+      <created>1706865703125</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1706865703125</updated>
+    </task>
+    <task id="LOCAL-00029" summary="v.8.4.0, Data Base">
+      <option name="closed" value="true" />
+      <created>1706868520963</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1706868520963</updated>
+    </task>
+    <task id="LOCAL-00030" summary="v.8.4.1, Data Base fucking">
+      <option name="closed" value="true" />
+      <created>1706877213846</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1706877213846</updated>
+    </task>
+    <task id="LOCAL-00031" summary="v.8.4.2, fix bug engine_volume validation">
+      <option name="closed" value="true" />
+      <created>1707116856507</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1707116856507</updated>
+    </task>
+    <task id="LOCAL-00032" summary="v.8.4.3, number starts with +7">
+      <option name="closed" value="true" />
+      <created>1707127641885</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1707127641885</updated>
+    </task>
+    <task id="LOCAL-00033" summary="v.8.4.4. - support partly">
+      <option name="closed" value="true" />
+      <created>1707221294646</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1707221294646</updated>
+    </task>
+    <task id="LOCAL-00034" summary="v.8.4.4. - support partly">
+      <option name="closed" value="true" />
+      <created>1707223262877</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1707223262877</updated>
+    </task>
+    <task id="LOCAL-00035" summary="v.8.4.5. - support FULL">
+      <option name="closed" value="true" />
+      <created>1707297732387</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1707297732387</updated>
+    </task>
+    <task id="LOCAL-00036" summary="v.8.4.5. - support FULL">
+      <option name="closed" value="true" />
+      <created>1707297871817</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1707297871817</updated>
+    </task>
+    <task id="LOCAL-00037" summary="v.8.4.5. - support FULL">
+      <option name="closed" value="true" />
+      <created>1707301218925</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1707301218925</updated>
+    </task>
+    <task id="LOCAL-00038" summary="v.8.4.5. - support FULL">
+      <option name="closed" value="true" />
+      <created>1707301355214</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1707301355214</updated>
+    </task>
+    <task id="LOCAL-00039" summary="v.8.4.6. - support capcha fix">
+      <option name="closed" value="true" />
+      <created>1707302750953</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1707302750953</updated>
+    </task>
+    <task id="LOCAL-00040" summary="v.8.4.7. - validation">
+      <option name="closed" value="true" />
+      <created>1707310391849</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1707310391849</updated>
+    </task>
+    <task id="LOCAL-00041" summary="v.8.4.7. - validation full">
+      <option name="closed" value="true" />
+      <created>1707388986612</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1707388986612</updated>
+    </task>
+    <task id="LOCAL-00042" summary="v.8.4.8. - validation full">
+      <option name="closed" value="true" />
+      <created>1707396003250</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1707396003250</updated>
+    </task>
+    <task id="LOCAL-00043" summary="v.8.4.9. - db test2">
+      <option name="closed" value="true" />
+      <created>1707467204835</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1707467204835</updated>
+    </task>
+    <task id="LOCAL-00044" summary="v.8.5.0 - Beta">
+      <option name="closed" value="true" />
+      <created>1707473586186</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1707473586186</updated>
+    </task>
+    <task id="LOCAL-00045" summary="v.8.5.0 - Beta">
+      <option name="closed" value="true" />
+      <created>1707473602816</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1707473602816</updated>
+    </task>
+    <task id="LOCAL-00046" summary="v.8.5.0 - Beta">
+      <option name="closed" value="true" />
+      <created>1707479406724</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1707479406724</updated>
+    </task>
+    <task id="LOCAL-00047" summary="v.8.5.0 - Beta">
+      <option name="closed" value="true" />
+      <created>1707480295817</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1707480295817</updated>
+    </task>
+    <task id="LOCAL-00048" summary="v.8.5.0 - Beta">
+      <option name="closed" value="true" />
+      <created>1707481207329</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1707481207329</updated>
+    </task>
+    <task id="LOCAL-00049" summary="v.8.5.1. - Beta">
+      <option name="closed" value="true" />
+      <created>1707726439249</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1707726439249</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -467,28 +641,32 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="1.6" />
-    <MESSAGE value="1.7" />
-    <MESSAGE value="1.8" />
-    <MESSAGE value="1.9" />
-    <MESSAGE value="v2.5" />
-    <MESSAGE value="v.2.6" />
-    <MESSAGE value="v.2.7" />
-    <MESSAGE value="v.2.8" />
-    <MESSAGE value="v.3.0" />
-    <MESSAGE value="v.3.1" />
     <MESSAGE value="v3.5" />
     <MESSAGE value="v3.6" />
     <MESSAGE value="v.4.6" />
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
     <MESSAGE value="v.7.3" />
-    <MESSAGE value="v.8.3.1. - question with image" />
-    <MESSAGE value="v.8.3.3. - git ignore" />
-    <MESSAGE value="v.8.3.4. - deletet unnessesary" />
-    <MESSAGE value="v.8.3.4. - deleted unnessesary" />
-    <MESSAGE value="v.8.3.5. - all is ok" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.3.5. - all is ok" />
+    <MESSAGE value="v.8.3.5. - hz" />
+    <MESSAGE value="v.8.3.5. - fix git ignore" />
+    <MESSAGE value="v.8.3.6. - fix states and engine volume bug" />
+    <MESSAGE value="v.8.3.7. - fix states, event and delete message" />
+    <MESSAGE value="v.8.3.8. - final" />
+    <MESSAGE value="v.8.3.9. - fix message bug" />
+    <MESSAGE value="v.8.4.0, Data Base" />
+    <MESSAGE value="v.8.4.1, Data Base fucking" />
+    <MESSAGE value="v.8.4.2, fix bug engine_volume validation" />
+    <MESSAGE value="v.8.4.3, number starts with +7" />
+    <MESSAGE value="v.8.4.4. - support partly" />
+    <MESSAGE value="v.8.4.5. - support FULL" />
+    <MESSAGE value="v.8.4.6. - support capcha fix" />
+    <MESSAGE value="v.8.4.7. - validation" />
+    <MESSAGE value="v.8.4.7. - validation full" />
+    <MESSAGE value="v.8.4.8. - validation full" />
+    <MESSAGE value="v.8.4.9. - db test2" />
+    <MESSAGE value="v.8.5.0 - Beta" />
+    <MESSAGE value="v.8.5.1. - Beta" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.1. - Beta" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -503,7 +681,7 @@
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="event" />
-        <watch expression="event" />
+        <watch expression="event" language="Python" />
       </configuration>
     </watches-manager>
   </component>
