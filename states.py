@@ -49,3 +49,7 @@ class User(StatesGroup):
     STATE_PREVIEW_PHOTO = State()
     STATE_CAR_PHOTO = State()
     STATE_SEND = State()
+    # support
+    STATE_SUPPORT_VALIDATION = State()
+    STATE_SUPPORT_MESSAGE = State()
+    STATE_SUPPORT_END = State()

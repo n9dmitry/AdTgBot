@@ -3,6 +3,8 @@ from aiogram.types import InputMediaPhoto
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+import random
+import datetime
 import uuid
 import asyncio
 import openpyxl
@@ -47,6 +49,61 @@ class CarBotHandler:
         self.lock = asyncio.Lock()
 
 
+# Команды
+
+    async def restart(self, event, state):
+        # В этом методе вы должны определить логику перезапуска вашего бота
+        # # await self.m.delete()
+        await state.finish()  # Завершаем текущее состояние FSM
+        await event.answer("Бот перезапущен.")  # Отправляем сообщение о перезапуске
+        await self.start(event, state)  # Запускаем начальное действие вашего бота
+
+
+    async def support(self, event, state):
+        await state.finish()
+        self.secret_number = str(random.randint(100, 999))
+
+        await event.answer(f"Нашли баг? Давайте отправим сообщение разработчикам! "
+                             f"Но перед этим введите проверку. Докажите что вы не робот. Напишите число {self.secret_number}:")
+        await state.set_state(User.STATE_SUPPORT_VALIDATION)
+
+    async def support_validation(self, event, state):
+        if event.text.isdigit() and event.text == self.secret_number:
+            await event.reply(f"Проверка пройдена успешно!")
+            await asyncio.sleep(1)
+            await event.answer(f"Опишите техническую проблему в деталях для разработчиков: ")
+            await state.set_state(User.STATE_SUPPORT_MESSAGE)
+        else:
+            await event.answer(f"Попробуйте ещё раз!")
+            await asyncio.sleep(1)
+            await cmd_support(event, state)
+
+    async def support_message(self, event: types.Message, state):
+        # Получаем текущую дату и время
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Формируем строку для записи в файл
+        message_to_write = f"""
+        Дата: {current_time}
+        Имя: {event.from_user.full_name}
+        Telegram @{event.from_user.username or event.from_user.id} 
+      
+        Сообщение: {event.text}
+        ...
+            """
+
+        # Открываем файл для записи и записываем сообщение
+        with open("support.txt", "a") as file:
+            file.write(message_to_write)
+        keyboard = create_keyboard(['Перезагрузить бота'])
+        await event.reply("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!", reply_markup=keyboard)
+        await state.set_state(User.STATE_SUPPORT_END)
+    async def support_end(selfself, event, state):
+        if event.text == 'Перезагрузить бота':
+            await cmd_restart(event, state)
+        await state.finish()
+
+
 
 # Начало работы бота
 
@@ -56,7 +113,7 @@ class CarBotHandler:
             self.m = await event.answer_photo(image_hello,
                                      caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
         await asyncio.sleep(2)
-        await self.m.delete()
+        # # await self.m.delete()
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         image_path = ImageDirectory.car_brand  # Путь к вашему изображению
@@ -67,9 +124,10 @@ class CarBotHandler:
 
 
 
+
     async def get_car_brand(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
 
         selected_brand = event.text
         valid_brands = dict_car_brands_and_models
@@ -95,7 +153,7 @@ class CarBotHandler:
 
     async def get_car_model(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         car_brand = user_data.get("car_brand", "")
         valid_models = dict_car_brands_and_models.get(car_brand, [])
 
@@ -117,7 +175,7 @@ class CarBotHandler:
 
     async def get_car_year(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # # await self.m.delete()
 
         if await validate_year(event.text):
             user_data["car_year"] = event.text
@@ -136,7 +194,7 @@ class CarBotHandler:
 
     async def get_car_body_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_body_types):
             user_data["car_body_type"] = event.text
             keyboard = create_keyboard(dict_car_engine_types)
@@ -155,7 +213,7 @@ class CarBotHandler:
 
     async def get_car_engine_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_engine_types):
             user_data["car_engine_type"] = event.text
             # Добавляем кнопки на основе словаря
@@ -174,7 +232,7 @@ class CarBotHandler:
 
     async def get_car_engine_volume(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         try:
             if "," in event.text:
                 event.text = event.text.replace(',', '.')
@@ -184,6 +242,7 @@ class CarBotHandler:
                 user_data["car_engine_volume"] = event.text
 
                 # Добавляем кнопки на основе словаря
+
                 await state.update_data(user_data=user_data)
                 # await self.delete_previous_question(event)
                 image_path = ImageDirectory.car_power
@@ -200,7 +259,7 @@ class CarBotHandler:
 
     async def get_car_power(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_car_power(event.text):
             user_data["car_power"] = event.text
             keyboard = create_keyboard(dict_car_transmission_types)
@@ -219,7 +278,7 @@ class CarBotHandler:
 
     async def get_car_transmission_type(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_transmission_types):
             user_data["car_transmission_type"] = event.text
             keyboard = create_keyboard(dict_car_colors)
@@ -238,7 +297,7 @@ class CarBotHandler:
 
     async def get_car_color(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_colors):
             user_data["car_color"] = event.text
             keyboard = create_keyboard(dict_car_mileages)
@@ -257,7 +316,7 @@ class CarBotHandler:
 
     async def get_car_mileage(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_car_mileage(event.text):
             user_data["car_mileage"] = event.text
             keyboard = create_keyboard(dict_car_document_statuses)
@@ -276,7 +335,7 @@ class CarBotHandler:
 
     async def get_car_document_status(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_document_statuses):
 
             user_data["car_document_status"] = event.text
@@ -296,7 +355,7 @@ class CarBotHandler:
 
     async def get_car_owners(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_owners):
             user_data["car_owners"] = event.text
             keyboard = create_keyboard(dict_car_customs_cleared)
@@ -315,7 +374,7 @@ class CarBotHandler:
 
     async def get_car_customs_cleared(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_customs_cleared):
             user_data["car_customs_cleared"] = event.text
             keyboard = create_keyboard(dict_car_conditions)
@@ -334,7 +393,7 @@ class CarBotHandler:
 
     async def get_car_condition(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_car_conditions):
             user_data["car_condition"] = event.text
             await state.update_data(user_data=user_data)
@@ -352,25 +411,30 @@ class CarBotHandler:
 
     async def get_car_description(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
-        if await validate_car_description(event.text):
-            user_data["car_description"] = event.text
-            keyboard = create_keyboard(dict_currency)
-            await state.update_data(user_data=user_data)
-#             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_currency
-            with open(image_path, "rb") as image:
-                self.m = await event.answer_photo(image, caption="Выберите валюту:", reply_markup=keyboard)
-            # self.m = await event.answer("Выберите валюту:", reply_markup=keyboard)
-            await state.set_state(User.STATE_SELECT_CURRENCY)
+        # await self.m.delete()
+
+        if await validate_length_text(event):
+            if await validate_car_description(event.text):
+                user_data["car_description"] = event.text
+                keyboard = create_keyboard(dict_currency)
+                await state.update_data(user_data=user_data)
+    #             await self.delete_previous_question(event)
+                image_path = ImageDirectory.car_currency
+                with open(image_path, "rb") as image:
+                    self.m = await event.answer_photo(image, caption="Выберите валюту:", reply_markup=keyboard)
+                # self.m = await event.answer("Выберите валюту:", reply_markup=keyboard)
+                await state.set_state(User.STATE_SELECT_CURRENCY)
+            else:
+    #             await self.delete_previous_question(event)
+                self.m = await event.answer("Пожалуйста, введите корректное описание.")
+                await state.set_state(User.STATE_CAR_DESCRIPTION)
         else:
-#             await self.delete_previous_question(event)
-            self.m = await event.answer("Пожалуйста, введите корректное описание.")
+            self.m = await event.answer("Ваше описание сильно большое. Напишите до ~500 символов:")
             await state.set_state(User.STATE_CAR_DESCRIPTION)
 
     async def select_currency(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
         if await validate_button_input(event.text, dict_currency):
             user_data["currency"] = event.text
             await state.update_data(user_data=user_data)
@@ -388,7 +452,7 @@ class CarBotHandler:
 
     async def get_car_price(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
 
         if await validate_car_price(event.text):
             user_data["car_price"] = event.text
@@ -406,7 +470,7 @@ class CarBotHandler:
 
     async def get_car_location(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
 
         if await validate_car_location(event.text):
             user_data["car_location"] = event.text
@@ -424,7 +488,7 @@ class CarBotHandler:
 
     async def get_seller_name(self, event, state):
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
 
         if await validate_name(event.text) is True:
             user_data["seller_name"] = event.text
@@ -432,7 +496,7 @@ class CarBotHandler:
 #             await self.delete_previous_question(event)
             image_path = ImageDirectory.seller_phone
             with open(image_path, "rb") as image:
-                self.m = await event.answer_photo(image, caption="Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
+                self.m = await event.answer_photo(image, caption="Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
             # self.m = await event.answer("Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
             await state.set_state(User.STATE_SELLER_PHONE)
         else:
@@ -441,23 +505,80 @@ class CarBotHandler:
             await state.set_state(User.STATE_SELLER_NAME)
 
     async def get_seller_phone(self, event, state):
+
         user_data = (await state.get_data()).get("user_data", {})
-        await self.m.delete()
+        # await self.m.delete()
 
         if await validate_phone_number(event.text) is True:
+            event.text = '+7' + event.text[1:] if event.text.startswith('8') else event.text
             user_data["seller_phone"] = event.text
             await state.update_data(user_data=user_data)
-#             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_photos
-            with open(image_path, "rb") as image:
-                self.m = await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук")
-            # self.m = await event.answer("Добавьте фотографии авто")
-            await state.set_state(User.STATE_CAR_PHOTO)
+            print(user_data)
+            print(await validate_final_length(event, state, user_data))
+            if await validate_final_length(event, state, user_data):
+                print(validate_final_length)
+    #             await self.delete_previous_question(event)
+                image_path = ImageDirectory.car_photos
+                with open(image_path, "rb") as image:
+                    self.m = await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук (За один раз!)")
+                # self.m = await event.answer("Добавьте фотографии авто")
+                await state.set_state(User.STATE_CAR_PHOTO)
+            else:
+                await event.reply(f"Ваше сообщение получилось сильно большим! \nПерезагрузите бота и напишите объявление заново.")
+
         else:
 #             await self.delete_previous_question(event)
             self.m = await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
             await state.set_state(User.STATE_SELLER_PHONE)
+    async def write_to_excel(self, event, user_data):
+        file_path = 'db.xlsx'
 
+        # Проверяем, существует ли файл Excel
+        if os.path.exists(file_path):
+            workbook = openpyxl.load_workbook(file_path)
+        else:
+            workbook = openpyxl.Workbook()
+
+        sheet = workbook.active
+
+        # Проверяем, нужно ли добавить заголовки
+        if sheet.max_row == 1:
+            headers = [
+                'Car Brand-Model', 'Year', 'Mileage (km)', 'Transmission Type',
+                'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
+                'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
+                'Condition', 'Additional Description', 'Price', 'Currency',
+                'Location', 'Seller Name', 'Seller Phone', 'Telegram'
+            ]
+            sheet.append(headers)
+
+        row_data = [
+            user_data.get('user_data').get('car_brand', '') + '-' + user_data.get('user_data').get('car_model', ''),
+            user_data.get('user_data').get('car_year', ''),
+            user_data.get('user_data').get('car_mileage', ''),
+            user_data.get('user_data').get('car_transmission_type', ''),
+            user_data.get('user_data').get('car_body_type', ''),
+            user_data.get('user_data').get('car_engine_type', ''),
+            user_data.get('user_data').get('car_engine_volume', ''),
+            user_data.get('user_data').get('car_power', ''),
+            user_data.get('user_data').get('car_color', ''),
+            user_data.get('user_data').get('car_document_status', ''),
+            user_data.get('user_data').get('car_owners', ''),
+            'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет',
+            user_data.get('user_data').get('car_condition', ''),
+            user_data.get('user_data').get('car_description', ''),
+            user_data.get('user_data').get('car_price', ''),
+            user_data.get('user_data').get('currency', ''),
+            user_data.get('user_data').get('car_location', ''),
+            user_data.get('user_data').get('seller_name', ''),
+            user_data.get('user_data').get('seller_phone', ''),
+            event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
+        ]
+
+        sheet.append(row_data)
+
+        # Сохраняем файл
+        workbook.save(file_path)
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
         photo_id = event.photo[-1].file_id
@@ -489,6 +610,7 @@ class CarBotHandler:
 
 
         print(user_data)
+        print(len(caption))
         photo_uuid = str(uuid.uuid4())
 
         if "sent_photos" not in user_data:
@@ -498,7 +620,7 @@ class CarBotHandler:
             {"file_id": photo_id, "uuid": photo_uuid})
         buffered_photos.append(InputMediaPhoto(
             media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
-        # await self.m.delete()
+        # # await self.m.delete()
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
@@ -511,50 +633,63 @@ class CarBotHandler:
         )
 
 
-        def check_duplicate_rows(ws, data_row):
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=len(data_row)):
-                if all([str(cell.value) == str(data_row[i]) for i, cell in enumerate(row)]):
-                    return True
-            return False
 
-        # Save user_data to Excel file
-        excel_file_path = "db.xlsx"
-        wb = openpyxl.load_workbook(excel_file_path) if os.path.exists(excel_file_path) else openpyxl.Workbook()
-        ws = wb.active
-        sheet = wb.active
-        column_headers = [
-            'Название', 'Модель', 'Год', 'Пробег (км.)', 'Тип КПП', 'Кузов', 'Тип двигателя',
-            'Объем двигателя (л.)', 'Мощность (л.с.)', 'Цвет', 'Статус документов', 'Количество владельцев',
-            'Растаможка', 'Состояние', 'Дополнительная информация', 'Цена', 'Местоположение',
-            'Продавец', 'Телефон продавца', 'Телеграм'
+        self.m = await event.answer("Фото добавлено", reply_markup=keyboard)
+
+        self.db_fix = user_data
+        await state.finish()
+
+
+    async def add_data_to_excel(self, event):
+        file_path = 'db.xlsx'
+
+        row_data = [
+            self.db_fix.get('user_data').get('car_brand', ''),
+            self.db_fix.get('user_data').get('car_model', ''),
+            self.db_fix.get('user_data').get('car_year', ''),
+            self.db_fix.get('user_data').get('car_mileage', ''),
+            self.db_fix.get('user_data').get('car_transmission_type', ''),
+            self.db_fix.get('user_data').get('car_body_type', ''),
+            self.db_fix.get('user_data').get('car_engine_type', ''),
+            self.db_fix.get('user_data').get('car_engine_volume', ''),
+            self.db_fix.get('user_data').get('car_power', ''),
+            self.db_fix.get('user_data').get('car_color', ''),
+            self.db_fix.get('user_data').get('car_document_status', ''),
+            self.db_fix.get('user_data').get('car_owners', ''),
+            self.db_fix.get('user_data').get('car_customs_cleared'),
+            self.db_fix.get('user_data').get('car_condition', ''),
+            self.db_fix.get('user_data').get('car_description', ''),
+            self.db_fix.get('user_data').get('car_price', ''),
+            self.db_fix.get('user_data').get('currency', ''),
+            self.db_fix.get('user_data').get('car_location', ''),
+            self.db_fix.get('user_data').get('seller_name', ''),
+            self.db_fix.get('user_data').get('seller_phone', ''),
+            event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
         ]
 
-        data_row = [user_data['user_data'].get(field, '') for field in [
-            'car_brand', 'car_model', 'car_year', 'car_mileage', 'car_transmission_type',
-            'car_body_type', 'car_engine_type', 'car_engine_volume', 'car_power', 'car_color',
-            'car_document_status', 'car_owners', 'car_customs_cleared', 'car_condition',
-            'car_description', 'car_price', 'car_location', 'seller_name', 'seller_phone'
-        ]]
-        data_row.append(event.from_user.username if event.from_user.username is not None else 'по номеру телефона')
+        # Проверяем, существует ли файл Excel
+        if os.path.exists(file_path):
+            workbook = openpyxl.load_workbook(file_path)
+        else:
+            workbook = openpyxl.Workbook()
+        sheet = workbook.active
 
-        if not ws['A1'].value:  # Check if the headers are not already written
-            for i, header in enumerate(column_headers, start=1):
-                ws.cell(row=1, column=i).value = header
+        # Проверяем, нужно ли добавить заголовки
+        if sheet.max_row == 1:
+            headers = [
+                'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
+                'Тип кузова', 'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)',
+                'Цвет', 'Статус документа', 'Количество владельцев', 'Растаможен',
+                'Состояние', 'Дополнительное описание', 'Цена', 'Валюта',
+                'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
+            ]
+            sheet.append(headers)
 
-        # Check for duplicate rows before appending
-        if not check_duplicate_rows(ws, data_row):
-            sheet.append(data_row)
-
-        # Specify the path and filename for the Excel file
-        wb.save(excel_file_path)
-
-
-        self.m = await event.reply("Фото добавлено", reply_markup=keyboard)
-        await state.finish()
+        sheet.append(row_data)
+        workbook.save(file_path)
 
     async def preview_advertisement(self, event):
         await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
-
 
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),
@@ -563,13 +698,17 @@ class CarBotHandler:
         await event.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=keyboard)
 
     async def send_advertisement(self, event):
-        user_id = event.from_user.id
-        await self.m.delete()
+        # user_id = event.from_user.id
+        # await self.m.delete()
         async with lock:
+            user_id = event.from_user.id
+            await self.add_data_to_excel(event)
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            await bot.send_message(user_id, "Объявление отправлено в канал!")
+            keyboard = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
+            await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=keyboard)
 
             buffered_photos.clear()
+
 
     async def fill_again(self, event, state):
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
@@ -577,7 +716,8 @@ class CarBotHandler:
         with open(image_path, "rb") as image:
             self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
-        buffered_photos.clear()
+        async with lock:
+            buffered_photos.clear()
         await state.set_state(User.STATE_CAR_BRAND)
 
 
@@ -588,9 +728,34 @@ lock = asyncio.Lock()
 buffered_photos = []
 
 
+@dp.message_handler(lambda message: message.text == "Добавить ещё объявление", commands=['restart'], state='*')
+async def cmd_restart(event: types.Message, state: FSMContext):
+    await car_bot.restart(event, state)
+
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
     await car_bot.start(event, state)
+
+#support
+@dp.message_handler(commands=['support'], state='*')
+async def cmd_support(event: types.Message, state: FSMContext):
+    await car_bot.support(event, state)
+
+@dp.message_handler(state=User.STATE_SUPPORT_VALIDATION)
+async def support_validation(event: types.Message, state: FSMContext):
+    await car_bot.support_validation(event, state)
+
+@dp.message_handler(state=User.STATE_SUPPORT_MESSAGE)
+async def support_message(event: types.Message, state: FSMContext):
+    await car_bot.support_message(event, state)
+
+@dp.message_handler(state=User.STATE_SUPPORT_END)
+async def support_end(event: types.Message, state: FSMContext):
+    await car_bot.restart(event, state)
+
+
+# end support
+
 
 
 @dp.message_handler(state=User.STATE_CAR_BRAND)
@@ -695,6 +860,7 @@ async def get_seller_phone_handler(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=User.STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(event: types.Message, state: FSMContext):
+    print('STATE:', state, event)
     await car_bot.handle_photos(event, state)
 
 
@@ -704,9 +870,8 @@ async def preview_advertisement(event: types.Message):
 
 
 @dp.message_handler(lambda message: message.text == "Отправить в канал")
-async def send_advertisement(event: types.Message):
+async def send_advertisement(event: types.Message, state: FSMContext):
     await car_bot.send_advertisement(event)
-
 
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(event: types.Message, state: FSMContext):
