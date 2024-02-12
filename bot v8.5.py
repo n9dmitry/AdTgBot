@@ -530,56 +530,7 @@ class CarBotHandler:
 #             await self.delete_previous_question(event)
             self.m = await event.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
             await state.set_state(User.STATE_SELLER_PHONE)
-    # async def write_to_excel(self, event, user_data):
-    #     file_path = 'db.xlsx'
-    #
-    #     # Проверяем, существует ли файл Excel
-    #     if os.path.exists(file_path):
-    #         workbook = openpyxl.load_workbook(file_path)
-    #     else:
-    #         workbook = openpyxl.Workbook()
-    #
-    #     sheet = workbook.active
-    #
-    #     # Проверяем, нужно ли добавить заголовки
-    #     if sheet.max_row == 1:
-    #         headers = [
-    #             'Data', 'Car Brand-Model', 'Year', 'Mileage (km)', 'Transmission Type',
-    #             'Body Type', 'Engine Type', 'Engine Volume (L)', 'Power (hp)',
-    #             'Color', 'Document Status', 'Number of Owners', 'Customs Cleared',
-    #             'Condition', 'Additional Description', 'Price', 'Currency',
-    #             'Location', 'Seller Name', 'Seller Phone', 'Telegram'
-    #         ]
-    #         sheet.append(headers)
-    #
-    #     row_data = [
-    #
-    #         user_data.get('user_data').get('car_brand', '') + '-' + user_data.get('user_data').get('car_model', ''),
-    #         user_data.get('user_data').get('car_year', ''),
-    #         user_data.get('user_data').get('car_mileage', ''),
-    #         user_data.get('user_data').get('car_transmission_type', ''),
-    #         user_data.get('user_data').get('car_body_type', ''),
-    #         user_data.get('user_data').get('car_engine_type', ''),
-    #         user_data.get('user_data').get('car_engine_volume', ''),
-    #         user_data.get('user_data').get('car_power', ''),
-    #         user_data.get('user_data').get('car_color', ''),
-    #         user_data.get('user_data').get('car_document_status', ''),
-    #         user_data.get('user_data').get('car_owners', ''),
-    #         'Да' if user_data.get('user_data').get('car_customs_cleared') else 'Нет',
-    #         user_data.get('user_data').get('car_condition', ''),
-    #         user_data.get('user_data').get('car_description', ''),
-    #         user_data.get('user_data').get('car_price', ''),
-    #         user_data.get('user_data').get('currency', ''),
-    #         user_data.get('user_data').get('car_location', ''),
-    #         user_data.get('user_data').get('seller_name', ''),
-    #         user_data.get('user_data').get('seller_phone', ''),
-    #         event.from_user.username if event.from_user.username is not None else 'по номеру телефона',
-    #     ]
-    #
-    #     sheet.append(row_data)
-    #
-    #     # Сохраняем файл
-    #     workbook.save(file_path)
+
     async def handle_photos(self, event, state):
         user_data = await state.get_data('user_data')
         photo_id = event.photo[-1].file_id
