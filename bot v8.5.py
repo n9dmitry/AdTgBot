@@ -535,6 +535,9 @@ class CarBotHandler:
         user_data = await state.get_data('user_data')
         photo_id = event.photo[-1].file_id
 
+
+        self.new_id = str(uuid.uuid4().int)[:6]
+
         caption = (
             f"🛞 <b>#{user_data.get('user_data').get('car_brand')}-{user_data.get('user_data').get('car_model')}</b>\n\n"
             f"   <b>-Год:</b> {user_data.get('user_data', {}).get('car_year')}\n"
@@ -555,21 +558,18 @@ class CarBotHandler:
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{event.from_user.username if event.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-            f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)"
+            f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)\n\n"
+            f"<b>ID объявления: #{self.new_id}</b>"
         )
 
 
 
 
-        print(user_data)
-        print(len(caption))
-        photo_uuid = str(uuid.uuid4())
-
         if "sent_photos" not in user_data:
             user_data["sent_photos"] = []
 
         user_data["sent_photos"].append(
-            {"file_id": photo_id, "uuid": photo_uuid})
+            {"file_id": photo_id,})
         buffered_photos.append(InputMediaPhoto(
             media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
         # # await self.m.delete()
@@ -588,14 +588,18 @@ class CarBotHandler:
 
         self.m = await event.answer("Фото добавлено", reply_markup=keyboard)
 
+
         self.db_fix = user_data
+
         await state.finish()
 
 
     async def add_data_to_excel(self, event):
         file_path = 'db.xlsx'
 
+
         row_data = [
+            self.new_id,
             datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             self.db_fix.get('user_data').get('car_brand', ''),
             self.db_fix.get('user_data').get('car_model', ''),
@@ -630,7 +634,7 @@ class CarBotHandler:
         # Проверяем, нужно ли добавить заголовки
         if sheet.max_row == 1:
             headers = [
-                'Дата', 'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
+                'ID','Дата', 'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
                 'Тип кузова', 'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)',
                 'Цвет', 'Статус документа', 'Количество владельцев', 'Растаможен',
                 'Состояние', 'Дополнительное описание', 'Цена', 'Валюта',
@@ -673,6 +677,13 @@ class CarBotHandler:
             buffered_photos.clear()
         await state.set_state(User.STATE_CAR_BRAND)
 
+    async def add_more(self, event, state):
+        await car_bot.restart(event, state)
+
+    async def promotion(self, event, state):
+        keyboard = create_keyboard(['Перезагрузить бота'])
+        await event.reply("Чтобы купить закреп напишите @n9dmitry", reply_markup=keyboard)
+
 
 car_bot = CarBotHandler()
 bot = Bot(token=API_TOKEN)
@@ -681,7 +692,11 @@ lock = asyncio.Lock()
 buffered_photos = []
 
 
-@dp.message_handler(lambda message: message.text == "Добавить ещё объявление", commands=['restart'], state='*')
+@dp.message_handler(commands=['restart'], state='*')
+async def cmd_restart(event: types.Message, state: FSMContext):
+    await car_bot.restart(event, state)
+
+@dp.message_handler(lambda message: message.text == "Перезагрузить бота", state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
@@ -830,8 +845,13 @@ async def send_advertisement(event: types.Message, state: FSMContext):
 async def fill_again(event: types.Message, state: FSMContext):
     await car_bot.fill_again(event, state)
 
+@dp.message_handler(lambda message: message.text == "Добавить ещё объявление")
+async def add_more(event: types.Message, state: FSMContext):
+    await car_bot.add_more(event, state)
 
-
+@dp.message_handler(lambda message: message.text == "Ускорить продажу")
+async def promotion(event: types.Message, state: FSMContext):
+    await car_bot.promotion(event, state)
 
 
 # старт бота
