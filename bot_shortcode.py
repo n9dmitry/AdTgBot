@@ -1,3 +1,8 @@
+# Аиограм 3.3
+from aiogram import Router, F
+
+
+# Аиограм 2.4
 from aiogram import Bot, Dispatcher, types, executor
 from aiogram.types import InputMediaPhoto
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
