@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.2. - Beta + ad id">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.2. - Beta + short code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/short_code_test2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot_shortcode.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot_shortcode.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -400,14 +399,6 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <task id="LOCAL-00024" summary="v.8.3.6. - fix states and engine volume bug">
-      <option name="closed" value="true" />
-      <created>1706788261928</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1706788261928</updated>
-    </task>
     <task id="LOCAL-00025" summary="v.8.3.6. - fix states and engine volume bug">
       <option name="closed" value="true" />
       <created>1706791695918</created>
@@ -624,7 +615,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707741493805</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="v.8.5.2. - Beta + short code">
+      <option name="closed" value="true" />
+      <created>1707811343702</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1707811343702</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -642,7 +641,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v3.6" />
     <MESSAGE value="v.4.6" />
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
@@ -667,7 +665,8 @@
     <MESSAGE value="v.8.5.0 - Beta" />
     <MESSAGE value="v.8.5.1. - Beta" />
     <MESSAGE value="v.8.5.2. - Beta + ad id" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.2. - Beta + ad id" />
+    <MESSAGE value="v.8.5.2. - Beta + short code" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.2. - Beta + short code" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
