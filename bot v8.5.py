@@ -720,11 +720,7 @@ async def support_message(event: types.Message, state: FSMContext):
 @dp.message_handler(state=User.STATE_SUPPORT_END)
 async def support_end(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
-
-
 # end support
-
-
 
 @dp.message_handler(state=User.STATE_CAR_BRAND)
 async def process_brand_selection(event: types.Message, state: FSMContext):
