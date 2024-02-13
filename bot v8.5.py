@@ -692,13 +692,11 @@ lock = asyncio.Lock()
 buffered_photos = []
 
 
+@dp.message_handler(lambda message: message.text == "Перезагрузить бота", state='*')
 @dp.message_handler(commands=['restart'], state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
-@dp.message_handler(lambda message: message.text == "Перезагрузить бота", state='*')
-async def cmd_restart(event: types.Message, state: FSMContext):
-    await car_bot.restart(event, state)
 
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):

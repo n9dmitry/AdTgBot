@@ -1,17 +1,14 @@
-# Аиограм 3.3
-from aiogram import Router, F
-
-
-# Аиограм 2.4
-from aiogram import Bot, Dispatcher, types, executor
+import asyncio
+from aiogram import Bot, Dispatcher, F, Router, html, types
 from aiogram.types import InputMediaPhoto
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher import FSMContext
+from aiogram.enums import ParseMode
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.client.session.aiohttp import AiohttpSession
 import random
 import datetime
 import uuid
-import asyncio
 import openpyxl
 from config import *
 from states import *
@@ -160,7 +157,7 @@ class CarBotHandler:
         user_data["sent_photos"].append(
             {"file_id": photo_id,})
         buffered_photos.append(InputMediaPhoto(
-            media=photo_id, caption=caption, parse_mode=types.ParseMode.HTML))
+            media=photo_id, caption=caption, parse_mode=ParseMode.HTML))
         if len(buffered_photos) > 1:
             for i in range(len(buffered_photos) - 1):
                 buffered_photos[i].caption = None
@@ -263,72 +260,76 @@ class CarBotHandler:
 
 
 car_bot = CarBotHandler()
-bot = Bot(token=API_TOKEN)
+session = AiohttpSession()
+bot_settings = {"session": session, "parse_mode": ParseMode.HTML}
+bot = Bot(token=API_TOKEN, **bot_settings)
 dp = Dispatcher(bot, storage=MemoryStorage())
+router = Router(name=__name__)
 lock = asyncio.Lock()
 buffered_photos = []
+dp.include_router(router)
 
 
-@dp.message_handler(commands=['restart'], state='*')
+@router.message(commands=['restart'], state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
-@dp.message_handler(lambda message: message.text == "Перезагрузить бота", state='*')
+@router.message(lambda message: message.text == "Перезагрузить бота", state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 
-@dp.message_handler(commands=["start"])
+@router.message(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
     await car_bot.start(event, state)
 
 #support
-@dp.message_handler(commands=['support'], state='*')
+@router.message(commands=['support'], state='*')
 async def cmd_support(event: types.Message, state: FSMContext):
     await car_bot.support(event, state)
 
-@dp.message_handler(state=User.STATE_SUPPORT_VALIDATION)
+@router.message(state=User.STATE_SUPPORT_VALIDATION)
 async def support_validation(event: types.Message, state: FSMContext):
     await car_bot.support_validation(event, state)
 
-@dp.message_handler(state=User.STATE_SUPPORT_MESSAGE)
+@router.message(state=User.STATE_SUPPORT_MESSAGE)
 async def support_message(event: types.Message, state: FSMContext):
     await car_bot.support_message(event, state)
 
-@dp.message_handler(state=User.STATE_SUPPORT_END)
+@router.message(state=User.STATE_SUPPORT_END)
 async def support_end(event: types.Message, state: FSMContext):
     await car_bot.restart(event, state)
 # end support
 
-@dp.message_handler(state=User.STATE_CAR_BRAND)
+@router.message(state=User.STATE_CAR_BRAND)
 async def process_brand_selection(event: types.Message, state: FSMContext):
     await car_bot.get_car_brand(event, state)
 
-@dp.message_handler(state=User.STATE_CAR_PHOTO, content_types=['photo'])
+@router.message(state=User.STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(event: types.Message, state: FSMContext):
     await car_bot.handle_photos(event, state)
 
-@dp.message_handler(lambda message: message.text == "Следущий шаг")
+@router.message(lambda message: message.text == "Следущий шаг")
 async def preview_advertisement(event: types.Message):
     await car_bot.preview_advertisement(event)
 
 
-@dp.message_handler(lambda message: message.text == "Отправить в канал")
+@router.message(lambda message: message.text == "Отправить в канал")
 async def send_advertisement(event: types.Message, state: FSMContext):
     await car_bot.send_advertisement(event)
 
-@dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
+@router.message(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(event: types.Message, state: FSMContext):
     await car_bot.fill_again(event, state)
 
-@dp.message_handler(lambda message: message.text == "Добавить ещё объявление")
+@router.message(lambda message: message.text == "Добавить ещё объявление")
 async def add_more(event: types.Message, state: FSMContext):
     await car_bot.add_more(event, state)
 
-@dp.message_handler(lambda message: message.text == "Ускорить продажу")
+@router.message(lambda message: message.text == "Ускорить продажу")
 async def promotion(event: types.Message, state: FSMContext):
     await car_bot.promotion(event, state)
 
 
 # старт бота
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run()
