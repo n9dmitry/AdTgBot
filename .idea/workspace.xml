@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.2. - Beta + short code">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.3. - Beta + short code try aiogram 3x">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot_shortcode.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot_shortcode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot_shortcode.py" beforeDir="false" afterPath="$PROJECT_DIR$/try to 3x.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,6 +58,7 @@
     "Python.short_code_test.executor": "Run",
     "Python.short_code_test2.executor": "Run",
     "Python.states.executor": "Run",
+    "Python.try to 3x.executor": "Run",
     "Python.validation.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -82,7 +84,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bot v8.5">
+  <component name="RunManager" selected="Python.try to 3x">
     <configuration name="bot v8.5" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -97,28 +99,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot v8.5.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="bot_shortcode" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="AdTgBot" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot_shortcode.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -194,6 +174,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="try to 3x" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AdTgBot" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/try to 3x.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="validation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -218,8 +220,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.try to 3x" />
         <item itemvalue="Python.bot v8.5" />
-        <item itemvalue="Python.bot_shortcode" />
         <item itemvalue="Python.states" />
         <item itemvalue="Python.validation" />
         <item itemvalue="Python.short_code_test2" />
@@ -401,14 +403,6 @@
       <option name="presentableId" value="LOCAL-00021" />
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
-    </task>
-    <task id="LOCAL-00026" summary="v.8.3.7. - fix states, event and delete message">
-      <option name="closed" value="true" />
-      <created>1706861559284</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1706861559284</updated>
     </task>
     <task id="LOCAL-00027" summary="v.8.3.8. - final">
       <option name="closed" value="true" />
@@ -626,7 +620,15 @@
       <option name="project" value="LOCAL" />
       <updated>1707817392906</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="v.8.5.3. - Beta + short code try aiogram 3x">
+      <option name="closed" value="true" />
+      <created>1707827908448</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1707827908448</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -644,7 +646,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.4.6" />
     <MESSAGE value="v.4.7" />
     <MESSAGE value="v.7.2" />
     <MESSAGE value="v.7.3" />
@@ -669,7 +670,8 @@
     <MESSAGE value="v.8.5.1. - Beta" />
     <MESSAGE value="v.8.5.2. - Beta + ad id" />
     <MESSAGE value="v.8.5.2. - Beta + short code" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.2. - Beta + short code" />
+    <MESSAGE value="v.8.5.3. - Beta + short code try aiogram 3x" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.3. - Beta + short code try aiogram 3x" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
