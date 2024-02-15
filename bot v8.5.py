@@ -52,11 +52,9 @@ class CarBotHandler:
 # Команды
 
     async def restart(self, event, state):
-        # В этом методе вы должны определить логику перезапуска вашего бота
-        # # await self.m.delete()
-        await state.finish()  # Завершаем текущее состояние FSM
-        await event.answer("Бот перезапущен.")  # Отправляем сообщение о перезапуске
-        await self.start(event, state)  # Запускаем начальное действие вашего бота
+        await state.finish()
+        await event.answer("Бот перезапущен.")
+        await self.start(event, state)
 
 
     async def support(self, event, state):
@@ -81,7 +79,6 @@ class CarBotHandler:
     async def support_message(self, event: types.Message, state):
         # Получаем текущую дату и время
         current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
         # Формируем строку для записи в файл
         message_to_write = f"""
         Дата: {current_time}
