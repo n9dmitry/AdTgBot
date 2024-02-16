@@ -6,6 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.filters import Command, CommandStart
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 import random
 import datetime
 import uuid
@@ -16,11 +17,6 @@ from validation import *
 import json
 from enumlist import *
 
-async def main():
-    dp = Dispatcher()
-    dp.include_router(router)
-    await dp.start_polling(bot)
-
 router = Router(name=__name__)
 buffered_photos = []
 lock = asyncio.Lock()
@@ -28,6 +24,13 @@ storage=MemoryStorage()
 session = AiohttpSession()
 bot_settings = {"session": session, "parse_mode": ParseMode.HTML}
 bot = Bot(token=API_TOKEN, parse_mode=ParseMode.HTML)
+
+async def main():
+    dp = Dispatcher()
+    dp.include_router(router)
+    await dp.start_polling(bot)
+
+
 
 # Загрузка JSON в начале скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
@@ -49,8 +52,20 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 
 
 # Создание клавиатуры
+# def create_keyboard(button_texts, resize_keyboard=True):
+#     keyboard = ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=2)
+#     buttons = [KeyboardButton(text=text) for text in button_texts]
+#     keyboard.add(*buttons)
+#     return keyboard
+
 def create_keyboard(button_texts, resize_keyboard=True):
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=resize_keyboard, row_width=2)
+    builder = ReplyKeyboardBuilder(
+        [
+            types
+        ]
+
+
+        resize_keyboard=resize_keyboard, row_width=2)
     buttons = [KeyboardButton(text=text) for text in button_texts]
     keyboard.add(*buttons)
     return keyboard

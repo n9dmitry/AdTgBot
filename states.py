@@ -1,5 +1,5 @@
-from aiogram.fsm.state import State, StatesGroup
-# from aiogram.dispatcher.filters.state import State, StatesGroup
+# from aiogram.fsm.state import State, StatesGroup
+from aiogram.dispatcher.filters.state import State, StatesGroup
 # Импорт для разных версий aiogram
 class User(StatesGroup):
     STATE_FIRST_QUESTION = State()
