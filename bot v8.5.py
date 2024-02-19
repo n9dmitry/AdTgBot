@@ -679,7 +679,7 @@ class CarBotHandler:
 
     async def promotion(self, event, state):
         keyboard = create_keyboard(['Перезагрузить бота'])
-        await event.reply("Чтобы купить закреп напишите @n9dmitry", reply_markup=keyboard)
+        await event.reply("Чтобы купить закреп напишите @selbie_adv", reply_markup=keyboard)
 
 
 car_bot = CarBotHandler()
