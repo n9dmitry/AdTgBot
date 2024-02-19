@@ -105,7 +105,7 @@ class CarBotHandler:
 # Начало работы бота
 
     async def start(self, event, state):
-        image_hello_path = ImageDirectory.say_hi
+        image_hello_path = ImageDirectory.auto_say_hi
         with open(image_hello_path, "rb") as image_hello:
             self.m = await event.answer_photo(image_hello,
                                      caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
@@ -113,7 +113,7 @@ class CarBotHandler:
         # # await self.m.delete()
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        image_path = ImageDirectory.car_brand  # Путь к вашему изображению
+        image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
         with open(image_path, "rb") as image:
             self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
@@ -136,7 +136,7 @@ class CarBotHandler:
             # Создаем клавиатуру
             keyboard = create_keyboard(
                 dict_car_brands_and_models[selected_brand])
-            image_path = ImageDirectory.car_model
+            image_path = ImageDirectory.auto_car_model
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
             # self.m = await event.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
@@ -158,7 +158,7 @@ class CarBotHandler:
             user_data["car_model"] = event.text
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_year
+            image_path = ImageDirectory.auto_car_year
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
             # self.m = await event.answer("Какой год выпуска у автомобиля? (напишите)")
@@ -179,7 +179,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_body_types)
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_body_type
+            image_path = ImageDirectory.auto_car_body_type
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
             # self.m = await event.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
@@ -197,7 +197,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_engine_types)
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_engine_type
+            image_path = ImageDirectory.auto_car_engine_type
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
             # self.m = await event.answer("Отлично! Какой тип двигателя у автомобиля?", reply_markup=keyboard)
@@ -216,7 +216,7 @@ class CarBotHandler:
             # Добавляем кнопки на основе словаря
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_engine_volume
+            image_path = ImageDirectory.auto_car_engine_volume
             with open(image_path, "rb") as image:
                 self.m = self.m = await event.answer_photo(image, caption="Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
             # self.m = await event.answer("Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
@@ -235,19 +235,25 @@ class CarBotHandler:
                 event.text = event.text.replace(',', '.')
             event.text = float(event.text)
 
-            if await validate_engine_volume(event.text):
+            if await validate_engine_volume(event.text) and 0.2 <= event.text <= 10.0:
                 user_data["car_engine_volume"] = event.text
 
                 # Добавляем кнопки на основе словаря
 
                 await state.update_data(user_data=user_data)
                 # await self.delete_previous_question(event)
-                image_path = ImageDirectory.car_power
+                image_path = ImageDirectory.auto_car_power
                 with open(image_path, "rb") as image:
                     self.m = await event.answer_photo(image,
                                              caption="Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
                 # self.m = await event.answer("Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
                 await state.set_state(User.STATE_CAR_POWER)
+            else:
+                await event.answer(
+                    "Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
+                await state.set_state(User.STATE_CAR_ENGINE_VOLUME)
+
+
         except ValueError:
             # Если не удалось преобразовать введенный текст в число
             self.m = await event.answer(
@@ -263,7 +269,7 @@ class CarBotHandler:
 
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_transmission_type
+            image_path = ImageDirectory.auto_car_transmission_type
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
             # await event.answer("Отлично! Какой тип коробки передач используется в автомобиле?", reply_markup=keyboard)
@@ -281,7 +287,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_colors)
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_color
+            image_path = ImageDirectory.auto_car_color
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Какого цвета автомобиль?", reply_markup=keyboard)
             # self.m = await event.answer("Какого цвета автомобиль?", reply_markup=keyboard)
@@ -300,7 +306,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_mileages)
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_mileage
+            image_path = ImageDirectory.auto_car_mileage
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", reply_markup=keyboard)
             # self.m = await event.answer("Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", reply_markup=keyboard)
@@ -319,7 +325,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_document_statuses)
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_document_status
+            image_path = ImageDirectory.auto_car_document_status
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Каков статус документов у автомобиля ?", reply_markup=keyboard)
             # self.m = await event.answer("Каков статус документов у автомобиля ?", reply_markup=keyboard)
@@ -339,7 +345,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_owners)
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_owners
+            image_path = ImageDirectory.auto_car_owners
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Сколько владельцев у автомобиля?", reply_markup=keyboard)
             # self.m = await event.answer("Сколько владельцев у автомобиля?", reply_markup=keyboard)
@@ -358,7 +364,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_customs_cleared)
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_customs_cleared
+            image_path = ImageDirectory.auto_car_customs_cleared
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Растаможен ли автомобиль?", reply_markup=keyboard)
             # self.m = await event.answer("Растаможен ли автомобиль?", reply_markup=keyboard)
@@ -377,7 +383,7 @@ class CarBotHandler:
             keyboard = create_keyboard(dict_car_conditions)
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_condition
+            image_path = ImageDirectory.auto_car_condition
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Выберите состояние автомобиля:", reply_markup=keyboard)
             # self.m = await event.answer("Выберите состояние автомобиля:", reply_markup=keyboard)
@@ -395,7 +401,7 @@ class CarBotHandler:
             user_data["car_condition"] = event.text
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_description
+            image_path = ImageDirectory.auto_car_description
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Описание автомобиля. (напишите)")
             # self.m = await event.answer("Описание автомобиля. (напишите)")
@@ -416,7 +422,7 @@ class CarBotHandler:
                 keyboard = create_keyboard(dict_currency)
                 await state.update_data(user_data=user_data)
     #             await self.delete_previous_question(event)
-                image_path = ImageDirectory.car_currency
+                image_path = ImageDirectory.auto_car_currency
                 with open(image_path, "rb") as image:
                     self.m = await event.answer_photo(image, caption="Выберите валюту:", reply_markup=keyboard)
                 # self.m = await event.answer("Выберите валюту:", reply_markup=keyboard)
@@ -436,7 +442,7 @@ class CarBotHandler:
             user_data["currency"] = event.text
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_price
+            image_path = ImageDirectory.auto_car_price
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Цена автомобиля?")
             # self.m = await event.answer("Цена автомобиля?")
@@ -455,7 +461,7 @@ class CarBotHandler:
             user_data["car_price"] = event.text
             await state.update_data(user_data=user_data)
             # await self.delete_previous_question(event)
-            image_path = ImageDirectory.car_location
+            image_path = ImageDirectory.auto_car_location
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
             # self.m = await event.answer("Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
@@ -473,7 +479,7 @@ class CarBotHandler:
             user_data["car_location"] = event.text
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.seller_name
+            image_path = ImageDirectory.auto_seller_name
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Прекрасно! Укажите имя продавца. (напишите)")
             # self.m = await event.answer("Прекрасно! Укажите имя продавца. (напишите)")
@@ -491,7 +497,7 @@ class CarBotHandler:
             user_data["seller_name"] = event.text
             await state.update_data(user_data=user_data)
 #             await self.delete_previous_question(event)
-            image_path = ImageDirectory.seller_phone
+            image_path = ImageDirectory.auto_seller_phone
             with open(image_path, "rb") as image:
                 self.m = await event.answer_photo(image, caption="Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
             # self.m = await event.answer("Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN)")
@@ -515,7 +521,7 @@ class CarBotHandler:
             if await validate_final_length(event, state, user_data):
                 print(validate_final_length)
     #             await self.delete_previous_question(event)
-                image_path = ImageDirectory.car_photos
+                image_path = ImageDirectory.auto_car_photos
                 with open(image_path, "rb") as image:
                     self.m = await event.answer_photo(image, caption="Добавьте фотографии авто до 10 штук (За один раз!)")
                 # self.m = await event.answer("Добавьте фотографии авто")
@@ -666,7 +672,7 @@ class CarBotHandler:
 
     async def fill_again(self, event, state):
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        image_path = ImageDirectory.car_brand # Путь к вашему изображению
+        image_path = ImageDirectory.auto_car_brand # Путь к вашему изображению
         with open(image_path, "rb") as image:
             self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
