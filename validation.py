@@ -89,7 +89,6 @@ async def validate_final_length(event, state, user_data):
     max_caption_length = 1024
 
     user_data_length = sum(len(str(value)) for value in user_data.values())
-    print(user_data_length, (user_data_length + caption_length), max_caption_length)
     return (user_data_length + caption_length) <= max_caption_length
 
 
