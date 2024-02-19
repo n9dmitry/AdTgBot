@@ -109,7 +109,7 @@ class CarBotHandler:
         with open(image_hello_path, "rb") as image_hello:
             self.m = await event.answer_photo(image_hello,
                                      caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-        await asyncio.sleep(2)
+        await asyncio.sleep(0)
         # # await self.m.delete()
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
@@ -555,7 +555,7 @@ class CarBotHandler:
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{event.from_user.username if event.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-            f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)\n\n"
+            f" Разместить авто @selbie_bot\n\n"
             f"<b>ID объявления: #{self.new_id}</b>"
         )
 
