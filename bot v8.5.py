@@ -111,7 +111,6 @@ class CarBotHandler:
             self.m = await event.answer_photo(image_hello,
                                      caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
         await asyncio.sleep(0)
-        # # await self.m.delete()
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
         image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
@@ -518,9 +517,7 @@ class CarBotHandler:
             user_data["seller_phone"] = event.text
             await state.update_data(user_data=user_data)
             print(user_data)
-            print(await validate_final_length(event, state, user_data))
             if await validate_final_length(event, state, user_data):
-                print(validate_final_length)
     #             await self.delete_previous_question(event)
                 image_path = ImageDirectory.auto_car_photos
                 with open(image_path, "rb") as image:
@@ -826,7 +823,6 @@ async def get_seller_phone_handler(event: types.Message, state: FSMContext):
 
 @dp.message_handler(state=User.STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(event: types.Message, state: FSMContext):
-    print('STATE:', state, event)
     await car_bot.handle_photos(event, state)
 
 
