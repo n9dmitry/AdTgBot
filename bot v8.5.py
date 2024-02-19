@@ -3,6 +3,7 @@ from aiogram.types import InputMediaPhoto
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.markdown import hlink
 import random
 import datetime
 import uuid
@@ -403,7 +404,7 @@ class CarBotHandler:
 #             await self.delete_previous_question(event)
             image_path = ImageDirectory.auto_car_description
             with open(image_path, "rb") as image:
-                self.m = await event.answer_photo(image, caption="Описание автомобиля. (напишите)")
+                self.m = await event.answer_photo(image, caption="Описание автомобиля. (напишите до 350 символов)")
             # self.m = await event.answer("Описание автомобиля. (напишите)")
             await state.set_state(User.STATE_CAR_DESCRIPTION)
         else:
@@ -432,7 +433,7 @@ class CarBotHandler:
                 self.m = await event.answer("Пожалуйста, введите корректное описание.")
                 await state.set_state(User.STATE_CAR_DESCRIPTION)
         else:
-            self.m = await event.answer("Ваше описание сильно большое. Напишите до ~500 символов:")
+            self.m = await event.answer("Ваше описание сильно большое. Напишите до ~350 символов:")
             await state.set_state(User.STATE_CAR_DESCRIPTION)
 
     async def select_currency(self, event, state):
@@ -561,7 +562,7 @@ class CarBotHandler:
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data.get('user_data').get('seller_name')} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data.get('user_data').get('seller_phone')} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{event.from_user.username if event.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-            f" Разместить авто @selbie_bot\n\n"
+            f" {hlink('Selbie Auto. Рынок тачек в ДНР', 'https://t.me/selbieauto')} | {hlink('Разместить авто', 'https://t.me/selbie_bot')} \n\n"
             f"<b>ID объявления: #{self.new_id}</b>"
         )
 
