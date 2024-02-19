@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.3. -  try aiogram 3x">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.3.Beta -  json">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dicts.json" beforeDir="false" afterPath="$PROJECT_DIR$/dicts.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -402,14 +403,6 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <task id="LOCAL-00029" summary="v.8.4.0, Data Base">
-      <option name="closed" value="true" />
-      <created>1706868520963</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1706868520963</updated>
-    </task>
     <task id="LOCAL-00030" summary="v.8.4.1, Data Base fucking">
       <option name="closed" value="true" />
       <created>1706877213846</created>
@@ -626,7 +619,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708087647426</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="v.8.5.3.Beta -  json">
+      <option name="closed" value="true" />
+      <created>1708328374556</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1708328374557</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -644,7 +645,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.7.2" />
     <MESSAGE value="v.7.3" />
     <MESSAGE value="v.8.3.5. - hz" />
     <MESSAGE value="v.8.3.5. - fix git ignore" />
@@ -669,7 +669,8 @@
     <MESSAGE value="v.8.5.2. - Beta + short code" />
     <MESSAGE value="v.8.5.3. - Beta + short code try aiogram 3x" />
     <MESSAGE value="v.8.5.3. -  try aiogram 3x" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.3. -  try aiogram 3x" />
+    <MESSAGE value="v.8.5.3.Beta -  json" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.3.Beta -  json" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
