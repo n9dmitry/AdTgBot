@@ -30,3 +30,7 @@ class User(StatesGroup):
     STATE_SUPPORT_VALIDATION = State()
     STATE_SUPPORT_MESSAGE = State()
     STATE_SUPPORT_END = State()
+    # состояния запусков
+    STATE_START_CARBOT = State()
+    STATE_START_ESTATEBOT = State()
+    STATE_START_HRBOT = State()

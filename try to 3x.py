@@ -23,7 +23,7 @@ lock = asyncio.Lock()
 storage=MemoryStorage()
 session = AiohttpSession()
 bot_settings = {"session": session, "parse_mode": ParseMode.HTML}
-bot = Bot(token=API_TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(token=API_TOKEN)
 
 async def main():
     dp = Dispatcher()
@@ -58,17 +58,11 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 #     keyboard.add(*buttons)
 #     return keyboard
 
-def create_keyboard(button_texts, resize_keyboard=True):
+def create_keyboard(button_texts):
     builder = ReplyKeyboardBuilder(
-        [
-            types
-        ]
-
-
-        resize_keyboard=resize_keyboard, row_width=2)
-    buttons = [KeyboardButton(text=text) for text in button_texts]
-    keyboard.add(*buttons)
-    return keyboard
+        [types.KeyboardButton(text) for text in button_texts]
+    )
+    return builder
 
 
 class CarBotHandler:
@@ -119,8 +113,8 @@ class CarBotHandler:
         # Открываем файл для записи и записываем сообщение
         with open("support.txt", "a") as file:
             file.write(message_to_write)
-        keyboard = create_keyboard(['Перезагрузить бота'])
-        await event.reply("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!", reply_markup=keyboard)
+        builder = create_keyboard(['Перезагрузить бота'])
+        await event.reply("Спасибо за ваше сообщение! Мы рассмотрим вашу проблему!", reply_markup=builder.as_markup(resize_keyboard=True))
         await state.set_state(User.STATE_SUPPORT_END)
 
     @router.message(User.STATE_SUPPORT_END)
@@ -132,16 +126,16 @@ class CarBotHandler:
 
     @router.message(CommandStart())
     async def start(message: types.Message, state: FSMContext):
-        image_hello_path = ImageDirectory.say_hi
+        image_hello_path = ImageDirectory.auto_say_hi
         with open(image_hello_path, "rb") as image_hello:
             input_file = types.InputFile(image_hello)
             await bot.send_photo(chat_id=message.from_user.id, photo=input_file,
                                      caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
         await asyncio.sleep(0)
-        keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        image_path = ImageDirectory.car_brand
+        builder = create_keyboard(list(dict_car_brands_and_models.keys()))
+        image_path = ImageDirectory.auto_car_brand
         with open(image_path, "rb") as image:
-            await bot.send_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+            await bot.send_photo(image, caption="Выберите бренд автомобиля:", reply_markup=builder.as_markup(resize_keyboard=True))
         await state.set_state(User.STATE_CAR_BRAND)
 
     @router.message(User.STATE_CAR_BRAND)
@@ -154,7 +148,7 @@ class CarBotHandler:
             await state.update_data(user_data=user_data)
             keyboard = create_keyboard(
                 dict_car_brands_and_models[selected_brand])
-            image_path = ImageDirectory.car_model
+            image_path = ImageDirectory.auto_car_model
             with open(image_path, "rb") as image:
                 await event.answer_photo(image, caption="Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
             await state.set_state(User.STATE_CAR_MODEL)
@@ -256,11 +250,11 @@ class CarBotHandler:
     @router.message(F.text == "Следущий шаг")
     async def preview_advertisement(self, event: types.Message):
         await bot.send_media_group(chat_id=event.chat.id, media=buffered_photos, disable_notification=True)
-        keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(
+        builder = ReplyKeyboardMarkup(resize_keyboard=True).add(
             KeyboardButton("Отправить в канал"),
             KeyboardButton("Отменить и заполнить заново"),
         )
-        await event.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=keyboard)
+        await event.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=builder.as_markup(resize_keyboard=True))
 
     @router.message(F.text == "Отправить в канал")
     async def send_advertisement(self, event: types.Message):
@@ -268,17 +262,17 @@ class CarBotHandler:
             user_id = event.from_user.id
             await self.add_data_to_excel(event)
             await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-            keyboard = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
-            await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=keyboard)
+            builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
+            await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=builder.as_markup(resize_keyboard=True))
 
             buffered_photos.clear()
 
     @router.message(F.text == "Отменить и заполнить заново")
     async def fill_again(self, event: types.Message, state: FSMContext):
-        keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        image_path = ImageDirectory.car_brand # Путь к вашему изображению
+        builder = create_keyboard(list(dict_car_brands_and_models.keys()))
+        image_path = ImageDirectory.auto_car_brand # Путь к вашему изображению
         with open(image_path, "rb") as image:
-            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+            await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=builder.as_markup(resize_keyboard=True))
         async with lock:
             buffered_photos.clear()
         await state.set_state(User.STATE_CAR_BRAND)
@@ -289,8 +283,8 @@ class CarBotHandler:
 
     @router.message(F.text == "Ускорить продажу")
     async def promotion(self, event: types.Message):
-        keyboard = create_keyboard(['Перезагрузить бота'])
-        await event.reply("Чтобы купить закреп напишите @n9dmitry", reply_markup=keyboard)
+        builder = create_keyboard(['Перезагрузить бота'])
+        await event.reply("Чтобы купить закреп напишите @n9dmitry", reply_markup=builder.as_markup(resize_keyboard=True))
 # end support
 
 

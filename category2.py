@@ -45,7 +45,7 @@ def create_keyboard(button_texts, resize_keyboard=True):
 
 
 
-class CarBotHandler:
+class EstateBotHandler:
     def __init__(self):
         self.lock = asyncio.Lock()
 
@@ -109,7 +109,7 @@ class CarBotHandler:
         image_hello_path = ImageDirectory.auto_say_hi
         with open(image_hello_path, "rb") as image_hello:
             self.m = await event.answer_photo(image_hello,
-                                     caption=f"Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+                                     caption=f"НЕДВИЖИМОСТЬ Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
         await asyncio.sleep(0)
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
@@ -525,6 +525,8 @@ class CarBotHandler:
         )
 
 
+
+
         if "sent_photos" not in user_data:
             user_data["sent_photos"] = []
 
@@ -638,14 +640,14 @@ class CarBotHandler:
         await state.set_state(User.STATE_CAR_BRAND)
 
     async def add_more(self, event, state):
-        await car_bot.restart(event, state)
+        await estate_bot.restart(event, state)
 
     async def promotion(self, event, state):
         keyboard = create_keyboard(['Перезагрузить бота'])
         await event.reply("Чтобы купить закреп напишите @selbie_adv", reply_markup=keyboard)
 
 
-car_bot = CarBotHandler()
+estate_bot = EstateBotHandler()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 lock = asyncio.Lock()
@@ -655,156 +657,157 @@ buffered_photos = []
 @dp.message_handler(lambda message: message.text == "Перезагрузить бота", state='*')
 @dp.message_handler(commands=['restart'], state='*')
 async def cmd_restart(event: types.Message, state: FSMContext):
-    await car_bot.restart(event, state)
+    await estate_bot.restart(event, state)
 
 
+@dp.message_handler(state=User.STATE_START_ESTATEBOT)
 @dp.message_handler(commands=["start"])
 async def cmd_start(event: types.Message, state: FSMContext):
-    await car_bot.start(event, state)
+    await estate_bot.start(event, state)
 
 #support
 @dp.message_handler(commands=['support'], state='*')
 async def cmd_support(event: types.Message, state: FSMContext):
-    await car_bot.support(event, state)
+    await estate_bot.support(event, state)
 
 @dp.message_handler(state=User.STATE_SUPPORT_VALIDATION)
 async def support_validation(event: types.Message, state: FSMContext):
-    await car_bot.support_validation(event, state)
+    await estate_bot.support_validation(event, state)
 
 @dp.message_handler(state=User.STATE_SUPPORT_MESSAGE)
 async def support_message(event: types.Message, state: FSMContext):
-    await car_bot.support_message(event, state)
+    await estate_bot.support_message(event, state)
 
 @dp.message_handler(state=User.STATE_SUPPORT_END)
 async def support_end(event: types.Message, state: FSMContext):
-    await car_bot.restart(event, state)
+    await estate_bot.restart(event, state)
 # end support
 
 @dp.message_handler(state=User.STATE_CAR_BRAND)
 async def process_brand_selection(event: types.Message, state: FSMContext):
-    await car_bot.get_car_brand(event, state)
+    await estate_bot.get_car_brand(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_MODEL)
 async def process_model(event: types.Message, state: FSMContext):
-    await car_bot.get_car_model(event, state)
+    await estate_bot.get_car_model(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_YEAR)
 async def get_car_year_handler(event: types.Message, state: FSMContext):
-    await car_bot.get_car_year(event, state)
+    await estate_bot.get_car_year(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_BODY_TYPE)
 async def get_car_body_type(event: types.Message, state: FSMContext):
-    await car_bot.get_car_body_type(event, state)
+    await estate_bot.get_car_body_type(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_ENGINE_TYPE)
 async def get_car_engine_type(event: types.Message, state: FSMContext):
-    await car_bot.get_car_engine_type(event, state)
+    await estate_bot.get_car_engine_type(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_ENGINE_VOLUME)
 async def get_car_engine_volume(event: types.Message, state: FSMContext):
-    await car_bot.get_car_engine_volume(event, state)
+    await estate_bot.get_car_engine_volume(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_POWER)
 async def get_car_power(event: types.Message, state: FSMContext):
-    await car_bot.get_car_power(event, state)
+    await estate_bot.get_car_power(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_TRANSMISSION_TYPE)
 async def get_car_transmission_type(event: types.Message, state: FSMContext):
-    await car_bot.get_car_transmission_type(event, state)
+    await estate_bot.get_car_transmission_type(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_COLOR)
 async def get_car_color(event: types.Message, state: FSMContext):
-    await car_bot.get_car_color(event, state)
+    await estate_bot.get_car_color(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_MILEAGE)
 async def get_car_mileage(event: types.Message, state: FSMContext):
-    await car_bot.get_car_mileage(event, state)
+    await estate_bot.get_car_mileage(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_DOCUMENT_STATUS)
 async def get_car_document_status(event: types.Message, state: FSMContext):
-    await car_bot.get_car_document_status(event, state)
+    await estate_bot.get_car_document_status(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_OWNERS)
 async def get_car_owners(event: types.Message, state: FSMContext):
-    await car_bot.get_car_owners(event, state)
+    await estate_bot.get_car_owners(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_CUSTOMS_CLEARED)
 async def get_car_customs_cleared(event: types.Message, state: FSMContext):
-    await car_bot.get_car_customs_cleared(event, state)
+    await estate_bot.get_car_customs_cleared(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_CONDITION)
 async def get_car_condition(event: types.Message, state: FSMContext):
-    await car_bot.get_car_condition(event, state)
+    await estate_bot.get_car_condition(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_DESCRIPTION)
 async def get_car_description(event: types.Message, state: FSMContext):
-    await car_bot.get_car_description(event, state)
+    await estate_bot.get_car_description(event, state)
 
 
 @dp.message_handler(state=User.STATE_SELECT_CURRENCY)
 async def select_currency(event: types.Message, state: FSMContext):
-    await car_bot.select_currency(event, state)
+    await estate_bot.select_currency(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_PRICE)
 async def get_car_price(event: types.Message, state: FSMContext):
-    await car_bot.get_car_price(event, state)
+    await estate_bot.get_car_price(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_LOCATION)
 async def get_car_location_handler(event: types.Message, state: FSMContext):
-    await car_bot.get_car_location(event, state)
+    await estate_bot.get_car_location(event, state)
 
 
 @dp.message_handler(state=User.STATE_SELLER_NAME)
 async def get_seller_name_handler(event: types.Message, state: FSMContext):
-    await car_bot.get_seller_name(event, state)
+    await estate_bot.get_seller_name(event, state)
 
 
 @dp.message_handler(state=User.STATE_SELLER_PHONE)
 async def get_seller_phone_handler(event: types.Message, state: FSMContext):
-    await car_bot.get_seller_phone(event, state)
+    await estate_bot.get_seller_phone(event, state)
 
 
 @dp.message_handler(state=User.STATE_CAR_PHOTO, content_types=['photo'])
 async def handle_photos(event: types.Message, state: FSMContext):
-    await car_bot.handle_photos(event, state)
+    await estate_bot.handle_photos(event, state)
 
 
 @dp.message_handler(lambda message: message.text == "Следущий шаг")
 async def preview_advertisement(event: types.Message):
-    await car_bot.preview_advertisement(event)
+    await estate_bot.preview_advertisement(event)
 
 
 @dp.message_handler(lambda message: message.text == "Отправить в канал")
 async def send_advertisement(event: types.Message, state: FSMContext):
-    await car_bot.send_advertisement(event)
+    await estate_bot.send_advertisement(event)
 
 @dp.message_handler(lambda message: message.text == "Отменить и заполнить заново")
 async def fill_again(event: types.Message, state: FSMContext):
-    await car_bot.fill_again(event, state)
+    await estate_bot.fill_again(event, state)
 
 @dp.message_handler(lambda message: message.text == "Добавить ещё объявление")
 async def add_more(event: types.Message, state: FSMContext):
-    await car_bot.add_more(event, state)
+    await estate_bot.add_more(event, state)
 
 @dp.message_handler(lambda message: message.text == "Ускорить продажу")
 async def promotion(event: types.Message, state: FSMContext):
-    await car_bot.promotion(event, state)
+    await estate_bot.promotion(event, state)
 
 
 # старт бота
