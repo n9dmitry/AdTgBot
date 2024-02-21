@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.6.Beta -  categories try">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.7.Beta -  3.4.1. try">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sc1.py" beforeDir="false" afterPath="$PROJECT_DIR$/sc1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sc2.py" beforeDir="false" afterPath="$PROJECT_DIR$/sc2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sc3.py" beforeDir="false" afterPath="$PROJECT_DIR$/sc3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/try to 3x.py" beforeDir="false" afterPath="$PROJECT_DIR$/try to 3x.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -410,14 +406,6 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <task id="LOCAL-00036" summary="v.8.4.5. - support FULL">
-      <option name="closed" value="true" />
-      <created>1707297871817</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1707297871817</updated>
-    </task>
     <task id="LOCAL-00037" summary="v.8.4.5. - support FULL">
       <option name="closed" value="true" />
       <created>1707301218925</created>
@@ -634,7 +622,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708431909515</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="v.8.5.7.Beta -  3.4.1. try">
+      <option name="closed" value="true" />
+      <created>1708514954560</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1708514954560</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -652,7 +648,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.8.3.7. - fix states, event and delete message" />
     <MESSAGE value="v.8.3.8. - final" />
     <MESSAGE value="v.8.3.9. - fix message bug" />
     <MESSAGE value="v.8.4.0, Data Base" />
@@ -677,7 +672,8 @@
     <MESSAGE value="v.8.5.5.Beta -  fix bug volume check" />
     <MESSAGE value="v.8.5.5.Beta -  caption" />
     <MESSAGE value="v.8.5.6.Beta -  categories try" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.6.Beta -  categories try" />
+    <MESSAGE value="v.8.5.7.Beta -  3.4.1. try" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.7.Beta -  3.4.1. try" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -62,17 +62,16 @@ def create_keyboard(button_texts):
     return builder
 
 
-# class CarBotHandler:
-def __init__(self):
-    self.lock = asyncio.Lock()
-    # self.car_bot = CarBotHandler()
+class CarBotHandler:
+    def __init__(self):
+        self.lock = asyncio.Lock()
 
 # Команды
 @router.message(F.text == "Перезагрузить бота")
 async def restart(message: types.Message, state: FSMContext):
     await state.clear()
     await message.answer("Бот перезапущен.")
-    await bot.start(message, state)
+    await car_bot.start(message, state)
 
 @router.message(Command("support"))
 async def support(message: types.Message, state: FSMContext):
@@ -93,7 +92,7 @@ async def support_validation(message: types.Message, state: FSMContext, secret_n
     else:
         await message.answer(f"Попробуйте ещё раз!")
         await asyncio.sleep(1)
-        await bot.support(message, state)
+        await car_bot.support(message, state)
 
 @router.message(User.STATE_SUPPORT_MESSAGE)
 async def support_message(self, message: types.Message, state: FSMContext):
