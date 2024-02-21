@@ -1,7 +1,16 @@
-# from aiogram.fsm.state import State, StatesGroup
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.fsm.state import State, StatesGroup
+# from aiogram.dispatcher.filters.state import State, StatesGroup
 # Импорт для разных версий aiogram
 class User(StatesGroup):
+    # support
+    STATE_SUPPORT_VALIDATION = State()
+    STATE_SUPPORT_MESSAGE = State()
+    STATE_SUPPORT_END = State()
+    # состояния запусков
+    STATE_START_CARBOT = State()
+    STATE_START_ESTATEBOT = State()
+    STATE_START_HRBOT = State()
+    # auto_bot
     STATE_FIRST_QUESTION = State()
     STATE_CAR_BRAND = State()
     STATE_CAR_MODEL = State()
@@ -26,11 +35,7 @@ class User(StatesGroup):
     STATE_PREVIEW_PHOTO = State()
     STATE_CAR_PHOTO = State()
     STATE_SEND = State()
-    # support
-    STATE_SUPPORT_VALIDATION = State()
-    STATE_SUPPORT_MESSAGE = State()
-    STATE_SUPPORT_END = State()
-    # состояния запусков
-    STATE_START_CARBOT = State()
-    STATE_START_ESTATEBOT = State()
-    STATE_START_HRBOT = State()
+    # estate_bot
+    STATE_ESTATE_PHOTO = State()
+    # hr_bot
+    STATE_HR_PHOTO = State()

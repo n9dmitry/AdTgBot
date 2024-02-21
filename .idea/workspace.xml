@@ -4,18 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.5.Beta -  caption">
-      <change afterPath="$PROJECT_DIR$/category1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/category2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/category3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sc1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sc2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sc3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_12_02_2024,_14_18_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_12_02_2024__14_18__Changes_.xml" beforeDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.6.Beta -  categories try">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dicts.json" beforeDir="false" afterPath="$PROJECT_DIR$/dicts.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sc1.py" beforeDir="false" afterPath="$PROJECT_DIR$/sc1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sc2.py" beforeDir="false" afterPath="$PROJECT_DIR$/sc2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sc3.py" beforeDir="false" afterPath="$PROJECT_DIR$/sc3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/try to 3x.py" beforeDir="false" afterPath="$PROJECT_DIR$/try to 3x.py" afterDir="false" />
     </list>
@@ -97,7 +90,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.try to 3x">
     <configuration name="bot v8.5" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -233,9 +226,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.try to 3x" />
         <item itemvalue="Python.bot v8.5" />
         <item itemvalue="Python.category1" />
-        <item itemvalue="Python.try to 3x" />
         <item itemvalue="Python.pre" />
         <item itemvalue="Python.states" />
       </list>
@@ -416,14 +409,6 @@
       <option name="presentableId" value="LOCAL-00021" />
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
-    </task>
-    <task id="LOCAL-00035" summary="v.8.4.5. - support FULL">
-      <option name="closed" value="true" />
-      <created>1707297732387</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1707297732387</updated>
     </task>
     <task id="LOCAL-00036" summary="v.8.4.5. - support FULL">
       <option name="closed" value="true" />
@@ -641,7 +626,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708345810620</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="v.8.5.6.Beta -  categories try">
+      <option name="closed" value="true" />
+      <created>1708431909514</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1708431909515</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -659,7 +652,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.8.3.6. - fix states and engine volume bug" />
     <MESSAGE value="v.8.3.7. - fix states, event and delete message" />
     <MESSAGE value="v.8.3.8. - final" />
     <MESSAGE value="v.8.3.9. - fix message bug" />
@@ -684,9 +676,19 @@
     <MESSAGE value="v.8.5.4.Beta -  fix last bug (hope)" />
     <MESSAGE value="v.8.5.5.Beta -  fix bug volume check" />
     <MESSAGE value="v.8.5.5.Beta -  caption" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.5.Beta -  caption" />
+    <MESSAGE value="v.8.5.6.Beta -  categories try" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.6.Beta -  categories try" />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/sc1.py</url>
+          <line>119</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="event" />
