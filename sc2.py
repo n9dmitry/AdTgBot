@@ -1,4 +1,4 @@
-from main import *
+# from main import *
 import asyncio
 import random
 import datetime
@@ -113,15 +113,16 @@ class EstateBotHandler:
                                      caption=f"(недвижимость)Привет, {event.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
         await asyncio.sleep(0)
         # self.m = await event.answer(f"Привет, {event.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
-        keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-        image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
-        with open(image_path, "rb") as image:
-            self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
+        # keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
+        # image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
+        # with open(image_path, "rb") as image:
+        #     self.m = await event.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
         # self.m = await event.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
-        await state.set_state(User.STATE_CAR_PHOTO)
+        await event.answer("Теперь фото:")
+        await state.set_state(User.STATE_ESTATE_PHOTO)
 
 
-    async def handle_photos(self, event, state):
+    async def handle_photos2(self, event, state):
         user_data = await state.get_data('user_data')
         photo_id = event.photo[-1].file_id
 
@@ -183,7 +184,7 @@ class EstateBotHandler:
 
 
     async def add_data_to_excel(self, event):
-        file_path = 'db.xlsx'
+        file_path = 'db2.xlsx'
 
 
         row_data = [
@@ -308,9 +309,9 @@ async def support_end(event: types.Message, state: FSMContext):
     await estate_bot.restart(event, state)
 # end support
 
-@dp.message_handler(state=User.STATE_CAR_PHOTO, content_types=['photo'])
-async def handle_photos(event: types.Message, state: FSMContext):
-    await estate_bot.handle_photos(event, state)
+@dp.message_handler(state=User.STATE_ESTATE_PHOTO, content_types=['photo'])
+async def handle_photos2(event: types.Message, state: FSMContext):
+    await estate_bot.handle_photos2(event, state)
 
 
 @dp.message_handler(lambda message: message.text == "Следущий шаг")
