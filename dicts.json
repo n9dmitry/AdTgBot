@@ -290,6 +290,8 @@
         "ZX": ["Admiral", "GrandLion", "GrandTiger", "Landmark"]
     },
 
+    "dict_start_brands": ["⌨ Ввести свою марку авто","Lada", "Kia", "Hyundai", "Toyota", "Volkswagen", "Nissan", "Renault", "Skoda", "Ford", "Mercedes-Benz"],
+
 
     "dict_car_body_types": [
         "Седан",
