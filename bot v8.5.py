@@ -44,12 +44,15 @@ def create_keyboard(button_texts, resize_keyboard=True):
     keyboard.add(*buttons)
     return keyboard
 
-async def recognize_car_model(message, brand_name):
+async def recognize_car_model(event, brand_name):
     models = []
     similar_brands = []
 
     if brand_name.lower() in ['жигули', 'ваз', 'лада']:
         brand_name = 'Lada (ВАЗ)'
+
+    if brand_name.lower() in ['мерседес', 'мерседес-бенц', 'mercedes-benz','mercedes', 'mercedez', 'mercedez-bens']:
+        brand_name = 'Mercedes-Benz'
 
     with open('cars.json', encoding='utf-8') as file:
         data = json.load(file)
@@ -73,15 +76,16 @@ async def recognize_car_model(message, brand_name):
                     inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
             elif 'cyrillic-name' in inner_item and distance(brand_name.lower(),
-                                                                        inner_item['cyrillic-name'].lower()) <= 2 and \
+                                                            inner_item['cyrillic-name'].lower()) <= 2 and \
                     inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
 
         if similar_brands:
             response_message = "Похожие бренды:\n" + "\n".join(similar_brands)
-            await message.answer(response_message)
+            await event.answer(response_message)
 
     return models
+
 
 
 
@@ -159,41 +163,46 @@ class CarBotHandler:
                                      caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
         await asyncio.sleep(0)
 
-        keyboard = create_keyboard(dict_start_brands)
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+        target_brands = [
+            "Lada", "Kia", "Hyundai", "Toyota", "Volkswagen", "Nissan", "Renault", "Skoda", "Ford", "Mercedes-Benz"
+        ]
+        with open('cars.json', encoding='utf-8') as file:
+            data = json.load(file)
+
+            for item in data:
+                if item['name'] in target_brands:
+                    keyboard.add(KeyboardButton(text=item['name']))
+        keyboard.add(KeyboardButton(text="Введите свой бренд"))
         image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
         with open(image_path, "rb") as image:
-            self.m = await message.answer_photo(image, caption="Выберите марку автомобиля из списка кнопок:", reply_markup=keyboard)
+            await message.answer_photo(image, caption="Выберите одну из кнопок ниже или введите свой бренд:", reply_markup=keyboard)
+
+
+
         # self.m = await message.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BRAND)
 
 
     async def get_car_brand(self, message, state):
         search_brand = message.text
-        if search_brand in dict_start_brands:
-            models = await recognize_car_model(message, search_brand)
+        models = await recognize_car_model(message, search_brand)
 
-            if models:
-                keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-                added_models = set()  # Множество для хранения добавленных моделей
+        if models:
+            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+            added_models = set()  # Множество для хранения добавленных моделей
 
-                for model in models:
-                    model_name = model['name']
-                    if model_name not in added_models:
-                        button_text = f"{model_name}"
-                        keyboard.add(KeyboardButton(text=button_text))
-                        added_models.add(model_name)
+            for model in models:
+                model_name = model['name']
+                if model_name not in added_models:
+                    button_text = f"{model_name}"
+                    keyboard.add(KeyboardButton(text=button_text))
+                    added_models.add(model_name)
 
-                response = f"Модели автомобилей марки '{search_brand}':"
-                await message.answer(response, reply_markup=keyboard)
-
-        elif search_brand == "⌨ Ввести свою марку авто":
-            image_path = ImageDirectory.auto_car_model
-            with open(image_path, "rb") as image:
-                self.m = await message.answer_photo(image, caption="Отлично! Выберите модель автомобиля:")
-            await state.set_state(User.STATE_CAR_MODEL)
+            response = f"Модели автомобилей марки '{search_brand}':"
+            await message.answer(response, reply_markup=keyboard)
         else:
-            await message.answer("Пожалуйста, выберите марку автомобиля из списка или введите вручную.")
-            await state.set_state(User.STATE_CAR_MODEL)
+            await message.answer(f"Модели автомобилей марки '{search_brand}' не найдены.")
 
     # async def get_car_brand(self, message, state):
     #     user_data = (await state.get_data()).get("user_data", {})
@@ -717,6 +726,9 @@ async def support_end(message: types.Message, state: FSMContext):
 async def process_brand_selection(message: types.Message, state: FSMContext):
     await car_bot.get_car_brand(message, state)
 
+@dp.message_handler(lambda message: message.text == "Ввести свою марку авто")
+async def input_brand(message: types.Message):
+    await message.answer("Введите марку автомобиля для поиска моделей:")
 
 @dp.message_handler(state=User.STATE_CAR_MODEL)
 async def process_model(message: types.Message, state: FSMContext):

@@ -63,6 +63,7 @@ def create_keyboard(button_texts):
 
 # Команды
 @router.message(F.text == "Перезагрузить бота")
+@router.message(Command("restart"))
 async def restart(message: types.Message, state: FSMContext):
     await state.clear()
     await message.answer("Бот перезапущен.")
@@ -191,32 +192,34 @@ async def handle_photos(message: types.Message, state: FSMContext):
     await state.clear()
     await add_data_to_excel(message, db_fix, new_id)
 
-async def add_data_to_excel(message, user_data, new_id):
+async def add_data_to_excel(message, db_fix, new_id):
+    # user_data = (await state.get_data()).get("user_data", {})
     file_path = 'db.xlsx'
-    print(user_data)
+    print(db_fix)
+    print(new_id)
     row_data = [
         new_id,
         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        user_data.user_data.get('user_data').get('car_brand', ''),
-        user_data.user_data.get('user_data').get('car_model', ''),
-        user_data.user_data.get('user_data').get('car_year', ''),
-        user_data.user_data.get('user_data').get('car_mileage', ''),
-        user_data.user_data.get('user_data').get('car_transmission_type', ''),
-        user_data.user_data.get('user_data').get('car_body_type', ''),
-        user_data.user_data.get('user_data').get('car_engine_type', ''),
-        user_data.user_data.get('user_data').get('car_engine_volume', ''),
-        user_data.user_data.get('user_data').get('car_power', ''),
-        user_data.user_data.get('user_data').get('car_color', ''),
-        user_data.user_data.get('user_data').get('car_document_status', ''),
-        user_data.user_data.get('user_data').get('car_owners', ''),
-        user_data.user_data.get('user_data').get('car_customs_cleared'),
-        user_data.user_data.get('user_data').get('car_condition', ''),
-        user_data.user_data.get('user_data').get('car_description', ''),
-        user_data.user_data.get('user_data').get('car_price', ''),
-        user_data.user_data.get('user_data').get('currency', ''),
-        user_data.user_data.get('user_data').get('car_location', ''),
-        user_data.user_data.get('user_data').get('seller_name', ''),
-        user_data.user_data.get('user_data').get('seller_phone', ''),
+        db_fix.get('user_data').get('car_brand', ''),
+        db_fix.get('user_data').get('car_model', ''),
+        db_fix.get('user_data').get('car_year', ''),
+        db_fix.get('user_data').get('car_mileage', ''),
+        db_fix.get('user_data').get('car_transmission_type', ''),
+        db_fix.get('user_data').get('car_body_type', ''),
+        db_fix.get('user_data').get('car_engine_type', ''),
+        db_fix.get('user_data').get('car_engine_volume', ''),
+        db_fix.get('user_data').get('car_power', ''),
+        db_fix.get('user_data').get('car_color', ''),
+        db_fix.get('user_data').get('car_document_status', ''),
+        db_fix.get('user_data').get('car_owners', ''),
+        db_fix.get('user_data').get('car_customs_cleared'),
+        db_fix.get('user_data').get('car_condition', ''),
+        db_fix.get('user_data').get('car_description', ''),
+        db_fix.get('user_data').get('car_price', ''),
+        db_fix.get('user_data').get('currency', ''),
+        db_fix.get('user_data').get('car_location', ''),
+        db_fix.get('user_data').get('seller_name', ''),
+        db_fix.get('user_data').get('seller_phone', ''),
         message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
     ]
 
@@ -258,7 +261,7 @@ async def preview_advertisement(message: types.Message):
 async def send_advertisement(message: types.Message):
     async with asyncio.Lock():
         user_id = message.from_user.id
-        await message.add_data_to_excel(message)
+        await add_data_to_excel(message)
         await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
         builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
         await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=builder.as_markup(resize_keyboard=True))
@@ -270,7 +273,7 @@ async def fill_again(message: types.Message, state: FSMContext):
     builder = create_keyboard(list(dict_car_brands_and_models.keys()))
     image_path = ImageDirectory.auto_car_brand # Путь к вашему изображению
     with open(image_path, "rb"):
-        await message.answer_photo(image_path, caption="Выберите бренд автомобиля:", reply_markup=builder.as_markup(resize_keyboard=True))
+        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:", reply_markup=builder.as_markup(resize_keyboard=True, row_width=2))
     async with lock:
         buffered_photos.clear()
     await state.set_state(User.STATE_CAR_BRAND)
