@@ -27,7 +27,6 @@ session = AiohttpSession()
 bot_settings = {"session": session, "parse_mode": ParseMode.HTML}
 bot = Bot(token=API_TOKEN)
 storage=MemoryStorage()
-
 buffered_photos = []
 
 async def main():
@@ -62,16 +61,12 @@ def create_keyboard(button_texts):
     return builder
 
 
-class CarBotHandler:
-    def __init__(self):
-        self.lock = asyncio.Lock()
-
 # Команды
 @router.message(F.text == "Перезагрузить бота")
 async def restart(message: types.Message, state: FSMContext):
     await state.clear()
     await message.answer("Бот перезапущен.")
-    await car_bot.start(message, state)
+    await start(message, state)
 
 @router.message(Command("support"))
 async def support(message: types.Message, state: FSMContext):
@@ -92,10 +87,10 @@ async def support_validation(message: types.Message, state: FSMContext, secret_n
     else:
         await message.answer(f"Попробуйте ещё раз!")
         await asyncio.sleep(1)
-        await car_bot.support(message, state)
+        await support(message, state)
 
 @router.message(User.STATE_SUPPORT_MESSAGE)
-async def support_message(self, message: types.Message, state: FSMContext):
+async def support_message(message: types.Message, state: FSMContext):
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     message_to_write = f"""
     Дата: {current_time}
@@ -114,14 +109,14 @@ async def support_message(self, message: types.Message, state: FSMContext):
     await state.set_state(User.STATE_SUPPORT_END)
 
 @router.message(User.STATE_SUPPORT_END)
-async def support_end(self, message: types.Message, state: FSMContext):
-    await self.car_bot.restart(message, state)
+async def support_end(message: types.Message, state: FSMContext):
+    await restart(message, state)
 
 
 # Начало работы бота
 
 @router.message(CommandStart())
-async def start(self, message: types.Message, state: FSMContext):
+async def start(message: types.Message, state: FSMContext):
     image_hello_path = ImageDirectory.auto_say_hi
     await message.answer_photo(photo=types.FSInputFile(image_hello_path), caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
     await asyncio.sleep(0.1)
@@ -153,18 +148,18 @@ async def get_car_brand(message: types.Message, state: FSMContext):
 
 @router.message(User.STATE_CAR_PHOTO)
 @router.message(F.photo)
-async def handle_photos(self, message: types.Message, state: FSMContext):
+async def handle_photos(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     photo_id = message.photo[-1].file_id
 
 
-    self.new_id = str(uuid.uuid4().int)[:6]
+    new_id = str(uuid.uuid4().int)[:6]
 
     caption = (
-        f"🛞 <b>#{user_data.get('user_data').get('car_brand')}-"
+        f"🛞 <b>#{user_data.get('user_data').get('car_brand')}-</b>"
         f"💬<b>Телеграм:</b> <span class='tg-spoiler'>{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
         f"ООО 'Продвижение' Авто в ДНР (link: разместить авто)\n\n"
-        f"<b>ID объявления: #{self.new_id}</b>"
+        f"<b>ID объявления: #{new_id}</b>"
     )
 
 
@@ -192,36 +187,36 @@ async def handle_photos(self, message: types.Message, state: FSMContext):
     )
 
     await message.answer("Фото добавлено", reply_markup=builder.as_markup(resize_keyboard=True))
-
-    self.db_fix = user_data
+    db_fix = user_data
     await state.clear()
+    await add_data_to_excel(message, db_fix, new_id)
 
-async def add_data_to_excel(self, message):
+async def add_data_to_excel(message, user_data, new_id):
     file_path = 'db.xlsx'
-
+    print(user_data)
     row_data = [
-        self.new_id,
+        new_id,
         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        self.db_fix.get('user_data').get('car_brand', ''),
-        self.db_fix.get('user_data').get('car_model', ''),
-        self.db_fix.get('user_data').get('car_year', ''),
-        self.db_fix.get('user_data').get('car_mileage', ''),
-        self.db_fix.get('user_data').get('car_transmission_type', ''),
-        self.db_fix.get('user_data').get('car_body_type', ''),
-        self.db_fix.get('user_data').get('car_engine_type', ''),
-        self.db_fix.get('user_data').get('car_engine_volume', ''),
-        self.db_fix.get('user_data').get('car_power', ''),
-        self.db_fix.get('user_data').get('car_color', ''),
-        self.db_fix.get('user_data').get('car_document_status', ''),
-        self.db_fix.get('user_data').get('car_owners', ''),
-        self.db_fix.get('user_data').get('car_customs_cleared'),
-        self.db_fix.get('user_data').get('car_condition', ''),
-        self.db_fix.get('user_data').get('car_description', ''),
-        self.db_fix.get('user_data').get('car_price', ''),
-        self.db_fix.get('user_data').get('currency', ''),
-        self.db_fix.get('user_data').get('car_location', ''),
-        self.db_fix.get('user_data').get('seller_name', ''),
-        self.db_fix.get('user_data').get('seller_phone', ''),
+        user_data.user_data.get('user_data').get('car_brand', ''),
+        user_data.user_data.get('user_data').get('car_model', ''),
+        user_data.user_data.get('user_data').get('car_year', ''),
+        user_data.user_data.get('user_data').get('car_mileage', ''),
+        user_data.user_data.get('user_data').get('car_transmission_type', ''),
+        user_data.user_data.get('user_data').get('car_body_type', ''),
+        user_data.user_data.get('user_data').get('car_engine_type', ''),
+        user_data.user_data.get('user_data').get('car_engine_volume', ''),
+        user_data.user_data.get('user_data').get('car_power', ''),
+        user_data.user_data.get('user_data').get('car_color', ''),
+        user_data.user_data.get('user_data').get('car_document_status', ''),
+        user_data.user_data.get('user_data').get('car_owners', ''),
+        user_data.user_data.get('user_data').get('car_customs_cleared'),
+        user_data.user_data.get('user_data').get('car_condition', ''),
+        user_data.user_data.get('user_data').get('car_description', ''),
+        user_data.user_data.get('user_data').get('car_price', ''),
+        user_data.user_data.get('user_data').get('currency', ''),
+        user_data.user_data.get('user_data').get('car_location', ''),
+        user_data.user_data.get('user_data').get('seller_name', ''),
+        user_data.user_data.get('user_data').get('seller_phone', ''),
         message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
     ]
 
@@ -247,7 +242,7 @@ async def add_data_to_excel(self, message):
     workbook.save(file_path)
 
 @router.message(F.text == "Следущий шаг")
-async def preview_advertisement(self, message: types.Message):
+async def preview_advertisement(message: types.Message):
     await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
     builder = ReplyKeyboardBuilder(
     [
@@ -260,8 +255,8 @@ async def preview_advertisement(self, message: types.Message):
     await message.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=builder.as_markup(resize_keyboard=True))
 
 @router.message(F.text == "Отправить в канал")
-async def send_advertisement(self, message: types.Message):
-    async with lock:
+async def send_advertisement(message: types.Message):
+    async with asyncio.Lock():
         user_id = message.from_user.id
         await message.add_data_to_excel(message)
         await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
@@ -281,11 +276,11 @@ async def fill_again(message: types.Message, state: FSMContext):
     await state.set_state(User.STATE_CAR_BRAND)
 
 @router.message(F.text == "Добавить ещё объявление")
-async def add_more(self, message: types.Message, state: FSMContext):
-    await self.car_bot.restart(message, state)
+async def add_more(message: types.Message, state: FSMContext):
+    await restart(message, state)
 
 @router.message(F.text == "Ускорить продажу")
-async def promotion(self, message: types.Message):
+async def promotion(message: types.Message):
     builder = create_keyboard(['Перезагрузить бота'])
     await message.reply("Чтобы купить закреп напишите @n9dmitry", reply_markup=builder.as_markup(resize_keyboard=True))
 # end support
