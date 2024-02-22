@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.7.Beta -  3.4.1. try">
-      <change afterPath="$PROJECT_DIR$/cars.json" afterDir="false" />
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.5.8.Beta -  get car brand update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/category1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/category2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/category3.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/dicts.json" beforeDir="false" afterPath="$PROJECT_DIR$/dicts.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/try to 3x.py" beforeDir="false" afterPath="$PROJECT_DIR$/try to 3x.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -37,6 +32,20 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "n9dmitry"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="b57fdc0c-b212-4717-a7df-4abee2acc219" />
+        <option name="url" value="https://github.com/n9dmitry/AdTgBot.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/use not/caption.py" root0="SKIP_INSPECTION" />
@@ -413,14 +422,6 @@
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
     </task>
-    <task id="LOCAL-00038" summary="v.8.4.5. - support FULL">
-      <option name="closed" value="true" />
-      <created>1707301355214</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1707301355214</updated>
-    </task>
     <task id="LOCAL-00039" summary="v.8.4.6. - support capcha fix">
       <option name="closed" value="true" />
       <created>1707302750953</created>
@@ -637,7 +638,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708517035653</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="v.8.5.8.Beta -  get car brand update">
+      <option name="closed" value="true" />
+      <created>1708593541155</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1708593541155</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -655,7 +664,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.8.3.8. - final" />
     <MESSAGE value="v.8.3.9. - fix message bug" />
     <MESSAGE value="v.8.4.0, Data Base" />
     <MESSAGE value="v.8.4.1, Data Base fucking" />
@@ -680,7 +688,8 @@
     <MESSAGE value="v.8.5.5.Beta -  caption" />
     <MESSAGE value="v.8.5.6.Beta -  categories try" />
     <MESSAGE value="v.8.5.7.Beta -  3.4.1. try" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.7.Beta -  3.4.1. try" />
+    <MESSAGE value="v.8.5.8.Beta -  get car brand update" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.5.8.Beta -  get car brand update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
