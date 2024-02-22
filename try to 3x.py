@@ -195,8 +195,6 @@ async def handle_photos(message: types.Message, state: FSMContext):
 async def add_data_to_excel(message, db_fix, new_id):
     # user_data = (await state.get_data()).get("user_data", {})
     file_path = 'db.xlsx'
-    print(db_fix)
-    print(new_id)
     row_data = [
         new_id,
         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -246,6 +244,8 @@ async def add_data_to_excel(message, db_fix, new_id):
 
 @router.message(F.text == "Следущий шаг")
 async def preview_advertisement(message: types.Message):
+    # print(db_fix)
+    # print(new_id)
     await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
     builder = ReplyKeyboardBuilder(
     [
