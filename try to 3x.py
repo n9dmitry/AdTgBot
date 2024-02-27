@@ -1,5 +1,4 @@
 # pip install aiogram==3.4.1
-
 import asyncio
 from aiogram import Bot, Dispatcher, Router, F, types
 from aiogram.types import KeyboardButton, InputMediaPhoto
@@ -27,13 +26,13 @@ session = AiohttpSession()
 bot_settings = {"session": session, "parse_mode": ParseMode.HTML}
 bot = Bot(token=API_TOKEN)
 storage=MemoryStorage()
-buffered_photos = []
+# buffered_photos = []
+# db_fix = {}
 
 async def main():
     dp = Dispatcher()
     dp.include_router(router)
     await dp.start_polling(bot)
-
 # Загрузка JSON в начале скрипта
 with open('dicts.json', 'r', encoding='utf-8') as file:
     dicts = json.load(file)
@@ -129,6 +128,7 @@ async def start(message: types.Message, state: FSMContext):
 @router.message(User.STATE_CAR_BRAND)
 async def get_car_brand(message: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
+    await message.delete()
     selected_brand = message.text
     valid_brands = dict_car_brands_and_models
     if await validate_car_brand(selected_brand, valid_brands):
@@ -163,9 +163,6 @@ async def handle_photos(message: types.Message, state: FSMContext):
         f"<b>ID объявления: #{new_id}</b>"
     )
 
-
-
-
     if "sent_photos" not in user_data:
         user_data["sent_photos"] = []
 
@@ -188,36 +185,46 @@ async def handle_photos(message: types.Message, state: FSMContext):
     )
 
     await message.answer("Фото добавлено", reply_markup=builder.as_markup(resize_keyboard=True))
-    db_fix = user_data
+    db_fix['user_data'] = user_data
+    db_fix['new_id'] = new_id
     await state.clear()
-    await add_data_to_excel(message, db_fix, new_id)
+@router.message(F.text == "Следущий шаг")
+async def preview_advertisement(message: types.Message):
+    await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
+    builder = ReplyKeyboardBuilder(
+    [
+        [
+        KeyboardButton(text="Отправить в канал"),
+        KeyboardButton(text="Отменить и заполнить заново")
+        ]
+    ]
+    )
+    await message.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=builder.as_markup(resize_keyboard=True))
 
-async def add_data_to_excel(message, db_fix, new_id):
+@router.message(F.text == "Отправить в канал")
+async def send_advertisement(message: types.Message):
+    global db_fix
+    await add_data_to_excel(message, db_fix)
+    async with (asyncio.Lock()):
+        user_id = message.from_user.id
+        await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
+        builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
+        await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=builder.as_markup(resize_keyboard=True))
+        buffered_photos.clear()
+
+
+        db_fix.clear()
+
+
+async def add_data_to_excel(message, db_fix):
     # user_data = (await state.get_data()).get("user_data", {})
+    print(db_fix)
+
     file_path = 'db.xlsx'
     row_data = [
-        new_id,
+        db_fix.get('new_id'),
         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        db_fix.get('user_data').get('car_brand', ''),
-        db_fix.get('user_data').get('car_model', ''),
-        db_fix.get('user_data').get('car_year', ''),
-        db_fix.get('user_data').get('car_mileage', ''),
-        db_fix.get('user_data').get('car_transmission_type', ''),
-        db_fix.get('user_data').get('car_body_type', ''),
-        db_fix.get('user_data').get('car_engine_type', ''),
-        db_fix.get('user_data').get('car_engine_volume', ''),
-        db_fix.get('user_data').get('car_power', ''),
-        db_fix.get('user_data').get('car_color', ''),
-        db_fix.get('user_data').get('car_document_status', ''),
-        db_fix.get('user_data').get('car_owners', ''),
-        db_fix.get('user_data').get('car_customs_cleared'),
-        db_fix.get('user_data').get('car_condition', ''),
-        db_fix.get('user_data').get('car_description', ''),
-        db_fix.get('user_data').get('car_price', ''),
-        db_fix.get('user_data').get('currency', ''),
-        db_fix.get('user_data').get('car_location', ''),
-        db_fix.get('user_data').get('seller_name', ''),
-        db_fix.get('user_data').get('seller_phone', ''),
+        db_fix.get('user_data').get('user_data').get('car_brand', ''),
         message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
     ]
 
@@ -241,32 +248,6 @@ async def add_data_to_excel(message, db_fix, new_id):
 
     sheet.append(row_data)
     workbook.save(file_path)
-
-@router.message(F.text == "Следущий шаг")
-async def preview_advertisement(message: types.Message):
-    # print(db_fix)
-    # print(new_id)
-    await bot.send_media_group(chat_id=message.chat.id, media=buffered_photos, disable_notification=True)
-    builder = ReplyKeyboardBuilder(
-    [
-        [
-        KeyboardButton(text="Отправить в канал"),
-        KeyboardButton(text="Отменить и заполнить заново")
-        ]
-    ]
-    )
-    await message.reply("Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.", reply_markup=builder.as_markup(resize_keyboard=True))
-
-@router.message(F.text == "Отправить в канал")
-async def send_advertisement(message: types.Message):
-    async with asyncio.Lock():
-        user_id = message.from_user.id
-        await add_data_to_excel(message)
-        await bot.send_media_group(chat_id=CHANNEL_ID, media=buffered_photos, disable_notification=True)
-        builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
-        await bot.send_message(user_id, "Объявление отправлено в канал!", reply_markup=builder.as_markup(resize_keyboard=True))
-
-        buffered_photos.clear()
 
 @router.message(F.text == "Отменить и заполнить заново")
 async def fill_again(message: types.Message, state: FSMContext):

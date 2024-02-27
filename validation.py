@@ -18,13 +18,18 @@ async def validate_button_input(event_text, options):
 # Конец функции
 
 
-async def validate_car_brand(car_brand, valid_brands):
-    return car_brand in valid_brands
+# async def validate_car_brand(car_brand, valid_brands):
+#     return car_brand in valid_brands
+#
+#
+# async def validate_car_model(selected_model, valid_models):
+#     return selected_model.lower() in [model.lower() for model in valid_models]
 
+async def validate_car_brand(car_brand, valid_brands):
+    pass
 
 async def validate_car_model(selected_model, valid_models):
-    return selected_model.lower() in [model.lower() for model in valid_models]
-
+    pass
 
 async def validate_year(year):
     return bool(re.match(r'^(19|20)\d{2}$', year)) and int(year) <= 2024
