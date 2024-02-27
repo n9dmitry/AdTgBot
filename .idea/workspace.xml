@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.6.0.Beta -  get car brand update">
+    <list default="true" id="22f3e2f5-e859-4be0-8c84-7d48babb7cbd" name="Changes" comment="v.8.6.1.Beta - brand and model search engine">
+      <change afterPath="$PROJECT_DIR$/short test code.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot v8.5.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot v8.5.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dicts.json" beforeDir="false" afterPath="$PROJECT_DIR$/dicts.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/states.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/try to 3x.py" beforeDir="false" afterPath="$PROJECT_DIR$/try to 3x.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/validation.py" beforeDir="false" afterPath="$PROJECT_DIR$/validation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/support.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,35 +61,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.bot v8.3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bot v8.4.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bot v8.5.executor&quot;: &quot;Run&quot;,
-    &quot;Python.bot_shortcode.executor&quot;: &quot;Run&quot;,
-    &quot;Python.category1.executor&quot;: &quot;Run&quot;,
-    &quot;Python.config.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.pre.executor&quot;: &quot;Run&quot;,
-    &quot;Python.short_code_test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.short_code_test2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.states.executor&quot;: &quot;Run&quot;,
-    &quot;Python.try to 3x.executor&quot;: &quot;Run&quot;,
-    &quot;Python.validation.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Rebasing forkN&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/dev/Development/AdTgBot&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.bot v8.3.executor": "Run",
+    "Python.bot v8.4.executor": "Run",
+    "Python.bot v8.5.executor": "Run",
+    "Python.bot_shortcode.executor": "Run",
+    "Python.category1.executor": "Run",
+    "Python.config.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.pre.executor": "Run",
+    "Python.short test code.executor": "Run",
+    "Python.short_code_test.executor": "Run",
+    "Python.short_code_test2.executor": "Run",
+    "Python.states.executor": "Run",
+    "Python.try to 3x.executor": "Run",
+    "Python.validation.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "Rebasing forkN",
+    "last_opened_file_path": "/home/dev/Development/AdTgBot",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;,
-      &quot;PLAIN_TEXT&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python",
+      "PLAIN_TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -104,7 +102,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.bot v8.5">
+  <component name="RunManager" selected="Python.short test code">
     <configuration name="bot v8.5" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
@@ -194,7 +192,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="states" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="short test code" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AdTgBot" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -207,7 +205,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/states.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/short test code.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -240,11 +238,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.short test code" />
         <item itemvalue="Python.bot v8.5" />
         <item itemvalue="Python.try to 3x" />
         <item itemvalue="Python.category1" />
         <item itemvalue="Python.pre" />
-        <item itemvalue="Python.states" />
       </list>
     </recent_temporary>
   </component>
@@ -423,14 +421,6 @@
       <option name="presentableId" value="LOCAL-00021" />
       <option name="project" value="LOCAL" />
       <updated>1705494030674</updated>
-    </task>
-    <task id="LOCAL-00041" summary="v.8.4.7. - validation full">
-      <option name="closed" value="true" />
-      <created>1707388986612</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1707388986612</updated>
     </task>
     <task id="LOCAL-00042" summary="v.8.4.8. - validation full">
       <option name="closed" value="true" />
@@ -648,7 +638,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708605174439</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="v.8.6.1.Beta - brand and model search engine">
+      <option name="closed" value="true" />
+      <created>1709026718787</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1709026718788</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -666,7 +664,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="v.8.4.1, Data Base fucking" />
     <MESSAGE value="v.8.4.2, fix bug engine_volume validation" />
     <MESSAGE value="v.8.4.3, number starts with +7" />
     <MESSAGE value="v.8.4.4. - support partly" />
@@ -691,7 +688,8 @@
     <MESSAGE value="v.8.5.8.Beta -  get car brand update" />
     <MESSAGE value="v.8.5.9.Beta -  get car brand update" />
     <MESSAGE value="v.8.6.0.Beta -  get car brand update" />
-    <option name="LAST_COMMIT_MESSAGE" value="v.8.6.0.Beta -  get car brand update" />
+    <MESSAGE value="v.8.6.1.Beta - brand and model search engine" />
+    <option name="LAST_COMMIT_MESSAGE" value="v.8.6.1.Beta - brand and model search engine" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
