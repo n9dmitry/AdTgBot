@@ -156,40 +156,6 @@ class CarBotHandler:
 #         # self.m = await message.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
 #         await state.set_state(User.STATE_CAR_BRAND)
 
-    async def start(self, message, state):
-        image_hello_path = ImageDirectory.auto_say_hi
-        with open(image_hello_path, "rb") as image_hello:
-            self.m = await message.answer_photo(image_hello,
-                                     caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-        await asyncio.sleep(0)
-
-        keyboard = create_keyboard(dict_start_brands)
-        image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
-        with open(image_path, "rb") as image:
-            self.m = await message.answer_photo(image, caption="Выберите марку автомобиля из списка кнопок:", reply_markup=keyboard)
-        # self.m = await message.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
-        await state.set_state(User.STATE_CAR_BRAND)
-
-
-    async def get_car_brand(self, message, state):
-        search_brand = message.text
-        models = await recognize_car_model(message, search_brand)
-
-        if models:
-            keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-            added_models = set()  # Множество для хранения добавленных моделей
-
-            for model in models:
-                model_name = model['name']
-                if model_name not in added_models:
-                    button_text = f"{model_name}"
-                    keyboard.add(KeyboardButton(text=button_text))
-                    added_models.add(model_name)
-
-            response = f"Модели автомобилей марки '{search_brand}':"
-            await message.answer(response, reply_markup=keyboard)
-        else:
-            await message.answer(f"Модели автомобилей марки '{search_brand}' не найдены.")
 
     # async def get_car_brand(self, message, state):
     #     user_data = (await state.get_data()).get("user_data", {})
@@ -210,26 +176,59 @@ class CarBotHandler:
     #         keyboard = create_keyboard(dict_car_brands_and_models.keys())
     #         self.m = await bot.send_message(message.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
     #         await state.set_state(User.STATE_CAR_BRAND)
+    async def start(self, message, state):
+        image_hello_path = ImageDirectory.auto_say_hi
+        with open(image_hello_path, "rb") as image_hello:
+            self.m = await message.answer_photo(image_hello,
+                                                caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+        await asyncio.sleep(0)
+
+        keyboard = create_keyboard(dict_start_brands)
+
+        image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
+        with open(image_path, "rb") as image:
+            await message.answer_photo(image, caption="Выберите одну из кнопок ниже или введите свой бренд:",
+                                       reply_markup=keyboard)
+
+        # self.m = await message.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
+        await state.set_state(User.STATE_CAR_BRAND)
+
+    async def get_car_brand(self, message, state):
+        search_brand = message.text
+        user_data = {"car_brand": search_brand}  # Сохраняем название марки в данных пользователя
+        await state.update_data(user_data=user_data)  # Обновляем данные пользователя в состоянии
+
+        if search_brand == "⌨ Введите свой бренд":
+            await message.answer("Пожалуйста, введите название марки своего автомобиля:")
+        else:
+            models = await recognize_car_model(message, search_brand)
+
+            if not models:
+                await message.answer("Марка не найдена, попробуйте еще раз")
+            else:
+                model_names = [model['name'] for model in models]
+                keyboard = create_keyboard(model_names)
+                await message.answer("Выберите модель автомобиля из списка:", reply_markup=keyboard)
+
+                response = f"Модели автомобилей марки '{search_brand}':"
+                await message.answer(response, reply_markup=keyboard)
+                await state.set_state(User.STATE_CAR_MODEL)
 
     async def get_car_model(self, message, state):
         user_data = (await state.get_data()).get("user_data", {})
+        print(user_data)
         car_brand = user_data.get("car_brand", "")
-        valid_models = dict_car_brands_and_models.get(car_brand, [])
+        print(car_brand)
 
-        if await validate_car_model(message.text, valid_models):
-            user_data["car_model"] = message.text
-            await state.update_data(user_data=user_data)
-            image_path = ImageDirectory.auto_car_year
-            with open(image_path, "rb") as image:
-                self.m = await message.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
-            # await message.answer("Какой год выпуска у автомобиля? (напишите)")
-            await state.set_state(User.STATE_CAR_YEAR)
-        else:
-            keyboard = create_keyboard(valid_models)
-            self.m = await bot.send_message(message.from_user.id, "Пожалуйста, выберите модель из предложенных вариантов.",
-                                   reply_markup=keyboard)
-            await state.set_state(User.STATE_CAR_MODEL)
 
+        user_data["car_model"] = message.text  # Сохраняем выбранную модель в данных пользователя
+        await state.update_data(user_data=user_data)  # Обновляем данные пользователя в состоянии
+
+        image_path = ImageDirectory.auto_car_year
+        with open(image_path, "rb") as image:
+            self.m = await message.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
+
+        await state.set_state(User.STATE_CAR_YEAR)  # Переключаемся на следующий шаг
 
     async def get_car_year(self, message, state):
         user_data = (await state.get_data()).get("user_data", {})
