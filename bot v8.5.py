@@ -9,7 +9,8 @@ import datetime
 import uuid
 import asyncio
 import openpyxl
-from Levenshtein import distance
+# from Levenshtein import distance
+from fuzzywuzzy import fuzz
 from config import *
 from states import *
 from validation import *
@@ -44,27 +45,66 @@ def create_keyboard(button_texts, resize_keyboard=True):
     keyboard.add(*buttons)
     return keyboard
 
+# async def recognize_car_model(event, brand_name):
+#     models = []
+#     similar_brands = []
+#
+#     if brand_name.lower() in ['жигули', 'ваз', 'лада']:
+#         brand_name = 'Lada (ВАЗ)'
+#
+#     if brand_name.lower() in ['мерседес', 'мерседес-бенц', 'mercedes-benz','mercedes', 'mercedez', 'mercedez-bens']:
+#         brand_name = 'Mercedes-Benz'
+#
+#     with open('cars.json', encoding='utf-8') as file:
+#         data = json.load(file)
+#
+#     found_brand = False
+#     for item in data:
+#         if 'name' in item and item['name'].lower() == brand_name.lower():
+#             if 'models' in item:
+#                 models = item['models']
+#             found_brand = True
+#             break
+#         elif 'cyrillic-name' in item and item['cyrillic-name'].lower() == brand_name.lower():
+#             if 'models' in item:
+#                 models = item['models']
+#             found_brand = True
+#             break
+#
+#     if not found_brand and len(brand_name) >= 3:
+#         for inner_item in data:
+#             if 'name' in inner_item and distance(brand_name.lower(), inner_item['name'].lower()) <= 2 and \
+#                     inner_item['name'] not in similar_brands:
+#                 similar_brands.append(inner_item['name'])
+#             elif 'cyrillic-name' in inner_item and distance(brand_name.lower(),
+#                                                             inner_item['cyrillic-name'].lower()) <= 2 and \
+#                     inner_item['name'] not in similar_brands:
+#                 similar_brands.append(inner_item['name'])
+#
+#         if similar_brands:
+#             response_message = "Похожие бренды:\n" + "\n".join(similar_brands)
+#             await event.answer(response_message)
+#
+#     return models
+
+
 async def recognize_car_model(event, brand_name):
     models = []
     similar_brands = []
-
-    if brand_name.lower() in ['жигули', 'ваз', 'лада']:
-        brand_name = 'Lada (ВАЗ)'
-
-    if brand_name.lower() in ['мерседес', 'мерседес-бенц', 'mercedes-benz','mercedes', 'mercedez', 'mercedez-bens']:
-        brand_name = 'Mercedes-Benz'
 
     with open('cars.json', encoding='utf-8') as file:
         data = json.load(file)
 
     found_brand = False
     for item in data:
-        if 'name' in item and item['name'].lower() == brand_name.lower():
+        # Сравнение имени бренда с учетом расстояния Левенштейна
+        if 'name' in item and fuzz.token_sort_ratio(brand_name.lower(), item['name'].lower()) >= 90:
             if 'models' in item:
                 models = item['models']
             found_brand = True
             break
-        elif 'cyrillic-name' in item and item['cyrillic-name'].lower() == brand_name.lower():
+        # Сравнение кириллического имени бренда
+        elif 'cyrillic-name' in item and fuzz.token_sort_ratio(brand_name.lower(), item['cyrillic-name'].lower()) >= 90:
             if 'models' in item:
                 models = item['models']
             found_brand = True
@@ -72,12 +112,13 @@ async def recognize_car_model(event, brand_name):
 
     if not found_brand and len(brand_name) >= 3:
         for inner_item in data:
-            if 'name' in inner_item and distance(brand_name.lower(), inner_item['name'].lower()) <= 2 and \
-                    inner_item['name'] not in similar_brands:
+            # Поиск похожих брендов с учетом расстояния Левенштейна
+            if 'name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['name'].lower()) >= 75 \
+                and inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
-            elif 'cyrillic-name' in inner_item and distance(brand_name.lower(),
-                                                            inner_item['cyrillic-name'].lower()) <= 2 and \
-                    inner_item['name'] not in similar_brands:
+            # Поиск похожих кириллических брендов
+            elif 'cyrillic-name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['cyrillic-name'].lower()) >= 75 \
+                and inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
 
         if similar_brands:
