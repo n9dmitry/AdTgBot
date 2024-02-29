@@ -150,7 +150,7 @@ class CarBotHandler:
         with open(image_hello_path, "rb") as image_hello:
             self.m = await message.answer_photo(image_hello,
                                                 caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-        await asyncio.sleep(0)
+        await asyncio.sleep(0.5)
 
         keyboard = create_keyboard(dict_start_brands)
 
