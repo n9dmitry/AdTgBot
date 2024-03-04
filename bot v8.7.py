@@ -9,7 +9,6 @@ import datetime
 import uuid
 import asyncio
 import openpyxl
-# from Levenshtein import distance
 from fuzzywuzzy import fuzz
 from config import *
 from states import *
