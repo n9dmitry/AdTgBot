@@ -1,5 +1,5 @@
-# from aiogram.fsm.state import State, StatesGroup
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.fsm.state import State, StatesGroup
+# from aiogram.dispatcher.filters.state import State, StatesGroup
 # Импорт для разных версий aiogram
 class User(StatesGroup):
     # support
@@ -34,6 +34,7 @@ class User(StatesGroup):
     STATE_SELLER_PHONE = State()
     STATE_PREVIEW_PHOTO = State()
     STATE_CAR_PHOTO = State()
+    STATE_PREVIEW_ADVERTISMENT = State()
     STATE_SEND = State()
     # estate_bot
     STATE_ESTATE_PHOTO = State()

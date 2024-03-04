@@ -9,14 +9,14 @@ import datetime
 import uuid
 import asyncio
 import openpyxl
-from Levenshtein import distance
+from fuzzywuzzy import fuzz
 from config import *
 from states import *
 import json
 from enumlist import *
 
 # Загрузка JSON в начале скрипта
-with open('dicts.json', 'r', encoding='utf-8') as file:
+with open('../dicts.json', 'r', encoding='utf-8') as file:
     dicts = json.load(file)
 
 dict_start_brands = dicts.get("dict_start_brands", {})
@@ -50,23 +50,22 @@ async def recognize_car_model(event, brand_name):
     models = []
     similar_brands = []
 
-    if brand_name.lower() in ['жигули', 'ваз', 'лада']:
+    if brand_name.lower() in ['жигули']:
         brand_name = 'Lada (ВАЗ)'
 
-    if brand_name.lower() in ['мерседес', 'мерседес-бенц', 'mercedes-benz', 'mercedes', 'mercedez', 'mercedez-bens']:
-        brand_name = 'Mercedes-Benz'
-
-    with open('cars.json', encoding='utf-8') as file:
+    with open('../cars.json', encoding='utf-8') as file:
         data = json.load(file)
 
     found_brand = False
     for item in data:
-        if 'name' in item and item['name'].lower() == brand_name.lower():
+        # Сравнение имени бренда с учетом расстояния Левенштейна
+        if 'name' in item and fuzz.token_sort_ratio(brand_name.lower(), item['name'].lower()) >= 90:
             if 'models' in item:
                 models = item['models']
             found_brand = True
             break
-        elif 'cyrillic-name' in item and item['cyrillic-name'].lower() == brand_name.lower():
+        # Сравнение кириллического имени бренда
+        elif 'cyrillic-name' in item and fuzz.token_sort_ratio(brand_name.lower(), item['cyrillic-name'].lower()) >= 90:
             if 'models' in item:
                 models = item['models']
             found_brand = True
@@ -74,18 +73,18 @@ async def recognize_car_model(event, brand_name):
 
     if not found_brand and len(brand_name) >= 3:
         for inner_item in data:
-            if 'name' in inner_item and distance(brand_name.lower(), inner_item['name'].lower()) <= 2 and \
-                    inner_item['name'] not in similar_brands:
+            # Поиск похожих брендов с учетом расстояния Левенштейна
+            if 'name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['name'].lower()) >= 50 \
+                and inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
-            elif 'cyrillic-name' in inner_item and distance(brand_name.lower(),
-                                                            inner_item['cyrillic-name'].lower()) <= 2 and \
-                    inner_item['name'] not in similar_brands:
+            # Поиск похожих кириллических брендов
+            elif 'cyrillic-name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['cyrillic-name'].lower()) >= 50 \
+                and inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
 
         if similar_brands:
             response_message = "Похожие бренды:\n" + "\n".join(similar_brands)
             await event.answer(response_message)
-
     return models
 
 
@@ -144,40 +143,6 @@ class CarBotHandler:
             await cmd_restart(message, state)
         await state.finish()
 
-    # Начало работы бота
-    #     async def start(self, message, state):
-    #         image_hello_path = ImageDirectory.auto_say_hi
-    #         with open(image_hello_path, "rb") as image_hello:
-    #             self.m = await message.answer_photo(image_hello,
-    #                                      caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-    #         await asyncio.sleep(0)
-    #         # self.m = await message.answer(f"Привет, {message.from_user.first_name}! Я бот для сбора данных. Давай начнем.")
-    #         keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
-    #         image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
-    #         with open(image_path, "rb") as image:
-    #             self.m = await message.answer_photo(image, caption="Выберите бренд автомобиля:", reply_markup=keyboard)
-    #         # self.m = await message.answer("Выберите бренд автомобиля:", reply_markup=keyboard)
-    #         await state.set_state(User.STATE_CAR_BRAND)
-
-    # async def get_car_brand(self, message, state):
-    #     user_data = (await state.get_data()).get("user_data", {})
-    #     selected_brand = message.text
-    #     valid_brands = dict_car_brands_and_models
-    #     if await validate_car_brand(selected_brand, valid_brands):
-    #         user_data["car_brand"] = selected_brand
-    #         await state.update_data(user_data=user_data)
-    #         # Создаем клавиатуру
-    #         keyboard = create_keyboard(
-    #             dict_car_brands_and_models[selected_brand])
-    #         image_path = ImageDirectory.auto_car_model
-    #         with open(image_path, "rb") as image:
-    #             self.m = await message.answer_photo(image, caption="Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
-    #         # self.m = await message.answer("Отлично! Выберите модель автомобиля:", reply_markup=keyboard)
-    #         await state.set_state(User.STATE_CAR_MODEL)
-    #     else:
-    #         keyboard = create_keyboard(dict_car_brands_and_models.keys())
-    #         self.m = await bot.send_message(message.from_user.id, "Пожалуйста, выберите бренд из предложенных вариантов или напишите нам если вашего бренда нет", reply_markup=keyboard)
-    #         await state.set_state(User.STATE_CAR_BRAND)
     async def start(self, message, state):
         image_hello_path = ImageDirectory.auto_say_hi
         with open(image_hello_path, "rb") as image_hello:
