@@ -169,9 +169,14 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
         await event.reply(f'{count_photos} Фото добавлены', reply_markup=builder.as_markup(resize_keyboard=True))
 
     media = []
-    for i in album:
-        media.add(type="photo", media=photo.file_unique_id[i])
-    print(media)
+    # for i in album:
+    #     media.add(type="photo", media=photo.file_unique_id[i])
+    for message in album:
+        # Перебираем каждую фотографию в сообщении
+        for photo in message.photo:
+            # Добавляем file_id каждой фотографии в переменную media
+            media.append(photo.file_id)
+    print('111', media)
     # for message in album:
     #
     #     for photo in message:
