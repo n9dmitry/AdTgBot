@@ -1,7 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher, Router, F, types
-from aiogram.types import KeyboardButton
-# from aiogram.types import InputMediaPhoto
+from aiogram.types import KeyboardButton, InputMediaPhoto, FSInputFile
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
@@ -149,10 +148,11 @@ async def get_car_brand(message: types.Message, state: FSMContext):
 @router.message(F.media_group_id)
 async def handle_photos(event: types.Message, state: FSMContext, album: list[Message]):
     user_data = await state.get_data()
+    print(album)
     if 'sent_photos' not in user_data:
         user_data['sent_photos'] = []
+
     user_data['sent_photos'].extend(album)
-    await state.update_data(user_data)
     new_id = str(uuid.uuid4().int)[:6]
 
     caption = (
@@ -160,28 +160,28 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
         f"<b>ID объявления: #{new_id}</b>"
     )
 
+    # user_data['sent_photos'].append({'caption': caption})
+    await state.update_data(user_data)
+
     builder = ReplyKeyboardBuilder([[types.KeyboardButton(text="Следущий шаг"), ]])
     if album:
         count_photos = len(album)
         await event.reply(f'{count_photos} Фото добавлены', reply_markup=builder.as_markup(resize_keyboard=True))
 
+    media = []
+    for i in album:
+        media.add(type="photo", media=photo.file_unique_id[i])
+    print(media)
+    # for message in album:
+    #
+    #     for photo in message:
+    #         media.append(InputMediaPhoto(photo=file_id, caption=message.caption))
     await state.set_state(User.STATE_PREVIEW_ADVERTISMENT)
 
 
 @router.message(User.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
-    user_data = (await state.get_data()).get("user_data", {})
-
-    sent_photos = user_data.get("sent_photos", [])
-    print(sent_photos)
-
-    for photo_data in user_data['sent_photos']:
-        await bot.send_photo(
-            chat_id=message.chat.id,
-            photo=user_data.get("sent_photos").media,
-            caption=user_data.get("sent_photos").caption,
-            parse_mode=ParseMode.HTML,
-            disable_notification=True)
+    user_data = await state.get_data()
 
     await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'], disable_notification=True)
 
