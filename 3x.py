@@ -1,6 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher, Router, F, types
-from aiogram.types import KeyboardButton, InputMediaPhoto, FSInputFile
+from aiogram.types import KeyboardButton, InputMediaPhoto
+# , FSInputFile)
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
@@ -141,6 +142,7 @@ async def start(message: types.Message, state: FSMContext):
 @router.message(User.STATE_CAR_BRAND)
 async def get_car_brand(message: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
+    print(state)
     await state.set_state(User.STATE_CAR_PHOTO)
 
 
@@ -152,7 +154,9 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
     if 'sent_photos' not in user_data:
         user_data['sent_photos'] = []
 
-    user_data['sent_photos'].extend(album)
+    media = []
+    media.extend(album)
+
     new_id = str(uuid.uuid4().int)[:6]
 
     caption = (
@@ -160,7 +164,13 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
         f"<b>ID объявления: #{new_id}</b>"
     )
 
-    # user_data['sent_photos'].append({'caption': caption})
+    for message in media:
+        for photo in message.photo:
+            user_data['sent_photos'].append(InputMediaPhoto(photo.file_id(type=photo)))
+
+    user_data['sent_photos'].append({'caption': caption})
+
+
     await state.update_data(user_data)
 
     builder = ReplyKeyboardBuilder([[types.KeyboardButton(text="Следущий шаг"), ]])
@@ -168,26 +178,13 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
         count_photos = len(album)
         await event.reply(f'{count_photos} Фото добавлены', reply_markup=builder.as_markup(resize_keyboard=True))
 
-    media = []
-    # for i in album:
-    #     media.add(type="photo", media=photo.file_unique_id[i])
-    for message in album:
-        # Перебираем каждую фотографию в сообщении
-        for photo in message.photo:
-            # Добавляем file_id каждой фотографии в переменную media
-            media.append(photo.file_id)
-    print('111', media)
-    # for message in album:
-    #
-    #     for photo in message:
-    #         media.append(InputMediaPhoto(photo=file_id, caption=message.caption))
     await state.set_state(User.STATE_PREVIEW_ADVERTISMENT)
 
 
 @router.message(User.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
-
+    print('111', user_data['sent_photos'])
     await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'], disable_notification=True)
 
     builder = ReplyKeyboardBuilder(
@@ -208,8 +205,7 @@ async def preview_advertisement(message: types.Message, state: FSMContext):
 async def send_advertisement(message: types.Message, state):
     user_data = (await state.get_data()).get("user_data", {})
 
-    # global db_fix
-    await add_data_to_excel(message, user_data["sent_photos"])
+    # await add_data_to_excel(message, user_data["sent_photos"])
     async with (asyncio.Lock()):
         user_id = message.from_user.id
         await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
@@ -221,38 +217,38 @@ async def send_advertisement(message: types.Message, state):
         # db_fix.clear()
 
 
-async def add_data_to_excel(message, state):
-    user_data = (await state.get_data()).get("user_data", {})
-    # print(db_fix)
-
-    file_path = 'db.xlsx'
-    row_data = [
-        # db_fix.get('new_id'),
-        datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        # db_fix.get('user_data').get('user_data').get('car_brand', ''),
-        message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
-    ]
-
-    # Проверяем, существует ли файл Excel
-    if os.path.exists(file_path):
-        workbook = openpyxl.load_workbook(file_path)
-    else:
-        workbook = openpyxl.Workbook()
-    sheet = workbook.active
-
-    # Проверяем, нужно ли добавить заголовки
-    if sheet.max_row == 1:
-        headers = [
-            'ID', 'Дата', 'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
-            'Тип кузова', 'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)',
-            'Цвет', 'Статус документа', 'Количество владельцев', 'Растаможен',
-            'Состояние', 'Дополнительное описание', 'Цена', 'Валюта',
-            'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
-        ]
-        sheet.append(headers)
-
-    sheet.append(row_data)
-    workbook.save(file_path)
+# async def add_data_to_excel(message, state):
+#     user_data = (await state.get_data()).get("user_data", {})
+#     # print(db_fix)
+#
+#     file_path = 'db.xlsx'
+#     row_data = [
+#         # db_fix.get('new_id'),
+#         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+#         # db_fix.get('user_data').get('user_data').get('car_brand', ''),
+#         message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
+#     ]
+#
+#     # Проверяем, существует ли файл Excel
+#     if os.path.exists(file_path):
+#         workbook = openpyxl.load_workbook(file_path)
+#     else:
+#         workbook = openpyxl.Workbook()
+#     sheet = workbook.active
+#
+#     # Проверяем, нужно ли добавить заголовки
+#     if sheet.max_row == 1:
+#         headers = [
+#             'ID', 'Дата', 'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
+#             'Тип кузова', 'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)',
+#             'Цвет', 'Статус документа', 'Количество владельцев', 'Растаможен',
+#             'Состояние', 'Дополнительное описание', 'Цена', 'Валюта',
+#             'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
+#         ]
+#         sheet.append(headers)
+#
+#     sheet.append(row_data)
+#     workbook.save(file_path)
 
 
 @router.message(F.text == "Отменить и заполнить заново")
