@@ -11,7 +11,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 import random
 import datetime
 import uuid
-import openpyxl
+# import openpyxl
 from config import *
 from states import *
 # from validation import *
@@ -142,7 +142,6 @@ async def start(message: types.Message, state: FSMContext):
 @router.message(User.STATE_CAR_BRAND)
 async def get_car_brand(message: types.Message, state: FSMContext):
     user_data = (await state.get_data()).get("user_data", {})
-    print(state)
     await state.set_state(User.STATE_CAR_PHOTO)
 
 
@@ -150,12 +149,8 @@ async def get_car_brand(message: types.Message, state: FSMContext):
 @router.message(F.media_group_id)
 async def handle_photos(event: types.Message, state: FSMContext, album: list[Message]):
     user_data = await state.get_data()
-    print(album)
     if 'sent_photos' not in user_data:
         user_data['sent_photos'] = []
-
-    media = []
-    media.extend(album)
 
     new_id = str(uuid.uuid4().int)[:6]
 
@@ -164,12 +159,16 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
         f"<b>ID объявления: #{new_id}</b>"
     )
 
-    for message in media:
-        for photo in message.photo:
-            user_data['sent_photos'].append(InputMediaPhoto(photo.file_id(type=photo)))
+    for message in album:
+        # Проверяем, есть ли атрибут photo у текущего сообщения
+        if message.photo:
+            # Берем последний элемент списка photo, который обычно является наивысшим качеством
+            top_photo = message.photo[-1]
+            # Получаем file_id фотографии и добавляем его в список sent_photos
+            user_data['sent_photos'].append(
+                InputMediaPhoto(media=top_photo.file_id, caption=None, parse_mode="HTML"))
 
-    user_data['sent_photos'].append({'caption': caption})
-
+    user_data['sent_photos'][0].caption = caption
 
     await state.update_data(user_data)
 
@@ -181,40 +180,50 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
     await state.set_state(User.STATE_PREVIEW_ADVERTISMENT)
 
 
+@router.message(F.text == "Отправить в канал")
+async def send_advertisement(message: types.Message, state):
+    user_data = await state.get_data()
+    print('222', user_data['sent_photos'])
+
+    # await add_data_to_excel(message, user_data["sent_photos"])
+    user_id = message.from_user.id
+    await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
+    builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
+    await bot.send_message(user_id, "Объявление отправлено в канал!",
+                           reply_markup=builder.as_markup(resize_keyboard=True))
+    # user_data['sent_photos'].clear()
+
+@router.message(F.text == "Отменить и заполнить заново")
+async def fill_again(message: types.Message, state: FSMContext):
+    user_data = await state.get_data()
+    builder = create_keyboard(list(dict_car_brands_and_models.keys()))
+    image_path = ImageDirectory.auto_car_brand
+    with open(image_path, "rb"):
+        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
+                                   reply_markup=builder.as_markup(resize_keyboard=True, row_width=2))
+    user_data['sent_photos'].clear()
+    await state.clear()
+    await state.set_state(User.STATE_CAR_BRAND)
+
+
+
 @router.message(User.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     print('111', user_data['sent_photos'])
-    await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'], disable_notification=True)
+    await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'])
 
-    builder = ReplyKeyboardBuilder(
-        [
-            [
-                KeyboardButton(text="Отправить в канал"),
-                KeyboardButton(text="Отменить и заполнить заново")
-            ]
-        ]
-    )
+    builder = ReplyKeyboardBuilder([[
+        KeyboardButton(text="Отправить в канал"),
+        KeyboardButton(text="Отменить и заполнить заново")
+    ]])
 
     await message.reply(
         "Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.",
         reply_markup=builder.as_markup(resize_keyboard=True))
 
 
-@router.message(F.text == "Отправить в канал")
-async def send_advertisement(message: types.Message, state):
-    user_data = (await state.get_data()).get("user_data", {})
-
-    # await add_data_to_excel(message, user_data["sent_photos"])
-    async with (asyncio.Lock()):
-        user_id = message.from_user.id
-        await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
-        builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
-        await bot.send_message(user_id, "Объявление отправлено в канал!",
-                               reply_markup=builder.as_markup(resize_keyboard=True))
-        user_data['sent_photos'].clear()
-
-        # db_fix.clear()
+    # db_fix.clear()
 
 
 # async def add_data_to_excel(message, state):
@@ -249,19 +258,6 @@ async def send_advertisement(message: types.Message, state):
 #
 #     sheet.append(row_data)
 #     workbook.save(file_path)
-
-
-@router.message(F.text == "Отменить и заполнить заново")
-async def fill_again(message: types.Message, state: FSMContext):
-    user_data = (await state.get_data()).get("user_data", {})
-    builder = create_keyboard(list(dict_car_brands_and_models.keys()))
-    image_path = ImageDirectory.auto_car_brand  # Путь к вашему изображению
-    with open(image_path, "rb"):
-        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
-                                   reply_markup=builder.as_markup(resize_keyboard=True, row_width=2))
-    async with lock:
-        user_data['buffered_photos'].clear()
-    await state.set_state(User.STATE_CAR_BRAND)
 
 
 @router.message(F.text == "Добавить ещё объявление")
