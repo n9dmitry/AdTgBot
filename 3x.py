@@ -11,7 +11,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 import random
 import datetime
 import uuid
-# import openpyxl
+import openpyxl
 from config import *
 from states import *
 # from validation import *
@@ -68,6 +68,7 @@ def create_keyboard(button_texts):
 
 # Команды
 @router.message(F.text == "Перезагрузить бота")
+@router.message(F.text == "Добавить ещё объявление")
 @router.message(Command("restart"))
 async def restart(message: types.Message, state: FSMContext):
     await state.clear()
@@ -183,15 +184,15 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
 @router.message(F.text == "Отправить в канал")
 async def send_advertisement(message: types.Message, state):
     user_data = await state.get_data()
-    print('222', user_data['sent_photos'])
+    print('2', user_data['sent_photos'])
 
-    # await add_data_to_excel(message, user_data["sent_photos"])
+    await add_data_to_excel(message, state)
     user_id = message.from_user.id
     await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
     builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
     await bot.send_message(user_id, "Объявление отправлено в канал!",
                            reply_markup=builder.as_markup(resize_keyboard=True))
-    # user_data['sent_photos'].clear()
+    await state.clear()
 
 @router.message(F.text == "Отменить и заполнить заново")
 async def fill_again(message: types.Message, state: FSMContext):
@@ -205,12 +206,15 @@ async def fill_again(message: types.Message, state: FSMContext):
     await state.clear()
     await state.set_state(User.STATE_CAR_BRAND)
 
-
+@router.message(F.text == "Ускорить продажу")
+async def promotion(message: types.Message):
+    builder = create_keyboard(['Перезагрузить бота'])
+    await message.reply("Чтобы купить закреп напишите @selbie_adv", reply_markup=builder.as_markup(resize_keyboard=True))
 
 @router.message(User.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
-    print('111', user_data['sent_photos'])
+    print('1', user_data['sent_photos'])
     await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'])
 
     builder = ReplyKeyboardBuilder([[
@@ -226,49 +230,39 @@ async def preview_advertisement(message: types.Message, state: FSMContext):
     # db_fix.clear()
 
 
-# async def add_data_to_excel(message, state):
-#     user_data = (await state.get_data()).get("user_data", {})
-#     # print(db_fix)
-#
-#     file_path = 'db.xlsx'
-#     row_data = [
-#         # db_fix.get('new_id'),
-#         datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-#         # db_fix.get('user_data').get('user_data').get('car_brand', ''),
-#         message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
-#     ]
-#
-#     # Проверяем, существует ли файл Excel
-#     if os.path.exists(file_path):
-#         workbook = openpyxl.load_workbook(file_path)
-#     else:
-#         workbook = openpyxl.Workbook()
-#     sheet = workbook.active
-#
-#     # Проверяем, нужно ли добавить заголовки
-#     if sheet.max_row == 1:
-#         headers = [
-#             'ID', 'Дата', 'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
-#             'Тип кузова', 'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)',
-#             'Цвет', 'Статус документа', 'Количество владельцев', 'Растаможен',
-#             'Состояние', 'Дополнительное описание', 'Цена', 'Валюта',
-#             'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
-#         ]
-#         sheet.append(headers)
-#
-#     sheet.append(row_data)
-#     workbook.save(file_path)
+async def add_data_to_excel(message, state):
+    user_data = await state.get_data()
+    print('3', user_data['sent_photos'])
+    file_path = 'db.xlsx'
+    row_data = [
+        # db_fix.get('new_id'),
+        datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        # user_data.get('car_brand', ''),
+        message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
+    ]
+
+    # Проверяем, существует ли файл Excel
+    if os.path.exists(file_path):
+        workbook = openpyxl.load_workbook(file_path)
+    else:
+        workbook = openpyxl.Workbook()
+    sheet = workbook.active
+
+    # Проверяем, нужно ли добавить заголовки
+    if sheet.max_row == 1:
+        headers = [
+            'ID', 'Дата', 'Бренд', 'Модель', 'Год', 'Пробег (км)', 'Тип трансмиссии',
+            'Тип кузова', 'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)',
+            'Цвет', 'Статус документа', 'Количество владельцев', 'Растаможен',
+            'Состояние', 'Дополнительное описание', 'Цена', 'Валюта',
+            'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
+        ]
+        sheet.append(headers)
+
+    sheet.append(row_data)
+    workbook.save(file_path)
 
 
-@router.message(F.text == "Добавить ещё объявление")
-async def add_more(message: types.Message, state: FSMContext):
-    await restart(message, state)
-
-
-@router.message(F.text == "Ускорить продажу")
-async def promotion(message: types.Message):
-    builder = create_keyboard(['Перезагрузить бота'])
-    await message.reply("Чтобы купить закреп напишите @n9dmitry", reply_markup=builder.as_markup(resize_keyboard=True))
 
 
 # end support
