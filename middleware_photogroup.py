@@ -10,7 +10,6 @@ class AlbumMiddleware(BaseMiddleware):
         self.album_data = {}
 
     async def __call__(self, handler, event: Message, data: Dict[str, Any]) -> Any:
-        print('1 event', event)
         if not event.media_group_id:
             data["album"] = [
                 event]  # ---- > это моя попытка добавить одну фотку в альбом при проверке. но что-то пошло не так)

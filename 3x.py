@@ -66,10 +66,9 @@ def create_keyboard(button_texts):
     builder.add(*buttons).adjust(2)
     return builder
 
-def recognize_car_model(event, brand_name):
-    models = None
+async def recognize_car_model(message, brand_name):
+    models = []
     similar_brands = []
-
     if brand_name.lower() in ['жигули']:
         brand_name = 'Lada (ВАЗ)'
 
@@ -94,20 +93,18 @@ def recognize_car_model(event, brand_name):
     if not found_brand and len(brand_name) >= 3:
         for inner_item in data:
             # Поиск похожих брендов с учетом расстояния Левенштейна
-            if 'name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['name'].lower()) >= 50 \
-                    and inner_item['name'] not in similar_brands:
+            if 'name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['name'].lower()) >= 75 and inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
             # Поиск похожих кириллических брендов
-            elif 'cyrillic-name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(),
-                                                                         inner_item['cyrillic-name'].lower()) >= 50 \
-                    and inner_item['name'] not in similar_brands:
+            elif 'cyrillic-name' in inner_item and fuzz.token_sort_ratio(brand_name.lower(), inner_item['cyrillic-name'].lower()) >= 75 \
+                and inner_item['name'] not in similar_brands:
                 similar_brands.append(inner_item['name'])
 
         if similar_brands:
             response_message = "Похожие бренды:\n" + "\n".join(similar_brands)
-            await event.answer(response_message)
+            await message.answer(response_message)
 
-    return models if models else []
+    return models
 
 # Команды
 @router.message(F.text == "Перезагрузить бота")
@@ -182,44 +179,70 @@ async def start(message: types.Message, state: FSMContext):
 
 @router.message(User.STATE_CAR_BRAND)
 async def get_car_brand(message, state):
-    search_brand = message.text
-    user_data = {"car_brand": search_brand}  # Сохраняем название марки в данных пользователя
-    await state.update_data(user_data=user_data)  # Обновляем данные пользователя в состоянии
+    user_data = await state.get_data()
+    if 'car_brand' not in user_data:
+        search_brand = message.text
+        print('11', message.text)
+        user_data = {"car_brand": search_brand}  # Сохраняем название марки в данных пользователя
+        await state.update_data(user_data)  # Обновляем данные пользователя в состоянии
+        print('1', user_data['car_brand'])
 
-    if search_brand == "⌨ Введите свой бренд":
-        await message.answer("Пожалуйста, введите название марки своего автомобиля:")
+        if search_brand == "⌨ Введите свой бренд":
+            await message.answer("Пожалуйста, введите название марки своего автомобиля:")
+        else:
+            models = await recognize_car_model(message, search_brand)
+            print(search_brand)
+            if not models:
+                await message.answer("Марка не найдена, попробуйте еще раз")
+            else:
+                model_names = [model['name'] for model in models]
+                builder = create_keyboard(model_names)
+                await message.answer("Выберите модель автомобиля из списка:", reply_markup=builder.as_markup(resize_keyboard=True))
+
+                response = f"Модели автомобилей марки '{search_brand}':"
+                await message.answer(response, reply_markup=builder)
+
+        await state.set_state(User.STATE_CAR_MODEL)
     else:
+        search_brand = user_data['car_brand']
         models = await recognize_car_model(message, search_brand)
-
+        print(search_brand)
         if not models:
             await message.answer("Марка не найдена, попробуйте еще раз")
         else:
             model_names = [model['name'] for model in models]
             builder = create_keyboard(model_names)
-            await message.answer("Выберите модель автомобиля из списка:", reply_markup=builder.as_markup(resize_keyboard=True, row_width=2))
+            await message.answer("Выберите модель автомобиля из списка:",
+                                 reply_markup=builder.as_markup(resize_keyboard=True))
 
-            response = f"Модели автомобилей марки '{search_brand}':"
-            await message.answer(response, reply_markup=builder)
+            # response = f"Модели автомобилей марки '{search_brand}':"
+            # await message.answer(response, reply_markup=builder)
+
             await state.set_state(User.STATE_CAR_MODEL)
 
-
 @router.message(User.STATE_CAR_MODEL)
-async def get_car_model(self, message, state):
+async def get_car_model(message, state):
+    print('1')
     user_data = await state.get_data()
-    car_brand = user_data.get("car_brand", "")
+
+    car_brand = user_data['car_brand']
+
+    print('2', user_data['car_brand'])
 
     user_data["car_model"] = message.text  # Сохраняем выбранную модель в данных пользователя
+
     await state.update_data(user_data=user_data)  # Обновляем данные пользователя в состоянии
+    print('3', user_data['car_model'])
 
     image_path = ImageDirectory.auto_car_year
     with open(image_path, "rb") as image:
-        self.m = await message.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
+        await message.answer_photo(image, caption="Какой год выпуска у автомобиля? (напишите)")
 
     await state.set_state(User.STATE_CAR_YEAR)  # Переключаемся на следующий шаг
 
 
 @router.message(User.STATE_CAR_YEAR)
-async def get_car_year(self, message, state):
+async def get_car_year(message, state):
     user_data = await state.get_data()
 
     if await validate_year(message.text):
@@ -228,17 +251,17 @@ async def get_car_year(self, message, state):
         await state.update_data(user_data=user_data)
         image_path = ImageDirectory.auto_car_body_type
         with open(image_path, "rb") as image:
-            self.m = await message.answer_photo(image, caption="Отлично! Какой тип кузова у автомобиля?",
+            await message.answer_photo(image, caption="Отлично! Какой тип кузова у автомобиля?",
                                                 reply_markup=keyboard)
         # self.m = await message.answer("Отлично! Какой тип кузова у автомобиля?", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BODY_TYPE)
     else:
-        self.m = await message.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2024)")
+        await message.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2024)")
         await state.set_state(User.STATE_CAR_YEAR)
 
 
 @router.message(User.STATE_CAR_BODY_TYPE)
-async def get_car_body_type(self, message, state):
+async def get_car_body_type(message, state):
     user_data = await state.get_data()
     if await validate_button_input(message.text, dict_car_body_types):
         user_data["car_body_type"] = message.text
@@ -252,7 +275,7 @@ async def get_car_body_type(self, message, state):
         await state.set_state(User.STATE_CAR_ENGINE_TYPE)
     else:
         keyboard = create_keyboard(dict_car_body_types)
-        self.m = await message.answer("Пожалуйста, выберите корректный тип кузова.", reply_markup=keyboard)
+        await message.answer("Пожалуйста, выберите корректный тип кузова.", reply_markup=keyboard)
         await state.set_state(User.STATE_CAR_BODY_TYPE)
 
 
@@ -624,7 +647,7 @@ async def send_advertisement(message: types.Message, state):
 #     image_path = ImageDirectory.auto_car_brand
 #     with open(image_path, "rb"):
 #         await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
-#                                    reply_markup=builder.as_markup(resize_keyboard=True, row_width=2))
+#                                    reply_markup=builder.as_markup(resize_keyboard=True))
 #     user_data['sent_photos'].clear()
 #     await state.clear()
 #     await state.set_state(User.STATE_CAR_BRAND)
@@ -640,7 +663,6 @@ async def promotion(message: types.Message):
 @router.message(User.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
-    print('1', user_data['sent_photos'])
     await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'])
 
     builder = ReplyKeyboardBuilder([[
