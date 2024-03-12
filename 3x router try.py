@@ -172,10 +172,10 @@ async def start(message: types.Message, state: FSMContext):
     await message.answer_photo(photo=types.FSInputFile(image_hello_path),
                                caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
     await asyncio.sleep(0.1)
-    builder = create_keyboard(list(dict_car_brands_and_models.keys()))
+    keyboard = create_keyboard(list(dict_car_brands_and_models.keys()))
     image_path = ImageDirectory.auto_car_brand
     await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
-                               reply_markup=builder.as_markup(resize_keyboard=True, row_width=2))
+                               reply_markup=keyboard.as_markup())
     await state.set_state(User.STATE_CAR_BRAND)
 
 

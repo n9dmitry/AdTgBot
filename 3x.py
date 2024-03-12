@@ -1,24 +1,26 @@
 import asyncio
+import json
+import random
+import datetime
+import uuid
+import openpyxl
+
 from aiogram import Bot, Dispatcher, Router, F, types
-from aiogram.types import KeyboardButton, InputMediaPhoto, ReplyKeyboardMarkup
+from aiogram.types import KeyboardButton, InputMediaPhoto, Message
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.filters import Command, CommandStart
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
-import random
-import datetime
-import uuid
-import openpyxl
+from fuzzywuzzy import fuzz
+
 from config import *
 from states import *
 from validation import *
-import json
 from enumlist import *
 from middleware_photogroup import AlbumMiddleware
-from aiogram.types import Message
-from fuzzywuzzy import fuzz
+
 
 router = Router()
 
@@ -42,7 +44,6 @@ with open('dicts.json', 'r', encoding='utf-8') as file:
     dicts = json.load(file)
 
 dict_start_brands = dicts.get("dict_start_brands", {})
-dict_car_brands_and_models = dicts.get("dict_car_brands_and_models", {})
 dict_car_body_types = dicts.get("dict_car_body_types", {})
 dict_car_engine_types = dicts.get("dict_car_engine_types", {})
 dict_car_transmission_types = dicts.get("dict_car_transmission_types", {})
@@ -57,17 +58,16 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 
 
 # Конец импорта json словарей
-
 # Создание клавиатуры
+
 def create_keyboard(button_texts):
     buttons = [KeyboardButton(text=text) for text in button_texts]
-    keyboard = ReplyKeyboardMarkup()
-    keyboard.add(*buttons)
-    return keyboard
+    builder = ReplyKeyboardBuilder()
+    builder.add(*buttons).adjust(2)
+    return builder
 
-
-async def recognize_car_model(event, brand_name):
-    models = []
+def recognize_car_model(event, brand_name):
+    models = None
     similar_brands = []
 
     if brand_name.lower() in ['жигули']:
@@ -107,8 +107,7 @@ async def recognize_car_model(event, brand_name):
             response_message = "Похожие бренды:\n" + "\n".join(similar_brands)
             await event.answer(response_message)
 
-    return models
-
+    return models if models else []
 
 # Команды
 @router.message(F.text == "Перезагрузить бота")
@@ -124,16 +123,20 @@ async def restart(message: types.Message, state: FSMContext):
 
 @router.message(Command("support"))
 async def support(message: types.Message, state: FSMContext):
-    await state.clear()
+    user_data = await state.get_data()
     secret_number = str(random.randint(100, 999))
 
     await message.answer(f"Нашли баг? Давайте отправим сообщение разработчикам! "
                          f"Но перед этим введите проверку. Докажите что вы не робот. Напишите число {secret_number}:")
+    user_data['secret_number'] = secret_number
+    await state.update_data(user_data)
     await state.set_state(User.STATE_SUPPORT_VALIDATION)
 
 
 @router.message(User.STATE_SUPPORT_VALIDATION)
-async def support_validation(message: types.Message, state: FSMContext, secret_number):
+async def support_validation(message: types.Message, state: FSMContext):
+    user_data = await state.get_data()
+    secret_number = user_data['secret_number']
     if message.text.isdigit() and message.text == secret_number:
         await message.reply(f"Проверка пройдена успешно!")
         await asyncio.sleep(1)
@@ -156,7 +159,6 @@ async def support_message(message: types.Message, state: FSMContext):
     Сообщение: {message.text}
     ...
         """
-
     # Открываем файл для записи и записываем сообщение
     with open("support.txt", "a") as file:
         file.write(message_to_write)
@@ -165,24 +167,16 @@ async def support_message(message: types.Message, state: FSMContext):
                         reply_markup=builder.as_markup(resize_keyboard=True))
     await state.set_state(User.STATE_SUPPORT_END)
 
-
-# @router.message(User.STATE_SUPPORT_END)
-# async def support_end(message: types.Message, state: FSMContext):
-#     await restart(message, state)
-
-
 # Начало работы бота
-
 @router.message(CommandStart())
 async def start(message: types.Message, state: FSMContext):
     image_hello_path = ImageDirectory.auto_say_hi
     await message.answer_photo(photo=types.FSInputFile(image_hello_path),
                                caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
     await asyncio.sleep(0.5)
-    keyboard = create_keyboard(dict_start_brands)
+    builder = create_keyboard(list(dict_start_brands))
     image_path = ImageDirectory.auto_car_brand
-    await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
-                               reply_markup=keyboard.as_markup(resize_keyboard=True, row_width=2))
+    await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:", reply_markup=builder.as_markup(resize_keyboard=True))
     await state.set_state(User.STATE_CAR_BRAND)
 
 
@@ -212,9 +206,7 @@ async def get_car_brand(message, state):
 @router.message(User.STATE_CAR_MODEL)
 async def get_car_model(self, message, state):
     user_data = await state.get_data()
-    print(user_data)
     car_brand = user_data.get("car_brand", "")
-    print(car_brand)
 
     user_data["car_model"] = message.text  # Сохраняем выбранную модель в данных пользователя
     await state.update_data(user_data=user_data)  # Обновляем данные пользователя в состоянии
@@ -564,7 +556,6 @@ async def get_seller_phone(self, message, state):
         message.text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
         user_data["seller_phone"] = message.text
         await state.update_data(user_data=user_data)
-        print(user_data)
         if await validate_final_length(message, state, user_data):
             image_path = ImageDirectory.auto_car_photos
             with open(image_path, "rb") as image:
@@ -617,8 +608,6 @@ async def handle_photos(event: types.Message, state: FSMContext, album: list[Mes
 @router.message(F.text == "Отправить в канал")
 async def send_advertisement(message: types.Message, state):
     user_data = await state.get_data()
-    print('2', user_data['sent_photos'])
-
     await add_data_to_excel(message, state)
     user_id = message.from_user.id
     await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
@@ -668,7 +657,6 @@ async def preview_advertisement(message: types.Message, state: FSMContext):
 
 async def add_data_to_excel(message, state):
     user_data = await state.get_data()
-    print('3', user_data['sent_photos'])
     file_path = 'db.xlsx'
     row_data = [
         # db_fix.get('new_id'),
