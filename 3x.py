@@ -66,6 +66,13 @@ def create_keyboard(button_texts):
     builder.add(*buttons).adjust(2)
     return builder
 
+async def send_photo_with_caption(message, state, image_path, caption, builder=None):
+    user_data = await state.get_data()
+    reply_markup = None
+    if builder:
+        reply_markup = builder.as_markup(resize_keyboard=True)
+    await message.answer_photo(photo=types.FSInputFile(image_path), caption=caption, reply_markup=reply_markup)
+
 
 async def recognize_car_model(message, brand_name):
     models = []
@@ -173,13 +180,12 @@ async def support_message(message: types.Message, state: FSMContext):
 @router.message(CommandStart())
 async def start(message: types.Message, state: FSMContext):
     image_hello_path = ImageDirectory.auto_say_hi
-    await message.answer_photo(photo=types.FSInputFile(image_hello_path),
-                               caption=f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+    await send_photo_with_caption(message, state, image_hello_path,
+                                  f"Привет, {message.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
     await asyncio.sleep(0.5)
-    builder = create_keyboard(list(dict_start_brands))
+    builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
-    await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
-                               reply_markup=builder.as_markup(resize_keyboard=True))
+    await send_photo_with_caption(message, state, image_path, "Выберите бренд автомобиля:", builder)
     await state.set_state(User.STATE_CAR_BRAND)
 
 
@@ -188,7 +194,6 @@ async def get_car_brand(message, state):
     user_data = await state.get_data()
     search_brand = message.text
     await state.update_data(car_brand=search_brand)  # Обновляем данные пользователя в состоянии
-
     if search_brand == "⌨ Введите свой бренд":
         await message.answer("Пожалуйста, введите название марки своего автомобиля:")
     else:
@@ -213,9 +218,7 @@ async def get_car_model(message, state):
     print('0', user_data)
     await state.update_data(car_model=message.text)  # Обновляем данные пользователя в состоянии
     image_path = ImageDirectory.auto_car_year
-    await message.answer_photo(photo=types.FSInputFile(image_path),
-                               caption="Какой год выпуска у автомобиля? (напишите)")
-
+    await send_photo_with_caption(message, state, image_path, "Какой год выпуска у автомобиля? (напишите)")
     await state.set_state(User.STATE_CAR_YEAR)  # Переключаемся на следующий шаг
 
 
@@ -224,12 +227,10 @@ async def get_car_year(message, state):
     user_data = await state.get_data()
     print('1', user_data)
     if await validate_year(message.text):
-        builder = create_keyboard(dict_car_body_types)
         await state.update_data(car_year=message.text)
+        builder = create_keyboard(dict_car_body_types)
         image_path = ImageDirectory.auto_car_body_type
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Отлично! Какой тип кузова у автомобиля?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Отлично! Какой тип кузова у автомобиля?", builder)
         await state.set_state(User.STATE_CAR_BODY_TYPE)
     else:
         await message.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2024)")
@@ -244,9 +245,7 @@ async def get_car_body_type(message, state):
         builder = create_keyboard(dict_car_engine_types)
         await state.update_data(car_body_type=message.text)
         image_path = ImageDirectory.auto_car_engine_type
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Отлично! Какой тип двигателя у автомобиля?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Отлично! Какой тип двигателя у автомобиля?", builder)
         await state.set_state(User.STATE_CAR_ENGINE_TYPE)
     else:
         builder = create_keyboard(dict_car_body_types)
@@ -261,8 +260,8 @@ async def get_car_engine_type(message, state):
     if await validate_button_input(message.text, dict_car_engine_types):
         await state.update_data(car_engine_type=message.text)
         image_path = ImageDirectory.auto_car_engine_volume
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+        await send_photo_with_caption(message, state, image_path,
+                                      "Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
         await state.set_state(User.STATE_CAR_ENGINE_VOLUME)
     else:
         builder = create_keyboard(dict_car_engine_types)
@@ -283,8 +282,8 @@ async def get_car_engine_volume(message, state):
         if await validate_engine_volume(volume) and 0.2 <= volume <= 10.0:
             await state.update_data(car_engine_volume=volume)
             image_path = ImageDirectory.auto_car_power
-            await message.answer_photo(photo=types.FSInputFile(image_path),
-                                       caption="Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            await send_photo_with_caption(message, state, image_path,
+                                          "Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
             await state.set_state(User.STATE_CAR_POWER)
         else:
             await message.answer(
@@ -306,9 +305,8 @@ async def get_car_power(message, state):
         builder = create_keyboard(dict_car_transmission_types)
         await state.update_data(car_power=message.text)
         image_path = ImageDirectory.auto_car_transmission_type
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Отлично! Какой тип коробки передач используется в автомобиле?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path,
+                                      "Отлично! Какой тип коробки передач используется в автомобиле?", builder)
         await state.set_state(User.STATE_CAR_TRANSMISSION_TYPE)
     else:
         await message.answer(
@@ -324,8 +322,7 @@ async def get_car_transmission_type(message, state):
         builder = create_keyboard(dict_car_colors)
         await state.update_data(car_transmission_type=message.text)
         image_path = ImageDirectory.auto_car_color
-        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Какого цвета автомобиль?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Какого цвета автомобиль?", builder)
         await state.set_state(User.STATE_CAR_COLOR)
     else:
         builder = create_keyboard(dict_car_transmission_types)
@@ -342,9 +339,8 @@ async def get_car_color(message, state):
         builder = create_keyboard(dict_car_mileages)
         await state.update_data(car_color=message.text)
         image_path = ImageDirectory.auto_car_mileage
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path,
+                                      "Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", builder)
         await state.set_state(User.STATE_CAR_MILEAGE)
     else:
         builder = create_keyboard(dict_car_colors)
@@ -361,9 +357,7 @@ async def get_car_mileage(message, state):
         builder = create_keyboard(dict_car_document_statuses)
         await state.update_data(car_mileage=message.text)
         image_path = ImageDirectory.auto_car_document_status
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Каков статус документов у автомобиля ?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Каков статус документов у автомобиля ?", builder)
         await state.set_state(User.STATE_CAR_DOCUMENT_STATUS)
     else:
         builder = create_keyboard(dict_car_mileages)
@@ -381,8 +375,7 @@ async def get_car_document_status(message, state):
         builder = create_keyboard(dict_car_owners)
         await state.update_data(car_document_status=message.text)
         image_path = ImageDirectory.auto_car_owners
-        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Сколько владельцев у автомобиля?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Сколько владельцев у автомобиля?", builder)
         await state.set_state(User.STATE_CAR_OWNERS)
     else:
         builder = create_keyboard(dict_car_document_statuses)
@@ -399,8 +392,7 @@ async def get_car_owners(message, state):
         builder = create_keyboard(dict_car_customs_cleared)
         await state.update_data(car_owners=message.text)
         image_path = ImageDirectory.auto_car_customs_cleared
-        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Растаможен ли автомобиль?",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Растаможен ли автомобиль?", builder)
         await state.set_state(User.STATE_CAR_CUSTOMS_CLEARED)
     else:
         builder = create_keyboard(dict_car_owners)
@@ -417,8 +409,7 @@ async def get_car_customs_cleared(message, state):
         builder = create_keyboard(dict_car_conditions)
         await state.update_data(car_customs_cleared=message.text)
         image_path = ImageDirectory.auto_car_condition
-        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите состояние автомобиля:",
-                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await send_photo_with_caption(message, state, image_path, "Выберите состояние автомобиля:", builder)
         await state.set_state(User.STATE_CAR_CONDITION)
     else:
         builder = create_keyboard(dict_car_customs_cleared)
@@ -434,8 +425,7 @@ async def get_car_condition(message, state):
     if await validate_button_input(message.text, dict_car_conditions):
         await state.update_data(car_condition=message.text)
         image_path = ImageDirectory.auto_car_description
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Описание автомобиля. (напишите до 350 символов)")
+        await send_photo_with_caption(message, state, image_path, "Описание автомобиля. (напишите до 350 символов)")
         await state.set_state(User.STATE_CAR_DESCRIPTION)
     else:
         builder = create_keyboard(dict_car_conditions)
@@ -453,8 +443,7 @@ async def get_car_description(message, state):
             builder = create_keyboard(dict_currency)
             await state.update_data(car_description=message.text)
             image_path = ImageDirectory.auto_car_currency
-            await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите валюту:",
-                                       reply_markup=builder.as_markup(resize_keyboard=True))
+            await send_photo_with_caption(message, state, image_path, "Выберите валюту:", builder)
             await state.set_state(User.STATE_SELECT_CURRENCY)
         else:
             await message.answer("Пожалуйста, введите корректное описание.")
@@ -471,7 +460,7 @@ async def select_currency(message, state):
     if await validate_button_input(message.text, dict_currency):
         await state.update_data(currency=message.text)
         image_path = ImageDirectory.auto_car_price
-        await message.answer_photo(photo=types.FSInputFile(image_path), caption="Цена автомобиля?")
+        await send_photo_with_caption(message, state, image_path, "Цена автомобиля?")
         await state.set_state(User.STATE_CAR_PRICE)
     else:
         builder = create_keyboard(dict_currency)
@@ -487,8 +476,8 @@ async def get_car_price(message, state):
     if await validate_car_price(message.text):
         await state.update_data(car_price=message.text)
         image_path = ImageDirectory.auto_car_location
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+        await send_photo_with_caption(message, state, image_path,
+                                      "Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
         await state.set_state(User.STATE_CAR_LOCATION)
     else:
         await message.answer("Пожалуйста, введите корректную цену.")
@@ -502,8 +491,7 @@ async def get_car_location(message, state):
     if await validate_car_location(message.text):
         await state.update_data(car_location=message.text)
         image_path = ImageDirectory.auto_seller_name
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Прекрасно! Укажите имя продавца. (напишите)")
+        await send_photo_with_caption(message, state, image_path, "Прекрасно! Укажите имя продавца. (напишите)")
         await state.set_state(User.STATE_SELLER_NAME)
     else:
         await message.answer("Пожалуйста, введите корректные данные.")
@@ -517,8 +505,8 @@ async def get_seller_name(message, state):
     if await validate_name(message.text) is True:
         await state.update_data(seller_name=message.text)
         image_path = ImageDirectory.auto_seller_phone
-        await message.answer_photo(photo=types.FSInputFile(image_path),
-                                   caption="Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
+        await send_photo_with_caption(message, state, image_path,
+                                      "Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
         await state.set_state(User.STATE_SELLER_PHONE)
     else:
         await message.answer("Пожалуйста, введите корректное имя.")
@@ -534,8 +522,8 @@ async def get_seller_phone(message, state):
         await state.update_data(seller_phone=phone_text)
         if await validate_final_length(message, state, user_data):
             image_path = ImageDirectory.auto_car_photos
-            await message.answer_photo(photo=types.FSInputFile(image_path),
-                                       caption="Добавьте фотографии авто до 10 штук (За один раз!)")
+            await send_photo_with_caption(message, state, image_path,
+                                          "Добавьте фотографии авто до 10 штук (За один раз!)")
             await state.set_state(User.STATE_CAR_PHOTO)
         else:
             await message.reply(
