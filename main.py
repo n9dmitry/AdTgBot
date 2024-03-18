@@ -17,7 +17,7 @@ from aiogram.utils.markdown import hlink
 from fuzzywuzzy import fuzz
 
 from config import *
-from states2 import *
+from states import *
 from validation import *
 from enumlist import *
 from middleware_photogroup import AlbumMiddleware
@@ -78,8 +78,8 @@ async def send_photo_with_caption(message, state, image_path, caption, builder=N
     reply_markup = None
     if builder:
         reply_markup = builder.as_markup(resize_keyboard=True)
-    await message.answer_photo(photo=types.FSInputFile(image_path), caption=caption, reply_markup=reply_markup)
-
+    sent_message = await message.answer_photo(photo=types.FSInputFile(image_path), caption=caption, reply_markup=reply_markup)
+    return sent_message
 
 async def recognize_car_model(message, brand_name):
     models = []
@@ -198,13 +198,25 @@ async def start(message: types.Message, state: FSMContext):
 @router.message(Car.STATE_START_CARBOT)
 async def car_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
+
+
     image_hello_path = ImageDirectory.auto_say_hi
-    await send_photo_with_caption(callback_query.message, state, image_hello_path,
+    msg = await send_photo_with_caption(callback_query.message, state, image_hello_path,
                                   f"Привет, {callback_query.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+    print('1', msg)
+    if 'msg_ids' not in user_data:
+        user_data['msg_ids'] = []
+    user_data['msg_ids'].append(msg.message_id)
+    print('3', user_data)
+
     await asyncio.sleep(0.5)
     builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
-    await send_photo_with_caption(callback_query.message, state, image_path, "Выберите бренд автомобиля:", builder)
+    msg = await send_photo_with_caption(callback_query.message, state, image_path, "Выберите бренд автомобиля:", builder)
+    print('2', msg)
+    user_data['msg_ids'].append(msg.message_id)
+    print('4', user_data)
+    await state.update_data(user_data)
     await state.set_state(Car.STATE_CAR_BRAND)
 
 
@@ -244,8 +256,15 @@ async def x(message: types.Message, state: FSMContext):
 @router.message(Car.STATE_CAR_BRAND)
 async def get_car_brand(message, state):
     user_data = await state.get_data()
+    print('5', user_data)
+
     search_brand = message.text
     await state.update_data(car_brand=search_brand)  # Обновляем данные пользователя в состоянии
+
+    # Удаление сохраненных сообщений
+    for message_id in user_data['msg_ids']:
+        await message.bot.delete_message(message.chat.id, message_id)
+
     if search_brand == "⌨ Введите свой бренд":
         await message.answer("Пожалуйста, введите название марки своего автомобиля:")
     else:
