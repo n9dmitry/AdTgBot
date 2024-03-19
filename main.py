@@ -67,19 +67,46 @@ def create_keyboard(button_texts):
     return builder
 
 
-
 def create_keyboard_inline(buttons):
     builder = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     return builder
 
 
+async def add_message_id(state, message_id):
+    user_data = await state.get_data()
+    if 'msg_ids' not in user_data:
+        user_data['msg_ids'] = []
+    user_data['msg_ids'].append(message_id)
+    await state.update_data(user_data)
+
+
 async def send_photo_with_caption(message, state, image_path, caption, builder=None):
     user_data = await state.get_data()
+    print(user_data)
     reply_markup = None
     if builder:
         reply_markup = builder.as_markup(resize_keyboard=True)
-    sent_message = await message.answer_photo(photo=types.FSInputFile(image_path), caption=caption, reply_markup=reply_markup)
+    sent_message = await message.answer_photo(photo=types.FSInputFile(image_path), caption=caption,
+                                              reply_markup=reply_markup)
+    await add_message_id(state, sent_message.message_id)  # добавляем айдишник доп функцией
     return sent_message
+
+
+async def delete_saved_messages(message, state):
+    user_data = await state.get_data()
+    print('t1', user_data['msg_ids'])
+    chat_id = message.chat.id
+    print('t2', user_data['msg_ids'])
+    for message_id in user_data['msg_ids']:
+        try:
+            await message.bot.delete_message(chat_id, message_id)
+        except:
+            print(f"Error deleting message")
+            # Обработка ошибки, например, удаление сообщения из списка msg_ids
+            user_data['msg_ids'].delete(message_id)
+    await state .update_data(user_data)
+
+
 
 async def recognize_car_model(message, brand_name):
     models = []
@@ -192,31 +219,27 @@ async def start(message: types.Message, state: FSMContext):
         [types.InlineKeyboardButton(text='💼 Работа', callback_data='Работа')],
     ]
     builder = create_keyboard_inline(buttons)
-    await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
+    msg = await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
+    await add_message_id(state, msg.message_id)
+    await state.update_data(user_data)
+
 
 @router.callback_query(F.data == "Авто")
 @router.message(Car.STATE_START_CARBOT)
 async def car_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
-
+    await delete_saved_messages(callback_query.message, state)
 
     image_hello_path = ImageDirectory.auto_say_hi
     msg = await send_photo_with_caption(callback_query.message, state, image_hello_path,
-                                  f"Привет, {callback_query.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-    print('1', msg)
-    if 'msg_ids' not in user_data:
-        user_data['msg_ids'] = []
-    user_data['msg_ids'].append(msg.message_id)
-    print('3', user_data)
-
+                                        f"Привет, {callback_query.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+    await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
     await asyncio.sleep(0.5)
     builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
-    msg = await send_photo_with_caption(callback_query.message, state, image_path, "Выберите бренд автомобиля:", builder)
-    print('2', msg)
-    user_data['msg_ids'].append(msg.message_id)
-    print('4', user_data)
-    await state.update_data(user_data)
+    msg = await send_photo_with_caption(callback_query.message, state, image_path, "Выберите бренд автомобиля:",
+                                        builder)
+    await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
     await state.set_state(Car.STATE_CAR_BRAND)
 
 
@@ -232,6 +255,7 @@ async def estate_bot_start(callback_query: types.CallbackQuery, state: FSMContex
     image_path = ImageDirectory.auto_car_brand
     await send_photo_with_caption(callback_query.message, state, image_path, "Что за 🏢 Недвижимость у тебя?:", builder)
     await state.set_state(X.X)
+
 
 @router.callback_query(F.data == "Работа")
 @router.message(Hr.STATE_START_HRBOT)
@@ -256,36 +280,41 @@ async def x(message: types.Message, state: FSMContext):
 @router.message(Car.STATE_CAR_BRAND)
 async def get_car_brand(message, state):
     user_data = await state.get_data()
-    print('5', user_data)
-
+    print(user_data)
     search_brand = message.text
     await state.update_data(car_brand=search_brand)  # Обновляем данные пользователя в состоянии
-
+    print('сообщения удалены')
     # Удаление сохраненных сообщений
-    for message_id in user_data['msg_ids']:
-        await message.bot.delete_message(message.chat.id, message_id)
+
+    await delete_saved_messages(message, state)
 
     if search_brand == "⌨ Введите свой бренд":
-        await message.answer("Пожалуйста, введите название марки своего автомобиля:")
+        msg = await message.answer("Пожалуйста, введите название марки своего автомобиля:")
+        await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
     else:
         models = await recognize_car_model(message, search_brand)
-
         if not models:
-            await message.answer("Марка не найдена, попробуйте еще раз")
+            msg = await message.answer("Марка не найдена, попробуйте еще раз")
+            await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
             await state.set_state(Car.STATE_CAR_BRAND)
         else:
             model_names = [model['name'] for model in models]
             builder = create_keyboard(model_names)
-            await message.answer("Выберите модель автомобиля из списка:")
-            await message.answer(f"Модели автомобилей марки '{search_brand}':",
-                                 reply_markup=builder.as_markup(resize_keyboard=True))
-
+            msg = await message.answer("Выберите модель автомобиля из списка:")
+            await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
+            msg = await message.answer(f"Модели автомобилей марки '{search_brand}':",
+                                       reply_markup=builder.as_markup(resize_keyboard=True))
+            await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
             await state.set_state(Car.STATE_CAR_MODEL)
 
 
 @router.message(Car.STATE_CAR_MODEL)
 async def get_car_model(message, state):
     user_data = await state.get_data()
+    print('test1', user_data)
+    await delete_saved_messages(message, state)
+
+    print('test2', user_data)
     print('0', user_data)
     await state.update_data(car_model=message.text)  # Обновляем данные пользователя в состоянии
     image_path = ImageDirectory.auto_car_year
