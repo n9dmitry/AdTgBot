@@ -485,7 +485,7 @@ async def get_car_color(message, state):
                                    reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_COLOR)
-
+#
 
 @router.message(Car.STATE_CAR_MILEAGE)
 async def get_car_mileage(message, state):
