@@ -324,7 +324,7 @@ async def get_car_model(message, state):
 
     await state.update_data(car_model=message.text)
     image_path = ImageDirectory.auto_car_year
-    msg = await send_photo_with_caption(message, state, image_path, "Какой год выпуска у автомобиля? (напишите)")
+    msg = await send_photo_with_caption(message, state, image_path, "Какой год выпуска у автомобиля? (⌨ напишите)")
     await add_message_id(state, msg.message_id)
     await state.set_state(Car.STATE_CAR_YEAR)
 
@@ -381,12 +381,12 @@ async def get_car_engine_type(message, state):
         await state.update_data(car_engine_type=message.text)
         image_path = ImageDirectory.auto_car_engine_volume
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+                                            "Хорошо! Какой объем двигателя у автомобиля (л.)? (⌨ напишите через точку: например 1.6)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_VOLUME)
     else:
         builder = create_keyboard(dict_car_engine_types)
-        msg = await message.answer("Пожалуйста, выберите корректный тип двигателя.",
+        msg = await message.answer("⌨ Пожалуйста, выберите корректный тип двигателя.",
                                    reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_TYPE)
@@ -418,7 +418,7 @@ async def get_car_engine_volume(message, state):
 
     except ValueError:
         msg = await message.answer(
-            "Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
+            "Пожалуйста, введите корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_VOLUME)
 
@@ -476,7 +476,7 @@ async def get_car_color(message, state):
         await state.update_data(car_color=message.text)
         image_path = ImageDirectory.auto_car_mileage
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", builder)
+                                            "Какой пробег автомобиля(км.), напишите ⌨? (если новый, выберите 'Новый')", builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_MILEAGE)
     else:
@@ -503,7 +503,7 @@ async def get_car_mileage(message, state):
         await state.set_state(Car.STATE_CAR_DOCUMENT_STATUS)
     else:
         builder = create_keyboard(dict_car_mileages)
-        msg = await message.answer("Пожалуйста, введите корректное значение пробега.",
+        msg = await message.answer("Пожалуйста, ⌨ введите корректное значение пробега.",
                                    reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_MILEAGE)
@@ -582,7 +582,7 @@ async def get_car_condition(message, state):
         await state.update_data(car_condition=message.text)
         image_path = ImageDirectory.auto_car_description
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Описание автомобиля. (напишите до 350 символов)")
+                                            "Описание автомобиля. (⌨ напишите до 350 символов)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_DESCRIPTION)
     else:
@@ -626,7 +626,7 @@ async def select_currency(message, state):
     if await validate_button_input(message.text, dict_currency):
         await state.update_data(currency=message.text)
         image_path = ImageDirectory.auto_car_price
-        msg = await send_photo_with_caption(message, state, image_path, "Цена автомобиля?")
+        msg = await send_photo_with_caption(message, state, image_path, "⌨ Цена автомобиля?")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_PRICE)
     else:
@@ -647,11 +647,11 @@ async def get_car_price(message, state):
         await state.update_data(car_price=message.text)
         image_path = ImageDirectory.auto_car_location
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+                                            "Прекрасно! Где находится автомобиль? Город/пункт. (⌨ напишите)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_LOCATION)
     else:
-        msg = await message.answer("Пожалуйста, введите корректную цену.")
+        msg = await message.answer("⌨ Пожалуйста, введите корректную цену.")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_PRICE)
 
@@ -665,7 +665,7 @@ async def get_car_location(message, state):
     if await validate_car_location(message.text):
         await state.update_data(car_location=message.text)
         image_path = ImageDirectory.auto_seller_name
-        msg = await send_photo_with_caption(message, state, image_path, "Прекрасно! Укажите имя продавца. (напишите)")
+        msg = await send_photo_with_caption(message, state, image_path, "Прекрасно! Укажите имя продавца. (⌨ напишите)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELLER_NAME)
     else:
@@ -684,7 +684,7 @@ async def get_seller_name(message, state):
         await state.update_data(seller_name=message.text)
         image_path = ImageDirectory.auto_seller_phone
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
+                                            "Отлично! Какой телефонный номер у продавца? (⌨ напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELLER_PHONE)
     else:
