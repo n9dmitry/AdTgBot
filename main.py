@@ -76,34 +76,42 @@ async def add_message_id(state, message_id):
     user_data = await state.get_data()
     if 'msg_ids' not in user_data:
         user_data['msg_ids'] = []
-    user_data['msg_ids'].append(message_id)
+    if message_id not in user_data['msg_ids']:
+        user_data['msg_ids'].append(message_id)
     await state.update_data(user_data)
 
 
 async def send_photo_with_caption(message, state, image_path, caption, builder=None):
     user_data = await state.get_data()
-    print(user_data)
     reply_markup = None
     if builder:
         reply_markup = builder.as_markup(resize_keyboard=True)
     sent_message = await message.answer_photo(photo=types.FSInputFile(image_path), caption=caption,
                                               reply_markup=reply_markup)
-    await add_message_id(state, sent_message.message_id)  # добавляем айдишник доп функцией
+    # await add_message_id(state, sent_message.message_id)  # добавляем айдишник доп функцией
     return sent_message
 
 
 async def delete_saved_messages(message, state):
     user_data = await state.get_data()
-    print('t1', user_data['msg_ids'])
     chat_id = message.chat.id
-    print('t2', user_data['msg_ids'])
-    for message_id in user_data['msg_ids']:
+    if 'msg_ids' not in user_data:
+        user_data['msg_ids'] = []
+    msg_ids_copy = user_data['msg_ids'].copy()
+
+    for message_id in msg_ids_copy:
         try:
+            user_data['msg_ids'].remove(message_id)
             await message.bot.delete_message(chat_id, message_id)
-        except:
-            print(f"Error deleting message")
-            # Обработка ошибки, например, удаление сообщения из списка msg_ids
-            user_data['msg_ids'].delete(message_id)
+            # await state.update_data(user_data)
+        except Exception as e:
+            print('Ошибка:', e)
+        #     print(user_data)
+        #     print(message_id)
+
+        #     print(f"Error deleting message")
+        #     # Обработка ошибки, например, удаление сообщения из списка msg_ids
+        #     user_data['msg_ids'].remove(message_id)
     await state .update_data(user_data)
 
 
@@ -158,8 +166,10 @@ async def recognize_car_model(message, brand_name):
 @router.message(Cmd.STATE_SUPPORT_END)
 @router.message(Command("restart"))
 async def restart(message: types.Message, state: FSMContext):
+    await delete_saved_messages(message, state)
     await state.clear()
-    await message.answer("Бот перезапущен.")
+    msg = await message.answer("Бот перезапущен.")
+    await add_message_id(state, msg.message_id)
     await start(message, state)
 
 
@@ -213,6 +223,7 @@ async def support_message(message: types.Message, state: FSMContext):
 @router.message(CommandStart())
 async def start(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     buttons = [
         [types.InlineKeyboardButton(text='🚗 Авто', callback_data='Авто')],
         [types.InlineKeyboardButton(text='🏢 Недвижимость', callback_data='Недвижимость')],
@@ -229,12 +240,12 @@ async def start(message: types.Message, state: FSMContext):
 async def car_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     await delete_saved_messages(callback_query.message, state)
-
-    image_hello_path = ImageDirectory.auto_say_hi
-    msg = await send_photo_with_caption(callback_query.message, state, image_hello_path,
-                                        f"Привет, {callback_query.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-    await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
-    await asyncio.sleep(0.5)
+    #
+    # image_hello_path = ImageDirectory.auto_say_hi
+    # msg = await send_photo_with_caption(callback_query.message, state, image_hello_path,
+    #                                     f"Привет, {callback_query.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
+    # await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
+    # await asyncio.sleep(0.5)
     builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
     msg = await send_photo_with_caption(callback_query.message, state, image_path, "Выберите бренд автомобиля:",
@@ -280,10 +291,8 @@ async def x(message: types.Message, state: FSMContext):
 @router.message(Car.STATE_CAR_BRAND)
 async def get_car_brand(message, state):
     user_data = await state.get_data()
-    print(user_data)
     search_brand = message.text
     await state.update_data(car_brand=search_brand)  # Обновляем данные пользователя в состоянии
-    print('сообщения удалены')
     # Удаление сохраненных сообщений
 
     await delete_saved_messages(message, state)
@@ -300,337 +309,411 @@ async def get_car_brand(message, state):
         else:
             model_names = [model['name'] for model in models]
             builder = create_keyboard(model_names)
-            msg = await message.answer("Выберите модель автомобиля из списка:")
+            image_path = ImageDirectory.auto_car_model
+            msg = await send_photo_with_caption(message, state, image_path,"Выберите модель автомобиля из списка:")
             await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
             msg = await message.answer(f"Модели автомобилей марки '{search_brand}':",
                                        reply_markup=builder.as_markup(resize_keyboard=True))
             await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
             await state.set_state(Car.STATE_CAR_MODEL)
 
-
 @router.message(Car.STATE_CAR_MODEL)
 async def get_car_model(message, state):
     user_data = await state.get_data()
-    print('test1', user_data)
     await delete_saved_messages(message, state)
 
-    print('test2', user_data)
-    print('0', user_data)
-    await state.update_data(car_model=message.text)  # Обновляем данные пользователя в состоянии
+    await state.update_data(car_model=message.text)
     image_path = ImageDirectory.auto_car_year
-    await send_photo_with_caption(message, state, image_path, "Какой год выпуска у автомобиля? (напишите)")
-    await state.set_state(Car.STATE_CAR_YEAR)  # Переключаемся на следующий шаг
+    msg = await send_photo_with_caption(message, state, image_path, "Какой год выпуска у автомобиля? (напишите)")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Car.STATE_CAR_YEAR)
 
 
 @router.message(Car.STATE_CAR_YEAR)
 async def get_car_year(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('1', user_data)
+
     if await validate_year(message.text):
         await state.update_data(car_year=message.text)
         builder = create_keyboard(dict_car_body_types)
         image_path = ImageDirectory.auto_car_body_type
-        await send_photo_with_caption(message, state, image_path, "Отлично! Какой тип кузова у автомобиля?", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Отлично! Какой тип кузова у автомобиля?",
+                                            builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_BODY_TYPE)
     else:
-        await message.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2024)")
+        msg = await message.answer("Пожалуйста, введите год в формате YYYY (например, 1990 или 2024)")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_YEAR)
 
 
 @router.message(Car.STATE_CAR_BODY_TYPE)
 async def get_car_body_type(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('2', user_data)
+
     if await validate_button_input(message.text, dict_car_body_types):
         builder = create_keyboard(dict_car_engine_types)
         await state.update_data(car_body_type=message.text)
         image_path = ImageDirectory.auto_car_engine_type
-        await send_photo_with_caption(message, state, image_path, "Отлично! Какой тип двигателя у автомобиля?", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Отлично! Какой тип двигателя у автомобиля?",
+                                            builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_TYPE)
     else:
         builder = create_keyboard(dict_car_body_types)
-        await message.answer("Пожалуйста, выберите корректный тип кузова.", builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректный тип кузова.",
+                                   builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_BODY_TYPE)
 
 
 @router.message(Car.STATE_CAR_ENGINE_TYPE)
 async def get_car_engine_type(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('3', user_data)
+
     if await validate_button_input(message.text, dict_car_engine_types):
         await state.update_data(car_engine_type=message.text)
         image_path = ImageDirectory.auto_car_engine_volume
-        await send_photo_with_caption(message, state, image_path,
-                                      "Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Хорошо! Какой объем двигателя у автомобиля (л.)? (напишите через точку: например 1.6)")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_VOLUME)
     else:
         builder = create_keyboard(dict_car_engine_types)
-        await message.answer("Пожалуйста, выберите корректный тип двигателя.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректный тип двигателя.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_TYPE)
 
 
 @router.message(Car.STATE_CAR_ENGINE_VOLUME)
 async def get_car_engine_volume(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('4', user_data)
+
     try:
-        if "," in message.text:  # Проверяем наличие запятой
-            message.text = message.text.replace(',', '.')  # Заменяем запятую на точку
-        volume = float(message.text)  # Преобразуем текст в число
+        if "," in message.text:
+            message.text = message.text.replace(',', '.')
+        volume = float(message.text)
 
         if await validate_engine_volume(volume) and 0.2 <= volume <= 10.0:
             await state.update_data(car_engine_volume=volume)
             image_path = ImageDirectory.auto_car_power
-            await send_photo_with_caption(message, state, image_path,
-                                          "Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            msg = await send_photo_with_caption(message, state, image_path,
+                                                "Отлично! Укажите мощность двигателя автомобиля от 50 до 1000 (л.с.). (напишите)")
+            await add_message_id(state, msg.message_id)
             await state.set_state(Car.STATE_CAR_POWER)
         else:
-            await message.answer(
+            msg = await message.answer(
                 "Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
+            await add_message_id(state, msg.message_id)
             await state.set_state(Car.STATE_CAR_ENGINE_VOLUME)
 
     except ValueError:
-        # Если не удалось преобразовать введенный текст в число
-        await message.answer(
+        msg = await message.answer(
             "Пожалуйста, корректный объем двигателя (в пределах от 0.2 до 10.0 литров) через точку или целым числом(!).")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_ENGINE_VOLUME)
 
 
 @router.message(Car.STATE_CAR_POWER)
 async def get_car_power(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('5', user_data)
+
     if await validate_car_power(message.text):
         builder = create_keyboard(dict_car_transmission_types)
         await state.update_data(car_power=message.text)
         image_path = ImageDirectory.auto_car_transmission_type
-        await send_photo_with_caption(message, state, image_path,
-                                      "Отлично! Какой тип коробки передач используется в автомобиле?", builder)
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Отлично! Какой тип коробки передач используется в автомобиле?", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_TRANSMISSION_TYPE)
     else:
-        await message.answer(
+        msg = await message.answer(
             "Пожалуйста, введите корректную мощность двигателя (в пределах от 50 до 1000 л.с.).")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_POWER)
 
 
 @router.message(Car.STATE_CAR_TRANSMISSION_TYPE)
 async def get_car_transmission_type(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('6', user_data)
+
     if await validate_button_input(message.text, dict_car_transmission_types):
         builder = create_keyboard(dict_car_colors)
         await state.update_data(car_transmission_type=message.text)
         image_path = ImageDirectory.auto_car_color
-        await send_photo_with_caption(message, state, image_path, "Какого цвета автомобиль?", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Какого цвета автомобиль?", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_COLOR)
     else:
         builder = create_keyboard(dict_car_transmission_types)
-        await message.answer("Пожалуйста, выберите корректный тип трансмиссии.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректный тип трансмиссии.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_TRANSMISSION_TYPE)
 
 
 @router.message(Car.STATE_CAR_COLOR)
 async def get_car_color(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('7', user_data)
+
     if await validate_button_input(message.text, dict_car_colors):
         builder = create_keyboard(dict_car_mileages)
         await state.update_data(car_color=message.text)
         image_path = ImageDirectory.auto_car_mileage
-        await send_photo_with_caption(message, state, image_path,
-                                      "Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", builder)
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Каков пробег автомобиля(км.)? (если новый, выберите 'Новый')", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_MILEAGE)
     else:
         builder = create_keyboard(dict_car_colors)
-        await message.answer("Пожалуйста, выберите корректный цвет автомобиля.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректный цвет автомобиля.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_COLOR)
 
 
 @router.message(Car.STATE_CAR_MILEAGE)
 async def get_car_mileage(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('8', user_data)
+
     if await validate_car_mileage(message.text):
         builder = create_keyboard(dict_car_document_statuses)
         await state.update_data(car_mileage=message.text)
         image_path = ImageDirectory.auto_car_document_status
-        await send_photo_with_caption(message, state, image_path, "Каков статус документов у автомобиля ?", builder)
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Каков статус документов у автомобиля ?", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_DOCUMENT_STATUS)
     else:
         builder = create_keyboard(dict_car_mileages)
-        await message.answer("Пожалуйста, введите корректное значение пробега.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, введите корректное значение пробега.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_MILEAGE)
 
 
 @router.message(Car.STATE_CAR_DOCUMENT_STATUS)
 async def get_car_document_status(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('9', user_data)
-    if await validate_button_input(message.text, dict_car_document_statuses):
 
+    if await validate_button_input(message.text, dict_car_document_statuses):
         builder = create_keyboard(dict_car_owners)
         await state.update_data(car_document_status=message.text)
         image_path = ImageDirectory.auto_car_owners
-        await send_photo_with_caption(message, state, image_path, "Сколько владельцев у автомобиля?", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Сколько владельцев у автомобиля?", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_OWNERS)
     else:
         builder = create_keyboard(dict_car_document_statuses)
-        await message.answer("Пожалуйста, выберите корректный статус документов автомобиля.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректный статус документов автомобиля.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_DOCUMENT_STATUS)
 
 
 @router.message(Car.STATE_CAR_OWNERS)
 async def get_car_owners(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('10', user_data)
+
     if await validate_button_input(message.text, dict_car_owners):
         builder = create_keyboard(dict_car_customs_cleared)
         await state.update_data(car_owners=message.text)
         image_path = ImageDirectory.auto_car_customs_cleared
-        await send_photo_with_caption(message, state, image_path, "Растаможен ли автомобиль?", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Растаможен ли автомобиль?", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_CUSTOMS_CLEARED)
     else:
         builder = create_keyboard(dict_car_owners)
-        await message.answer("Пожалуйста, выберите корректное количество владельцев автомобиля.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректное количество владельцев автомобиля.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_OWNERS)
 
 
 @router.message(Car.STATE_CAR_CUSTOMS_CLEARED)
 async def get_car_customs_cleared(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('11', user_data)
+
     if await validate_button_input(message.text, dict_car_customs_cleared):
         builder = create_keyboard(dict_car_conditions)
         await state.update_data(car_customs_cleared=message.text)
         image_path = ImageDirectory.auto_car_condition
-        await send_photo_with_caption(message, state, image_path, "Выберите состояние автомобиля:", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Выберите состояние автомобиля:", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_CONDITION)
     else:
         builder = create_keyboard(dict_car_customs_cleared)
-        await message.answer("Пожалуйста, выберите корректный статус растаможки автомобиля.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректный статус растаможки автомобиля.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_CUSTOMS_CLEARED)
 
 
 @router.message(Car.STATE_CAR_CONDITION)
 async def get_car_condition(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('12', user_data)
+
     if await validate_button_input(message.text, dict_car_conditions):
         await state.update_data(car_condition=message.text)
         image_path = ImageDirectory.auto_car_description
-        await send_photo_with_caption(message, state, image_path, "Описание автомобиля. (напишите до 350 символов)")
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Описание автомобиля. (напишите до 350 символов)")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_DESCRIPTION)
     else:
         builder = create_keyboard(dict_car_conditions)
-        await message.answer("Пожалуйста, выберите корректное состояние автомобиля.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректное состояние автомобиля.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_CONDITION)
 
 
 @router.message(Car.STATE_CAR_DESCRIPTION)
 async def get_car_description(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('13', user_data)
+
     if await validate_length_text(message):
         if await validate_car_description(message.text):
             builder = create_keyboard(dict_currency)
             await state.update_data(car_description=message.text)
             image_path = ImageDirectory.auto_car_currency
-            await send_photo_with_caption(message, state, image_path, "Выберите валюту:", builder)
+            msg = await send_photo_with_caption(message, state, image_path, "Выберите валюту:", builder)
+            await add_message_id(state, msg.message_id)
             await state.set_state(Car.STATE_SELECT_CURRENCY)
         else:
-            await message.answer("Пожалуйста, введите корректное описание.")
+            msg = await message.answer("Пожалуйста, введите корректное описание.")
+            await add_message_id(state, msg.message_id)
             await state.set_state(Car.STATE_CAR_DESCRIPTION)
     else:
-        await message.answer("Ваше описание сильно большое. Напишите до ~350 символов:")
+        msg = await message.answer("Ваше описание слишком большое. Напишите до ~350 символов:")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_DESCRIPTION)
 
 
 @router.message(Car.STATE_SELECT_CURRENCY)
 async def select_currency(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('14', user_data)
+
     if await validate_button_input(message.text, dict_currency):
         await state.update_data(currency=message.text)
         image_path = ImageDirectory.auto_car_price
-        await send_photo_with_caption(message, state, image_path, "Цена автомобиля?")
+        msg = await send_photo_with_caption(message, state, image_path, "Цена автомобиля?")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_PRICE)
     else:
         builder = create_keyboard(dict_currency)
-        await message.answer("Пожалуйста, выберите корректную валюту.",
-                             reply_markup=builder.as_markup(resize_keyboard=True))
+        msg = await message.answer("Пожалуйста, выберите корректную валюту.",
+                                    reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELECT_CURRENCY)
 
 
 @router.message(Car.STATE_CAR_PRICE)
 async def get_car_price(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('15', user_data)
+
     if await validate_car_price(message.text):
         await state.update_data(car_price=message.text)
         image_path = ImageDirectory.auto_car_location
-        await send_photo_with_caption(message, state, image_path,
-                                      "Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Прекрасно! Где находится автомобиль? Город/пункт. (напишите)")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_LOCATION)
     else:
-        await message.answer("Пожалуйста, введите корректную цену.")
+        msg = await message.answer("Пожалуйста, введите корректную цену.")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_PRICE)
 
 
 @router.message(Car.STATE_CAR_LOCATION)
 async def get_car_location(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('16', user_data)
+
     if await validate_car_location(message.text):
         await state.update_data(car_location=message.text)
         image_path = ImageDirectory.auto_seller_name
-        await send_photo_with_caption(message, state, image_path, "Прекрасно! Укажите имя продавца. (напишите)")
+        msg = await send_photo_with_caption(message, state, image_path, "Прекрасно! Укажите имя продавца. (напишите)")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELLER_NAME)
     else:
-        await message.answer("Пожалуйста, введите корректные данные.")
+        msg = await message.answer("Пожалуйста, введите корректные данные.")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_CAR_LOCATION)
 
 
 @router.message(Car.STATE_SELLER_NAME)
 async def get_seller_name(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('17', user_data)
+
     if await validate_name(message.text) is True:
         await state.update_data(seller_name=message.text)
         image_path = ImageDirectory.auto_seller_phone
-        await send_photo_with_caption(message, state, image_path,
-                                      "Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Отлично! Какой телефонный номер у продавца? (напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELLER_PHONE)
     else:
-        await message.answer("Пожалуйста, введите корректное имя.")
+        msg = await message.answer("Пожалуйста, введите корректное имя.")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELLER_NAME)
 
 
 @router.message(Car.STATE_SELLER_PHONE)
 async def get_seller_phone(message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('18', user_data)
+
     if await validate_phone_number(message.text) is True:
         phone_text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
         await state.update_data(seller_phone=phone_text)
         if await validate_final_length(message, state, user_data):
             image_path = ImageDirectory.auto_car_photos
-            await send_photo_with_caption(message, state, image_path,
-                                          "Добавьте фотографии авто до 10 штук (За один раз!)")
+            msg = await send_photo_with_caption(message, state, image_path,
+                                                "Добавьте фотографии авто до 10 штук (За один раз!)")
+            await add_message_id(state, msg.message_id)
             await state.set_state(Car.STATE_CAR_PHOTO)
         else:
             await message.reply(
-                f"Ваше сообщение получилось сильно большим! \nПерезагрузите бота и напишите объявление заново.")
-
+                f"Ваше сообщение получилось слишком большим! \nПерезагрузите бота и напишите объявление заново.")
     else:
-        await message.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
+        msg = await message.answer("Пожалуйста, введите корректный номер в формате +7XXXNNNXXNN.")
+        await add_message_id(state, msg.message_id)
         await state.set_state(Car.STATE_SELLER_PHONE)
 
 
@@ -638,6 +721,7 @@ async def get_seller_phone(message, state):
 @router.message(F.media_group_id)
 async def handle_photos(message: types.Message, state: FSMContext, album: list[Message]):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('19', user_data)
     if 'sent_photos' not in user_data:
         user_data['sent_photos'] = []
@@ -683,22 +767,24 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
     builder = ReplyKeyboardBuilder([[types.KeyboardButton(text="Следущий шаг"), ]])
     if album:
         count_photos = len(album)
-        await message.reply(f'{count_photos} Фото добавлены', reply_markup=builder.as_markup(resize_keyboard=True))
-
+        msg = await message.reply(f'{count_photos} Фото добавлены', reply_markup=builder.as_markup(resize_keyboard=True))
+        await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
     await state.set_state(Car.STATE_PREVIEW_ADVERTISMENT)
 
 
 @router.message(F.text == "Отправить в канал")
 async def send_advertisement(message: types.Message, state):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
     print('21', user_data)
     await add_data_to_excel(message, state)
     user_id = message.from_user.id
     await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
     builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
-    await bot.send_message(user_id, "Объявление отправлено в канал!",
+    msg = await bot.send_message(user_id, "Объявление отправлено в канал!",
                            reply_markup=builder.as_markup(resize_keyboard=True))
-    await state.clear()
+    await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
+    # await state.clear()
 
 
 # @router.message(F.text == "Отменить и заполнить заново")
@@ -715,15 +801,21 @@ async def send_advertisement(message: types.Message, state):
 
 
 @router.message(F.text == "Ускорить продажу")
-async def promotion(message: types.Message):
+async def promotion(message: types.Message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
     builder = create_keyboard(['Перезагрузить бота'])
-    await message.reply("Чтобы купить закреп напишите @selbie_adv",
+    msg = await message.reply("Чтобы купить закреп, напишите @selbie_adv",
                         reply_markup=builder.as_markup(resize_keyboard=True))
+    await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
 
 
 @router.message(Car.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
     print('20', user_data)
     await bot.send_media_group(chat_id=message.chat.id, media=user_data['sent_photos'])
 
@@ -732,9 +824,10 @@ async def preview_advertisement(message: types.Message, state: FSMContext):
         KeyboardButton(text="Отменить и заполнить заново")
     ]])
 
-    await message.reply(
+    msg = await message.reply(
         "Так будет выглядеть ваше объявление. Вы можете либо разместить либо отменить и заполнить заново.",
         reply_markup=builder.as_markup(resize_keyboard=True))
+    await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
 
     # db_fix.clear()
 
