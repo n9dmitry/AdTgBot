@@ -6,6 +6,7 @@ import uuid
 import openpyxl
 
 from aiogram import Bot, Dispatcher, Router, F, types
+from aiogram.client.session import aiohttp
 from aiogram.types import KeyboardButton, InputMediaPhoto, Message
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -58,8 +59,28 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 
 
 # Конец импорта json словарей
-# Создание клавиатуры
 
+
+async def send_api(message, state):
+    async with aiohttp.ClientSession() as session:
+        user_data = await state.get_data()
+        print('user_data_api:', user_data)
+
+        try:
+            async with session.post('http://127.0.0.1:8000/api/user_data', json=user_data,
+                                    headers={"Content-Type": "application/json"}) as response:
+                await message.answer(f'API отправлены:')
+
+                # print('session.post;', user_data)
+                if response.status == 200:
+                    print("User data sent successfully to Node.js site!", flush=True)
+                else:
+                    print("Failed to send user data to Node.js site. Status code:", response.status)
+        except aiohttp.ClientError as e:
+            print("Error sending user data to Node.js site:", e)
+
+
+# Создание клавиатуры
 def create_keyboard(button_texts):
     buttons = [KeyboardButton(text=text) for text in button_texts]
     builder = ReplyKeyboardBuilder()
@@ -771,7 +792,6 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
         await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
     await state.set_state(Car.STATE_PREVIEW_ADVERTISMENT)
 
-
 @router.message(F.text == "Отправить в канал")
 async def send_advertisement(message: types.Message, state):
     user_data = await state.get_data()
@@ -784,20 +804,8 @@ async def send_advertisement(message: types.Message, state):
     msg = await bot.send_message(user_id, "Объявление отправлено в канал!",
                            reply_markup=builder.as_markup(resize_keyboard=True))
     await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
+    await send_api(message, state)
     # await state.clear()
-
-
-# @router.message(F.text == "Отменить и заполнить заново")
-# async def fill_again(message: types.Message, state: FSMContext):
-#     user_data = await state.get_data()
-#     builder = create_keyboard(list(dict_car_brands_and_models.keys()))
-#     image_path = ImageDirectory.auto_car_brand
-#     with open(image_path, "rb"):
-#         await message.answer_photo(photo=types.FSInputFile(image_path), caption="Выберите бренд автомобиля:",
-#                                    reply_markup=builder.as_markup(resize_keyboard=True))
-#     user_data['sent_photos'].clear()
-#     await state.clear()
-#     await state.set_state(Car.STATE_CAR_BRAND)
 
 
 @router.message(F.text == "Ускорить продажу")
