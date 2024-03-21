@@ -226,8 +226,8 @@ async def start(message: types.Message, state: FSMContext):
     await delete_saved_messages(message, state)
     buttons = [
         [types.InlineKeyboardButton(text='🚗 Авто', callback_data='Авто')],
-        [types.InlineKeyboardButton(text='🏢 Недвижимость', callback_data='Недвижимость')],
-        [types.InlineKeyboardButton(text='💼 Работа', callback_data='Работа')],
+        [types.InlineKeyboardButton(text='🏢 Недвижимость (В разработке)', callback_data='Недвижимость')],
+        [types.InlineKeyboardButton(text='💼 Работа (В разработке)', callback_data='Работа')],
     ]
     builder = create_keyboard_inline(buttons)
     msg = await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
@@ -254,7 +254,7 @@ async def car_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     await state.set_state(Car.STATE_CAR_BRAND)
 
 
-@router.callback_query(F.data == "Недвижимость")
+@router.callback_query(F.data == "Недвижимост")
 @router.message(Estate.STATE_START_ESTATEBOT)
 async def estate_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
@@ -268,7 +268,7 @@ async def estate_bot_start(callback_query: types.CallbackQuery, state: FSMContex
     await state.set_state(X.X)
 
 
-@router.callback_query(F.data == "Работа")
+@router.callback_query(F.data == "Работ")
 @router.message(Hr.STATE_START_HRBOT)
 async def hr_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
@@ -399,9 +399,9 @@ async def get_car_engine_volume(message, state):
     print('4', user_data)
 
     try:
-        if "," in message.text:
-            message.text = message.text.replace(',', '.')
-        volume = float(message.text)
+        # Заменяем запятую на точку перед попыткой преобразования в число
+        volume_str = message.text.replace(',', '.')
+        volume = float(volume_str)
 
         if await validate_engine_volume(volume) and 0.2 <= volume <= 10.0:
             await state.update_data(car_engine_volume=volume)
