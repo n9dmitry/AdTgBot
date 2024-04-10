@@ -247,8 +247,8 @@ async def start(message: types.Message, state: FSMContext):
     await delete_saved_messages(message, state)
     buttons = [
         [types.InlineKeyboardButton(text='🚗 Авто', callback_data='Авто')],
-        [types.InlineKeyboardButton(text='🏢 Недвижимость (В разработке)', callback_data='Недвижимость')],
-        [types.InlineKeyboardButton(text='💼 Работа (В разработке)', callback_data='Работа')],
+        [types.InlineKeyboardButton(text='🏢 Недвижимость (в разработке)', callback_data='Недвижимость')],
+        [types.InlineKeyboardButton(text='💼 Работа (тестируется)', callback_data='Работа')],
     ]
     builder = create_keyboard_inline(buttons)
     msg = await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
@@ -261,23 +261,18 @@ async def start(message: types.Message, state: FSMContext):
 async def car_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     await delete_saved_messages(callback_query.message, state)
-    #
-    # image_hello_path = ImageDirectory.auto_say_hi
-    # msg = await send_photo_with_caption(callback_query.message, state, image_hello_path,
-    #                                     f"Привет, {callback_query.from_user.first_name}! Давай продадим твоё авто! Начнём же сбор данных!")
-    # await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
-    # await asyncio.sleep(0.5)
     builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
     msg = await send_photo_with_caption(callback_query.message, state, image_path, "Выберите бренд автомобиля:",
                                         builder)
     await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
+    await state.update_data(category='car')
     await state.set_state(Car.STATE_CAR_BRAND)
 
 
-@router.callback_query(F.data == "Недвижимост")
-@router.message(Estate.STATE_START_ESTATEBOT)
-async def estate_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == "Недвижимость")
+@router.message(Realty.STATE_START_REALTY)
+async def realty_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     image_hello_path = ImageDirectory.auto_say_hi
     await send_photo_with_caption(callback_query.message, state, image_hello_path,
@@ -286,11 +281,12 @@ async def estate_bot_start(callback_query: types.CallbackQuery, state: FSMContex
     builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
     await send_photo_with_caption(callback_query.message, state, image_path, "Что за 🏢 Недвижимость у тебя?:", builder)
+    await state.update_data(category='realty')
     await state.set_state(X.X)
 
 
-@router.callback_query(F.data == "Работ")
-@router.message(Hr.STATE_START_HRBOT)
+@router.callback_query(F.data == "Работа")
+@router.message(Hr.STATE_START_JOB)
 async def hr_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     image_hello_path = ImageDirectory.auto_say_hi
@@ -300,12 +296,14 @@ async def hr_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     builder = create_keyboard(dict_start_brands)
     image_path = ImageDirectory.auto_car_brand
     await send_photo_with_caption(callback_query.message, state, image_path, "Что за вакансия у тебя?:", builder)
+    await state.update_data(category='job')
     await state.set_state(X.X)
 
 
 @router.message(X.X)
 async def x(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
+    print(user_data)
     print("отработало!")
 
 

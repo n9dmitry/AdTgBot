@@ -38,13 +38,35 @@ class Car(StatesGroup):
     STATE_PREVIEW_ADVERTISMENT = State()
     STATE_SEND = State()
 
-class Estate(StatesGroup):
+class Realty(StatesGroup):
     #estate_bot
-    STATE_START_ESTATEBOT = State()
+    STATE_START_REALTY = State()
+    STATE_REALTY_DEAL = State()
+    STATE_REALTY_PROPERTY = State()
+    STATE_REALTY_ROOMS = State()
+    STATE_REALTY_FLOOR = State()
+    STATE_REALTY_TOTAL_FLOORS = State()
+    STATE_REALTY_DESCRIPTION = State()
+    STATE_REALTY_CITY = State()
+    STATE_REALTY_ADDRESS = State()
+    STATE_REALTY_CURRENCY = State()
+    STATE_REALTY_PRICE = State()
+    STATE_REALTY_PHOTOS = State()
+
 
 class Hr(StatesGroup):
     #hr_bot
-    STATE_START_HRBOT = State()
+    STATE_START_JOB = State()
+    STATE_JOB_TITLE = State()
+    STATE_JOB_RESPONSIBILITIES = State()
+    STATE_JOB_REQUIREMENTS = State()
+    STATE_JOB_CONDITIONS = State()
+    STATE_JOB_CONTACTS = State()
+    STATE_JOB_PHOTOS = State()
+
+
+
+
 
 class X(StatesGroup):
     X = State()
