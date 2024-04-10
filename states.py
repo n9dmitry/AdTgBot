@@ -54,7 +54,7 @@ class Realty(StatesGroup):
     STATE_REALTY_PHOTOS = State()
 
 
-class Hr(StatesGroup):
+class Job(StatesGroup):
     #hr_bot
     STATE_START_JOB = State()
     STATE_JOB_TITLE = State()
