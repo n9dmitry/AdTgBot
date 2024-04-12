@@ -23,4 +23,10 @@ class ImageDirectory:
     auto_seller_name = os.path.join(base_path, "auto_seller_name.jpg")
     auto_seller_phone = os.path.join(base_path, "auto_seller_phone.jpg")
     auto_car_photos = os.path.join(base_path, "auto_car_photos.jpg")
+    job_title = os.path.join(base_path, "job_title.jpg")
+    job_responsibilities = os.path.join(base_path, "job_responsibilities.jpg")
+    job_requirements = os.path.join(base_path, "job_requirements.jpg")
+    job_condition = os.path.join(base_path, "job_condition.jpg")
+    job_contacts = os.path.join(base_path, "job_contacts.jpg")
+    job_photos = os.path.join(base_path, "job_photos.jpg")
 

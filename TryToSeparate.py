@@ -61,23 +61,23 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 # Конец импорта json словарей
 
 
-async def send_api(message, state):
-    async with aiohttp.ClientSession() as session:
-        user_data = await state.get_data()
-        print('user_data_api:', user_data)
-
-        try:
-            async with session.post('http://127.0.0.1:8000/api/user_data', json=user_data,
-                                    headers={"Content-Type": "application/json"}) as response:
-                await message.answer(f'API отправлены:')
-
-                # print('session.post;', user_data)
-                if response.status == 200:
-                    print("User data sent successfully to Node.js site!", flush=True)
-                else:
-                    print("Failed to send user data to Node.js site. Status code:", response.status)
-        except aiohttp.ClientError as e:
-            print("Error sending user data to Node.js site:", e)
+# async def send_api(message, state):
+#     async with aiohttp.ClientSession() as session:
+#         user_data = await state.get_data()
+#         print('user_data_api:', user_data)
+#
+#         try:
+#             async with session.post('http://127.0.0.1:8000/api/user_data', json=user_data,
+#                                     headers={"Content-Type": "application/json"}) as response:
+#                 await message.answer(f'API отправлены:')
+#
+#                 # print('session.post;', user_data)
+#                 if response.status == 200:
+#                     print("User data sent successfully to Node.js site!", flush=True)
+#                 else:
+#                     print("Failed to send user data to Node.js site. Status code:", response.status)
+#         except aiohttp.ClientError as e:
+#             print("Error sending user data to Node.js site:", e)
 
 
 # Создание клавиатуры
@@ -248,7 +248,7 @@ async def start(message: types.Message, state: FSMContext):
     buttons = [
         [types.InlineKeyboardButton(text='🚗 Авто', callback_data='Авто')],
         [types.InlineKeyboardButton(text='🏢 Недвижимость (в разработке)', callback_data='Недвижимость')],
-        [types.InlineKeyboardButton(text='💼 Работа (тестируется)', callback_data='Работа')],
+        [types.InlineKeyboardButton(text='💼 Работа', callback_data='Работа')],
     ]
     builder = create_keyboard_inline(buttons)
     msg = await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
@@ -291,24 +291,21 @@ async def hr_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     await delete_saved_messages(callback_query.message, state)
 
-    image_hello_path = ImageDirectory.auto_say_hi
-    await callback_query.message.answer('Напиши название своей вакансии')
-    # await send_photo_with_caption(callback_query.message, state, image_hello_path,
-    #                               f"{callback_query.from_user.first_name} Напиши название своей вакансии")
+    image_path = ImageDirectory.job_title
+    # await callback_query.message.answer('Напиши название своей вакансии')
+    msg = await send_photo_with_caption(callback_query.message, state, image_path,
+                                  f"{callback_query.from_user.first_name} Напишите название вакансии (Например: Middle Python разработчик (⌨ напишите)")
+    await add_message_id(state, msg.message_id)
 
-    # builder = create_keyboard(dict_start_brands)
-    # image_path = ImageDirectory.auto_car_brand
-    # await send_photo_with_caption(callback_query.message, state, image_path, "Что за вакансия у тебя?:", builder)
-    await state.update_data(category='job')
-    print('отработал')
+    await state.update_data(category='job'),
     await state.set_state(Job.STATE_JOB_TITLE)
 
 
-@router.message(X.X)
-async def x(message: types.Message, state: FSMContext):
-    user_data = await state.get_data()
-    print(user_data)
-    print("отработало!")
+# @router.message(X.X)
+# async def x(message: types.Message, state: FSMContext):
+#     user_data = await state.get_data()
+#     print(user_data)
+#     print("отработало!")
 
 
 @router.message(Car.STATE_CAR_BRAND)
@@ -730,7 +727,7 @@ async def get_seller_phone(message, state):
             msg = await send_photo_with_caption(message, state, image_path,
                                                 "Добавьте фотографии авто до 10 штук (За один раз!)")
             await add_message_id(state, msg.message_id)
-            await state.set_state(Car.STATE_CAR_PHOTO)
+            await state.set_state(Ads.STATE_PHOTO)
         else:
             await message.reply(
                 f"Ваше сообщение получилось слишком большим! \nПерезагрузите бота и напишите объявление заново.")
@@ -740,7 +737,102 @@ async def get_seller_phone(message, state):
         await state.set_state(Car.STATE_SELLER_PHONE)
 
 
-@router.message(Car.STATE_CAR_PHOTO)
+
+
+    # НЕДВИЖИМОСТЬ
+
+@router.message(Job.STATE_JOB_TITLE)
+async def get_job_title(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_title=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_requirements
+    msg = await send_photo_with_caption(message, state, image_path, "Какие требования к кандидату? (⌨ напишите)")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_REQUIREMENTS)
+
+    # РАБОТА
+
+@router.message(Job.STATE_JOB_TITLE)
+async def get_job_title(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_title=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_requirements
+    msg = await send_photo_with_caption(message, state, image_path, "Какие требования к кандидату? (⌨ напишите)")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_REQUIREMENTS)
+
+@router.message(Job.STATE_JOB_REQUIREMENTS)
+async def get_job_requirements(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_requirements=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_responsibilities
+    msg = await send_photo_with_caption(message, state, image_path, "Напиишите обязанности для кандидата (⌨ напишите)")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_RESPONSIBILITIES)
+
+@router.message(Job.STATE_JOB_RESPONSIBILITIES)
+async def get_job_responsibilities(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_responsibilities=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_condition
+    msg = await send_photo_with_caption(message, state, image_path, "Напишите условия работы. Например ЗП, оформление, офис/удаленка и т.д. (⌨ напишите)")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_CONDITIONS)
+
+@router.message(Job.STATE_JOB_CONDITIONS)
+async def get_job_conditions(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_conditions=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_contacts
+    msg = await send_photo_with_caption(message, state, image_path, "Напишите номер для связи (⌨ напишите)")
+    # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_CONTACTS)
+
+
+@router.message(Job.STATE_JOB_CONTACTS)
+async def get_job_contacts(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_contacts=message.text)
+    await delete_saved_messages(message, state)
+    print(user_data)
+    image_path = ImageDirectory.job_photos
+    msg = await send_photo_with_caption(message, state, image_path, "Загрузите фото!")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Ads.STATE_PHOTO)
+
+
+
+
+
+
+
+
+
+
+@router.message(Ads.STATE_PHOTO)
 @router.message(F.media_group_id)
 async def handle_photos(message: types.Message, state: FSMContext, album: list[Message]):
     user_data = await state.get_data()
@@ -751,31 +843,48 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
     new_id = str(uuid.uuid4().int)[:6]
     if 'new_id' not in user_data:
         user_data['new_id'] = new_id
+    if user_data['category'] == 'car':
+        caption = (
+            f"🛞 <b>#{user_data['car_brand']}-{user_data['car_model']}</b>\n\n"
+            f"   <b>-Год:</b> {user_data['car_year']}\n"
+            f"   <b>-Пробег (км.):</b> {user_data['car_mileage']}\n"
+            f"   <b>-Тип КПП:</b> {user_data['car_transmission_type']}\n"
+            f"   <b>-Кузов:</b> {user_data['car_body_type']}\n"
+            f"   <b>-Тип двигателя:</b> {user_data['car_engine_type']}\n"
+            f"   <b>-Объем двигателя (л.):</b> {user_data['car_engine_volume']}\n"
+            f"   <b>-Мощность (л.с.):</b> {user_data['car_power']}\n"
+            f"   <b>-Цвет:</b> {user_data['car_color']}\n"
+            f"   <b>-Статус документов:</b> {user_data['car_document_status']}\n"
+            f"   <b>-Количество владельцев:</b> {user_data['car_owners']}\n"
+            f"   <b>-Растаможка:</b> {'Да' if user_data['car_customs_cleared'] else 'Нет'}\n"
+            f"   <b>-Состояние:</b> {user_data['car_condition']}\n\n"
+            f"ℹ️<b>Дополнительная информация:</b> {user_data['car_description']}\n\n"
+            f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['currency']}\n\n"
+            f"📍<b>Местоположение:</b> {user_data['car_location']}\n"
+            f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data['seller_name']} </span>\n"
+            f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['seller_phone']} </span>\n"
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
+            f" {hlink('Selbie Auto. Рынок тачек в ДНР', 'https://t.me/selbieauto')} | {hlink('Разместить авто', 'https://t.me/selbie_bot')} \n\n"
+            f"<b>ID объявления: #{user_data['new_id']}</b>"
+        )
+    elif user_data['category'] == 'realty':
+        print('userdata_ realty')
+        caption = (
+            f"<b>ID объявления: #{user_data['new_id']}</b>"
+        )
+    elif user_data['category'] == 'job':
+        print('userdata_ job')
 
-    caption = (
-        f"🛞 <b>#{user_data['car_brand']}-{user_data['car_model']}</b>\n\n"
-        f"   <b>-Год:</b> {user_data['car_year']}\n"
-        f"   <b>-Пробег (км.):</b> {user_data['car_mileage']}\n"
-        f"   <b>-Тип КПП:</b> {user_data['car_transmission_type']}\n"
-        f"   <b>-Кузов:</b> {user_data['car_body_type']}\n"
-        f"   <b>-Тип двигателя:</b> {user_data['car_engine_type']}\n"
-        f"   <b>-Объем двигателя (л.):</b> {user_data['car_engine_volume']}\n"
-        f"   <b>-Мощность (л.с.):</b> {user_data['car_power']}\n"
-        f"   <b>-Цвет:</b> {user_data['car_color']}\n"
-        f"   <b>-Статус документов:</b> {user_data['car_document_status']}\n"
-        f"   <b>-Количество владельцев:</b> {user_data['car_owners']}\n"
-        f"   <b>-Растаможка:</b> {'Да' if user_data['car_customs_cleared'] else 'Нет'}\n"
-        f"   <b>-Состояние:</b> {user_data['car_condition']}\n\n"
-        f"ℹ️<b>Дополнительная информация:</b> {user_data['car_description']}\n\n"
-        f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['currency']}\n\n"
-        f"📍<b>Местоположение:</b> {user_data['car_location']}\n"
-        f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data['seller_name']} </span>\n"
-        f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['seller_phone']} </span>\n"
-        f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-        f" {hlink('Selbie Auto. Рынок тачек в ДНР', 'https://t.me/selbieauto')} | {hlink('Разместить авто', 'https://t.me/selbie_bot')} \n\n"
-        f"<b>ID объявления: #{user_data['new_id']}</b>"
-
-    )
+        caption = (
+            f"🛞 <b> Название вакансии: {user_data['job_title']}</b>\n\n"
+            f" <b> Требования к кандидату: </b> {user_data['job_requirements']}\n"
+            f" <b> Обязанности и задачи: </b> {user_data['job_responsibilities']}\n"
+            f" <b> Условия работы </b>{user_data['job_conditions']}\n\n"
+            f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
+            
+            f"<b>ID объявления: #{user_data['new_id']}</b>"
+        )
 
     for message in album:
         if message.photo:
@@ -792,41 +901,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
         count_photos = len(album)
         msg = await message.reply(f'{count_photos} Фото добавлены', reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
-    await state.set_state(Car.STATE_PREVIEW_ADVERTISMENT)
-
-    # НЕДВИЖИМОСТЬ
-
-    # РАБОТА
-
-@router.message(Job.STATE_JOB_TITLE)
-async def get_car_model(message, state):
-    user_data = await state.get_data()
-    await delete_saved_messages(message, state)
-
-    await state.update_data(car_model=message.text)
-    image_path = ImageDirectory.auto_car_year
-    # msg = await send_photo_with_caption(message, state, image_path, "Какой год выпуска у автомобиля? (⌨ напишите)")
-    msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Car.STATE_CAR_YEAR)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    await state.set_state(Ads.STATE_PREVIEW_ADVERTISMENT)
 
 
 
@@ -845,15 +920,20 @@ async def send_advertisement(message: types.Message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
     print('21', user_data)
-    await add_data_to_excel(message, state)
+    # await add_data_to_excel(message, state)
     user_id = message.from_user.id
-    await bot.send_media_group(chat_id=CHANNEL_ID, media=user_data['sent_photos'], disable_notification=True)
+    if user_data['category'] == 'car':
+        await bot.send_media_group(chat_id=CHANNEL_CAR_ID, media=user_data['sent_photos'], disable_notification=True)
+    elif user_data['category'] == 'realty':
+        await bot.send_media_group(chat_id=CHANNEL_REALTY_ID, media=user_data['sent_photos'], disable_notification=True)
+    elif user_data['category'] == 'job':
+        await bot.send_media_group(chat_id=CHANNEL_JOB_ID, media=user_data['sent_photos'], disable_notification=True)
     builder = create_keyboard(['Добавить ещё объявление', 'Ускорить продажу'])
     msg = await bot.send_message(user_id, "Объявление отправлено в канал!",
                            reply_markup=builder.as_markup(resize_keyboard=True))
     await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
-    await send_api(message, state)
-    # await state.clear()
+    # await send_api(message, state)
+    await state.clear()
 
 
 @router.message(F.text == "Ускорить продажу")
@@ -867,7 +947,7 @@ async def promotion(message: types.Message, state):
     await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
 
 
-@router.message(Car.STATE_PREVIEW_ADVERTISMENT)
+@router.message(Ads.STATE_PREVIEW_ADVERTISMENT)
 async def preview_advertisement(message: types.Message, state: FSMContext):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
@@ -888,42 +968,42 @@ async def preview_advertisement(message: types.Message, state: FSMContext):
     # db_fix.clear()
 
 
-async def add_data_to_excel(message, state):
-    user_data = await state.get_data()
-    print('22 excel', user_data)
-    file_path = 'db.xlsx'
-    row_data = [
-        user_data['new_id'], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        user_data['car_brand'], user_data['car_model'], user_data['car_year'], user_data['car_body_type'],
-        user_data['car_engine_type'], user_data['car_engine_volume'], user_data['car_power'],
-        user_data['car_transmission_type'], user_data['car_color'], user_data['car_mileage'],
-        user_data['car_document_status'], user_data['car_owners'], user_data['car_customs_cleared'],
-        user_data['car_condition'], user_data['car_description'], user_data['currency'], user_data['car_price'],
-        user_data['car_location'], user_data['seller_name'], user_data['seller_phone'],
-        message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
-    ]
-
-    # Проверяем, существует ли файл Excel
-    if os.path.exists(file_path):
-        workbook = openpyxl.load_workbook(file_path)
-    else:
-        workbook = openpyxl.Workbook()
-    sheet = workbook.active
-
-    # Проверяем, нужно ли добавить заголовки
-    if sheet.max_row == 1:
-        headers = [
-            'ID', 'Дата', 'Бренд', 'Модель', 'Год', 'Тип кузова',
-            'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)', 'Тип трансмиссии',
-            'Цвет', 'Пробег (км)', 'Статус документа', 'Количество владельцев', 'Растаможен',
-            'Состояние', 'Дополнительное описание', 'Валюта', 'Цена',
-            'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
-
-        ]
-        sheet.append(headers)
-
-    sheet.append(row_data)
-    workbook.save(file_path)
+# async def add_data_to_excel(message, state):
+#     user_data = await state.get_data()
+#     print('22 excel', user_data)
+#     file_path = 'db.xlsx'
+#     row_data = [
+#         user_data['new_id'], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+#         user_data['car_brand'], user_data['car_model'], user_data['car_year'], user_data['car_body_type'],
+#         user_data['car_engine_type'], user_data['car_engine_volume'], user_data['car_power'],
+#         user_data['car_transmission_type'], user_data['car_color'], user_data['car_mileage'],
+#         user_data['car_document_status'], user_data['car_owners'], user_data['car_customs_cleared'],
+#         user_data['car_condition'], user_data['car_description'], user_data['currency'], user_data['car_price'],
+#         user_data['car_location'], user_data['seller_name'], user_data['seller_phone'],
+#         message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
+#     ]
+#
+#     # Проверяем, существует ли файл Excel
+#     if os.path.exists(file_path):
+#         workbook = openpyxl.load_workbook(file_path)
+#     else:
+#         workbook = openpyxl.Workbook()
+#     sheet = workbook.active
+#
+#     # Проверяем, нужно ли добавить заголовки
+#     if sheet.max_row == 1:
+#         headers = [
+#             'ID', 'Дата', 'Бренд', 'Модель', 'Год', 'Тип кузова',
+#             'Тип двигателя', 'Объем двигателя (л)', 'Мощность (л.с.)', 'Тип трансмиссии',
+#             'Цвет', 'Пробег (км)', 'Статус документа', 'Количество владельцев', 'Растаможен',
+#             'Состояние', 'Дополнительное описание', 'Валюта', 'Цена',
+#             'Местоположение', 'Имя продавца', 'Телефон продавца', 'Телеграм'
+#
+#         ]
+#         sheet.append(headers)
+#
+#     sheet.append(row_data)
+#     workbook.save(file_path)
 
 
 # end support

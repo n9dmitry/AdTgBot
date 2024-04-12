@@ -34,9 +34,10 @@ class Car(StatesGroup):
     STATE_SELLER_NAME = State()
     STATE_SELLER_PHONE = State()
     STATE_PREVIEW_PHOTO = State()
-    STATE_CAR_PHOTO = State()
-    STATE_PREVIEW_ADVERTISMENT = State()
-    STATE_SEND = State()
+
+
+
+
 
 class Realty(StatesGroup):
     #estate_bot
@@ -58,14 +59,16 @@ class Job(StatesGroup):
     #hr_bot
     STATE_START_JOB = State()
     STATE_JOB_TITLE = State()
-    STATE_JOB_RESPONSIBILITIES = State()
     STATE_JOB_REQUIREMENTS = State()
+    STATE_JOB_RESPONSIBILITIES = State()
     STATE_JOB_CONDITIONS = State()
     STATE_JOB_CONTACTS = State()
     STATE_JOB_PHOTOS = State()
 
-
-
+class Ads(StatesGroup):
+    STATE_PHOTO = State()
+    STATE_PREVIEW_ADVERTISMENT = State()
+    STATE_SEND = State()
 
 
 class X(StatesGroup):
