@@ -56,7 +56,8 @@ dict_currency = dicts.get("dict_currency", {})
 dict_car_conditions = dicts.get("dict_car_conditions", {})
 dict_car_mileages = dicts.get("dict_car_mileages", {})
 dict_edit_buttons = dicts.get("dict_edit_buttons", {})
-
+dict_realty_deal = dicts.get('dict_realty_deal', {})
+dict_realty_type = dicts.get('dict_realty_type', {})
 
 # Конец импорта json словарей
 
@@ -274,15 +275,12 @@ async def car_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
 @router.message(Realty.STATE_START_REALTY)
 async def realty_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
-    image_hello_path = ImageDirectory.auto_say_hi
-    await send_photo_with_caption(callback_query.message, state, image_hello_path,
-                                  f"Привет, {callback_query.from_user.first_name}! Давай продадим твою 🏢 Недвижимость! Начнём же сбор данных!")
-    await asyncio.sleep(0.5)
-    builder = create_keyboard(dict_start_brands)
-    image_path = ImageDirectory.auto_car_brand
-    await send_photo_with_caption(callback_query.message, state, image_path, "Что за 🏢 Недвижимость у тебя?:", builder)
+
+    builder = create_keyboard(dict_realty_deal).adjust(1)
+    image_path = ImageDirectory.realty_deal_type
+    await send_photo_with_caption(callback_query.message, state, image_path, "Укажи тип сделки с недвижимостью:", builder)
     await state.update_data(category='realty')
-    await state.set_state(X.X)
+    await state.set_state(Realty.STATE_REALTY_DEAL)
 
 
 @router.callback_query(F.data == "Работа")
@@ -299,13 +297,6 @@ async def hr_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
 
     await state.update_data(category='job'),
     await state.set_state(Job.STATE_JOB_TITLE)
-
-
-# @router.message(X.X)
-# async def x(message: types.Message, state: FSMContext):
-#     user_data = await state.get_data()
-#     print(user_data)
-#     print("отработало!")
 
 
 @router.message(Car.STATE_CAR_BRAND)
@@ -741,21 +732,108 @@ async def get_seller_phone(message, state):
 
     # НЕДВИЖИМОСТЬ
 
-@router.message(Job.STATE_JOB_TITLE)
-async def get_job_title(message, state):
+@router.message(Realty.STATE_REALTY_DEAL)
+async def get_realty_deal(message, state):
     user_data = await state.get_data()
+    await state.update_data(realty_deal=message.text)
     await delete_saved_messages(message, state)
 
-    await state.update_data(job_title=message.text)
-    await delete_saved_messages(message, state)
-
-    image_path = ImageDirectory.job_requirements
-    msg = await send_photo_with_caption(message, state, image_path, "Какие требования к кандидату? (⌨ напишите)")
+    builder = create_keyboard(dict_realty_type)
+    image_path = ImageDirectory.realty_type
+    msg = await send_photo_with_caption(message, state, image_path, "Укажите тип недвижимости:", builder)
     await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_REQUIREMENTS)
+    await state.set_state(Realty.STATE_REALTY_TYPE)
+
+@router.message(Realty.STATE_REALTY_TYPE)
+async def get_realty_type(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_type=message.text)
+    await delete_saved_messages(message, state)
+
+    builder = create_keyboard(dict_realty_type)
+    image_path = ImageDirectory.realty_square
+    msg = await send_photo_with_caption(message, state, image_path, "Напишите площадь недвижимости:")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_SQUARE)
+
+@router.message(Realty.STATE_REALTY_SQUARE)
+async def get_realty_square(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_square=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.realty_location
+    msg = await send_photo_with_caption(message, state, image_path, "Напишите адрес недвижимости (Город, Улица, Дом и т.д.) " )
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_LOCATION)
+
+@router.message(Realty.STATE_REALTY_LOCATION)
+async def get_realty_location(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_location=message.text)
+    await delete_saved_messages(message, state)
+
+    builder = create_keyboard(dict_currency)
+    image_path = ImageDirectory.realty_currency
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Выберите валюту:", builder)
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_CURRENCY)
+
+@router.message(Realty.STATE_REALTY_CURRENCY)
+async def get_realty_currency(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_currency=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.realty_price
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Напишите цену :")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_PRICE)
+
+@router.message(Realty.STATE_REALTY_PRICE)
+async def get_realty_price(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_price=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.realty_description
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Опишите важные детали детали (не больше 300 символов):")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
+
+@router.message(Realty.STATE_REALTY_DESCRIPTION)
+async def get_realty_description(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_description=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_contacts
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Напишите контакты: ")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_CONTACTS)
+
+@router.message(Realty.STATE_REALTY_CONTACTS)
+async def get_realty_description(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_contacts=message.text)
+    print(user_data)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.job_photos
+    # нужно будет поменять
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Красавчик. Скоро можно будет загрузить фотки")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_CONTACTS)
+
+
+
 
     # РАБОТА
-
 @router.message(Job.STATE_JOB_TITLE)
 async def get_job_title(message, state):
     user_data = await state.get_data()
@@ -829,9 +907,6 @@ async def get_job_contacts(message, state):
 
 
 
-
-
-
 @router.message(Ads.STATE_PHOTO)
 @router.message(F.media_group_id)
 async def handle_photos(message: types.Message, state: FSMContext, album: list[Message]):
@@ -873,13 +948,12 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"<b>ID объявления: #{user_data['new_id']}</b>"
         )
     elif user_data['category'] == 'job':
-        print('userdata_ job')
 
         caption = (
             f"🛞 <b> Название вакансии: {user_data['job_title']}</b>\n\n"
             f" <b> Требования к кандидату: </b> {user_data['job_requirements']}\n"
             f" <b> Обязанности и задачи: </b> {user_data['job_responsibilities']}\n"
-            f" <b> Условия работы </b>{user_data['job_conditions']}\n\n"
+            f" <b> Условия работы: </b>{user_data['job_conditions']}\n\n"
             f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             

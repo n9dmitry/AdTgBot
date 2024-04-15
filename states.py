@@ -43,17 +43,17 @@ class Realty(StatesGroup):
     #estate_bot
     STATE_START_REALTY = State()
     STATE_REALTY_DEAL = State()
-    STATE_REALTY_PROPERTY = State()
+    STATE_REALTY_TYPE = State()
+    STATE_REALTY_SQUARE = State()
+    STATE_REALTY_DESCRIPTION = State()
+    STATE_REALTY_LOCATION = State()
+    STATE_REALTY_CURRENCY = State()
+    STATE_REALTY_PRICE = State()
+    STATE_REALTY_CONTACTS = State()
+    STATE_REALTY_PHOTO = State()
     STATE_REALTY_ROOMS = State()
     STATE_REALTY_FLOOR = State()
     STATE_REALTY_TOTAL_FLOORS = State()
-    STATE_REALTY_DESCRIPTION = State()
-    STATE_REALTY_CITY = State()
-    STATE_REALTY_ADDRESS = State()
-    STATE_REALTY_CURRENCY = State()
-    STATE_REALTY_PRICE = State()
-    STATE_REALTY_PHOTOS = State()
-
 
 class Job(StatesGroup):
     #hr_bot

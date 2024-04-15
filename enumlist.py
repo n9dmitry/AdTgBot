@@ -23,10 +23,22 @@ class ImageDirectory:
     auto_seller_name = os.path.join(base_path, "auto_seller_name.jpg")
     auto_seller_phone = os.path.join(base_path, "auto_seller_phone.jpg")
     auto_car_photos = os.path.join(base_path, "auto_car_photos.jpg")
+    # работа
     job_title = os.path.join(base_path, "job_title.jpg")
     job_responsibilities = os.path.join(base_path, "job_responsibilities.jpg")
     job_requirements = os.path.join(base_path, "job_requirements.jpg")
     job_condition = os.path.join(base_path, "job_condition.jpg")
     job_contacts = os.path.join(base_path, "job_contacts.jpg")
     job_photos = os.path.join(base_path, "job_photos.jpg")
-
+    # недвижимость
+    realty_deal_type = os.path.join(base_path, "realty_deal_type.jpg")
+    realty_type = os.path.join(base_path, "realty_type.jpg")
+    # комнат
+    # этаж
+    # этажей
+    realty_square = os.path.join(base_path, "realty_square.jpg")
+    realty_description = os.path.join(base_path, "realty_description.jpg")
+    realty_location = os.path.join(base_path, "realty_location.jpg")
+    realty_currency = os.path.join(base_path, "realty_currency.jpg")
+    realty_price = os.path.join(base_path, "realty_price.jpg")
+    realty_photo = os.path.join(base_path, "realty_photo.jpg")
