@@ -750,7 +750,14 @@ async def get_realty_deal(message, state):
 async def get_custom_realty_type(message, state):
     if message.text == "⌨ ввести вручную (нет в списке)":
         await message.answer("Напишите тип недвижимости вручную ⌨ .")
-    await state.set_state(Realty.STATE_REALTY_TYPE)
+        await state.set_state(Realty.STATE_REALTY_TYPE)
+    else:
+        builder = create_keyboard(dict_realty_type)
+        image_path = ImageDirectory.realty_square
+        msg = await send_photo_with_caption(message, state, image_path, "Напишите площадь недвижимости:")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_SQUARE)
+
 
 @router.message(Realty.STATE_REALTY_TYPE)
 async def get_realty_type(message, state):
@@ -763,6 +770,31 @@ async def get_realty_type(message, state):
     msg = await send_photo_with_caption(message, state, image_path, "Напишите площадь недвижимости:")
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_SQUARE)
+
+
+# Пишем хендлер
+# @router.message(Realty.STATE_REALTY_ROOMS)
+# async def check_realty_type(message, state):
+#     user_data = await state.get_data()
+#
+#     if message.text == "дом":
+#         await message.answer("Сколько комнат в доме?")
+#         await state.set_state(Realty.х)
+#     elif message.text == "комната":
+#         await message.answer("На каком этаже находится комната?")
+#         await state.set_state(Realty.х)
+#     elif message.text == "квартира":
+#         await message.answer("Сколько комнат в квартире?")
+#         await state.set_state(Realty.х)
+#     else:
+#         await state.set_state(Realty.STATE_REALTY_SQUARE)
+#
+# @router.message(Realty.STATE_REALTY_ROOMS)
+# async def get_realty_rooms(message, state):
+
+
+
+# Пишем хендлер
 
 
 @router.message(Realty.STATE_REALTY_SQUARE)
@@ -829,7 +861,6 @@ async def get_realty_description(message, state):
 async def get_realty_description(message, state):
     user_data = await state.get_data()
     await state.update_data(realty_contacts=message.text)
-    print("отработало как надо")
     await delete_saved_messages(message, state)
 
     image_path = ImageDirectory.realty_photo
