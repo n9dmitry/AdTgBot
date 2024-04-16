@@ -42,3 +42,5 @@ class ImageDirectory:
     realty_currency = os.path.join(base_path, "realty_currency.jpg")
     realty_price = os.path.join(base_path, "realty_price.jpg")
     realty_photo = os.path.join(base_path, "realty_photo.jpg")
+    realty_contacts = os.path.join(base_path, "realty_contacts.jpg")
+

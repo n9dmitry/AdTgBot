@@ -44,6 +44,8 @@ class Realty(StatesGroup):
     STATE_START_REALTY = State()
     STATE_REALTY_DEAL = State()
     STATE_REALTY_TYPE = State()
+    STATE_CUSTOM_REALTY_TYPE = State()
+    # ewrfwefr
     STATE_REALTY_SQUARE = State()
     STATE_REALTY_DESCRIPTION = State()
     STATE_REALTY_LOCATION = State()
