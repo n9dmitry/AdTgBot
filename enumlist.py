@@ -33,9 +33,11 @@ class ImageDirectory:
     # недвижимость
     realty_deal_type = os.path.join(base_path, "realty_deal_type.jpg")
     realty_type = os.path.join(base_path, "realty_type.jpg")
-    # комнат
-    # этаж
-    # этажей
+    # asdasd
+    realty_rooms = os.path.join(base_path, "realty_rooms.jpg")
+    realty_floor = os.path.join(base_path, "realty_floor.jpg")
+    realty_floors_total = os.path.join(base_path, "realty_floors_total.jpg")
+    # asdasd
     realty_square = os.path.join(base_path, "realty_square.jpg")
     realty_description = os.path.join(base_path, "realty_description.jpg")
     realty_location = os.path.join(base_path, "realty_location.jpg")

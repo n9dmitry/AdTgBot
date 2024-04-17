@@ -46,6 +46,9 @@ class Realty(StatesGroup):
     STATE_REALTY_TYPE = State()
     STATE_CUSTOM_REALTY_TYPE = State()
     # ewrfwefr
+    STATE_REALTY_CHECK_TYPE = State()
+    # ewrfwefr
+    STATE_QUESTION_BEFORE_SQUARE = State()
     STATE_REALTY_SQUARE = State()
     STATE_REALTY_DESCRIPTION = State()
     STATE_REALTY_LOCATION = State()
@@ -53,6 +56,7 @@ class Realty(StatesGroup):
     STATE_REALTY_PRICE = State()
     STATE_REALTY_CONTACTS = State()
     STATE_REALTY_PHOTO = State()
+    # ымзвщшагмиыв
     STATE_REALTY_ROOMS = State()
     STATE_REALTY_FLOOR = State()
     STATE_REALTY_TOTAL_FLOORS = State()
