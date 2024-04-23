@@ -54,6 +54,7 @@ class Realty(StatesGroup):
     STATE_REALTY_LOCATION = State()
     STATE_REALTY_CURRENCY = State()
     STATE_REALTY_PRICE = State()
+    STATE_REALTY_NAME = State()
     STATE_REALTY_CONTACTS = State()
     STATE_REALTY_PHOTO = State()
     # ымзвщшагмиыв
@@ -68,6 +69,7 @@ class Job(StatesGroup):
     STATE_JOB_REQUIREMENTS = State()
     STATE_JOB_RESPONSIBILITIES = State()
     STATE_JOB_CONDITIONS = State()
+    STATE_JOB_NAME = State()
     STATE_JOB_CONTACTS = State()
     STATE_JOB_PHOTOS = State()
 

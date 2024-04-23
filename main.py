@@ -194,6 +194,7 @@ async def restart(message: types.Message, state: FSMContext):
     await add_message_id(state, msg.message_id)
     await start(message, state)
 
+
 @router.message(Command("my_ads"))
 async def my_ads(message: types.Message, state: FSMContext):
     msg = await message.answer(f"Список ваших объявлений.")
@@ -209,9 +210,13 @@ async def my_ads(message: types.Message, state: FSMContext):
             #         keyboard = types.InlineKeyboardMarkup()
             #         keyboard.add(types.InlineKeyboardButton(text=button_text, callback_data=callback_data))
             #         await bot.send_message(chat_id='chat_id', text="Choose an ad:", reply_markup=keyboard)
+
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
-    pass
+    msg = await message.answer(f"У вас пока нет размещенных объявлений. Нажмите /restart для перезапуска бота")
+    await add_message_id(state, msg.message_id)
+
+
 
 @router.message(Command("support"))
 async def support(message: types.Message, state: FSMContext):
@@ -270,6 +275,13 @@ async def start(message: types.Message, state: FSMContext):
         [types.InlineKeyboardButton(text='💼 Работа', callback_data='Работа')],
     ]
     builder = create_keyboard_inline(buttons)
+    msg = await message.answer(
+        f'/start - Запуск бота\n'
+        f'/restart - Перезагрузка бота\n'
+        f'/my_ads - Просмотр объявлений\n'
+        f'/my_profile - Мой профиль на selbie.ru [возможность редактирования объявления]\n'
+        f'/support - Написать в техподдержку')
+    await add_message_id(state, msg.message_id)
     msg = await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
     await add_message_id(state, msg.message_id)
     await state.update_data(user_data)
@@ -296,8 +308,9 @@ async def realty_bot_start(callback_query: types.CallbackQuery, state: FSMContex
 
     builder = create_keyboard(dict_realty_deal).adjust(1)
     image_path = ImageDirectory.realty_deal_type
-    await send_photo_with_caption(callback_query.message, state, image_path, "Укажи тип сделки с недвижимостью:",
-                                  builder)
+    msg = await send_photo_with_caption(callback_query.message, state, image_path, "Укажи тип сделки с недвижимостью:",
+                                        builder)
+    await add_message_id(state, msg.message_id)
     await state.update_data(category='realty')
     await state.set_state(Realty.STATE_REALTY_DEAL)
 
@@ -767,9 +780,6 @@ async def get_realty_deal(message, state):
     await state.set_state(Realty.STATE_REALTY_TYPE)
 
 
-
-
-
 @router.message(Realty.STATE_REALTY_TYPE)
 async def get_custom_realty_type(message, state):
     user_data = await state.get_data()
@@ -782,7 +792,9 @@ async def get_custom_realty_type(message, state):
         await state.update_data(realty_type=message.text)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_rooms
-        msg = await send_photo_with_caption(message, state, image_path, "Сколько комнат? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат, )", builder)
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Сколько комнат? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат, )",
+                                            builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
     else:
@@ -803,6 +815,7 @@ async def get_realty_type(message, state):
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_ROOMS)
 
+
 @router.message(Realty.STATE_REALTY_ROOMS)
 async def get_realty_rooms(message, state):
     user_data = await state.get_data()
@@ -812,9 +825,12 @@ async def get_realty_rooms(message, state):
         await state.update_data(realty_rooms=None)
     builder = create_keyboard(['Пропустить'])
     image_path = ImageDirectory.realty_floors_total
-    msg = await send_photo_with_caption(message, state, image_path, "Сколько этажей? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество этажей, )", builder)
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Сколько этажей? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество этажей, )",
+                                        builder)
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_TOTAL_FLOORS)
+
 
 @router.message(Realty.STATE_REALTY_TOTAL_FLOORS)
 async def get_realty_floors_total(message, state):
@@ -825,9 +841,12 @@ async def get_realty_floors_total(message, state):
         await state.update_data(realty_rooms=None)
     builder = create_keyboard(['Пропустить'])
     image_path = ImageDirectory.realty_floor
-    msg = await send_photo_with_caption(message, state, image_path, "Какой этаж? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрен этаж)", builder)
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Какой этаж? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрен этаж)",
+                                        builder)
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_FLOOR)
+
 
 @router.message(Realty.STATE_REALTY_FLOOR)
 async def get_realty_floor(message, state):
@@ -840,6 +859,7 @@ async def get_realty_floor(message, state):
     msg = await send_photo_with_caption(message, state, image_path, "Какая площадь объекта? (Введите вручную ⌨ )")
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_SQUARE)
+
 
 @router.message(Realty.STATE_REALTY_SQUARE)
 async def get_realty_square(message, state):
@@ -902,13 +922,26 @@ async def get_realty_description(message, state):
 
     image_path = ImageDirectory.realty_contacts
     msg = await send_photo_with_caption(message, state, image_path,
+                                        "Напишите имя: ")
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Realty.STATE_REALTY_NAME)
+
+
+@router.message(Realty.STATE_REALTY_NAME)
+async def get_realty_name(message, state):
+    user_data = await state.get_data()
+    await state.update_data(realty_name=message.text)
+    await delete_saved_messages(message, state)
+
+    image_path = ImageDirectory.auto_seller_name
+    msg = await send_photo_with_caption(message, state, image_path,
                                         "Напишите контакты: ")
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_CONTACTS)
 
 
 @router.message(Realty.STATE_REALTY_CONTACTS)
-async def get_realty_description(message, state):
+async def get_realty_contacts(message, state):
     user_data = await state.get_data()
     await state.update_data(realty_contacts=message.text)
     await delete_saved_messages(message, state)
@@ -973,6 +1006,21 @@ async def get_job_conditions(message, state):
     await state.update_data(job_conditions=message.text)
     await delete_saved_messages(message, state)
 
+    image_path = ImageDirectory.auto_seller_name
+    msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
+    # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_NAME)
+
+
+@router.message(Job.STATE_JOB_NAME)
+async def get_job_conditions(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_name=message.text)
+    await delete_saved_messages(message, state)
+
     image_path = ImageDirectory.job_contacts
     msg = await send_photo_with_caption(message, state, image_path, "Напишите номер для связи (⌨ напишите)")
     # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
@@ -1033,6 +1081,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
         caption = (
             f"<b> {user_data['realty_deal']} {user_data['realty_type']}  </b>\n\n"
             f"<b> {user_data['realty_type']} {user_data['realty_square']}</b>\n\n"
+            f"👤<b>Имя:</b> <span class='tg-spoiler'> {user_data['realty_name']} </span>\n"
             f"<b>ID объявления: #{user_data['new_id']}</b>"
             f"{user_data}"
         )
@@ -1043,6 +1092,8 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f" <b> Требования к кандидату: </b> {user_data['job_requirements']}\n"
             f" <b> Обязанности и задачи: </b> {user_data['job_responsibilities']}\n"
             f" <b> Условия работы: </b>{user_data['job_conditions']}\n\n"
+
+            f"👤<b>Работодатель:</b> <span class='tg-spoiler'> {user_data['job_name']} </span>\n"
             f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
 
