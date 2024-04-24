@@ -1,6 +1,7 @@
 import asyncio
 import json
 import random
+import requests
 import datetime
 import uuid
 import openpyxl
@@ -60,26 +61,87 @@ dict_realty_deal = dicts.get('dict_realty_deal', {})
 dict_realty_type = dicts.get('dict_realty_type', {})
 
 
-# Конец импорта json словарей
+async def send_api(message, state):
+    user_data = await state.get_data()
 
+    photo_urls = []
+    for photo_data in user_data.get('sent_photos', []):
+        if isinstance(photo_data, InputMediaPhoto):
+            file_id = photo_data.media
+            file_info_response = requests.get(f'https://api.telegram.org/bot{API_TOKEN}/getFile?file_id={file_id}')
+            file_info = file_info_response.json()
+            file_path = file_info['result']['file_path']
+            photo_url = f'https://api.telegram.org/file/bot{API_TOKEN}/{file_path}'
+            photo_urls.append(photo_url)
 
-# async def send_api(message, state):
-#     async with aiohttp.ClientSession() as session:
-#         user_data = await state.get_data()
-#         print('user_data_api:', user_data)
-#
-#         try:
-#             async with session.post('http://127.0.0.1:8000/api/user_data', json=user_data,
-#                                     headers={"Content-Type": "application/json"}) as response:
-#                 await message.answer(f'API отправлены:')
-#
-#                 # print('session.post;', user_data)
-#                 if response.status == 200:
-#                     print("User data sent successfully to Node.js site!", flush=True)
-#                 else:
-#                     print("Failed to send user data to Node.js site. Status code:", response.status)
-#         except aiohttp.ClientError as e:
-#             print("Error sending user data to Node.js site:", e)
+    try:
+        data = {
+            'ad_id': user_data['ad_id'],
+            'category': user_data['category'],
+            'photos': ','.join(photo_urls),
+            'user_id': user_data['user_id'],
+            # '',
+        }
+
+        if user_data['category'] == 'car':
+            data.update({
+                'car_brand': user_data['car_brand'],
+                'car_model': user_data['car_model'],
+                'car_year': user_data['car_year'],
+                'car_body_type': user_data['car_body_type'],
+                'car_engine_type': user_data['car_engine_type'],
+                'car_engine_volume': user_data['car_engine_volume'],
+                'car_power': user_data['car_power'],
+                'car_transmission_type': user_data['car_transmission_type'],
+                'car_color': user_data['car_color'],
+                'car_mileage': user_data['car_mileage'],
+                'car_document_status': user_data['car_document_status'],
+                'car_owners': user_data['car_owners'],
+                'car_customs_cleared': user_data['car_customs_cleared'],
+                'car_condition': user_data['car_condition'],
+                'car_description': user_data['car_description'],
+                'car_currency': user_data['car_currency'],
+                'car_price': user_data['car_price'],
+                'car_location': user_data['car_location'],
+                'seller_name': user_data['seller_name'],
+                'seller_phone': user_data['seller_phone'],
+                'username': message.from_user.username if message.from_user.username is not None else 'по номеру телефона'
+            })
+
+        elif user_data['category'] == 'realty':
+            data.update({
+                'realty_deal': user_data['realty_deal'],
+                'realty_type': user_data['realty_type'],
+                'realty_square': user_data['realty_square'],
+                'rooms_number': user_data['rooms_number'],
+                'total_floors': user_data['total_floors']
+            })
+
+        elif user_data['category'] == 'job':
+            data.update({
+                'job_title': user_data['job_title'],
+                'job_requirements': user_data['job_requirements'],
+                'job_responsibilities': user_data['job_responsibilities'],
+                'job_conditions': user_data['job_conditions'],
+                'job_name': user_data['job_name'],
+                'job_contacts': user_data['job_contacts'],
+            })
+
+        else:
+            print("Неподдерживаемая категория:", user_data['category'])
+            return
+
+        print('data', data)
+        response = requests.post('http://127.0.0.1:8000/api/user_data/', data=data)
+
+        if response.status_code == 200:
+            print("Успешно получили данные пользователя с сервера Django!")
+        else:
+            print("Ошибка при получении данных пользователя с сервера Django. Код состояния:", response.status_code)
+
+    except requests.RequestException as e:
+        print("Ошибка при отправке запроса на сервер Django:", e)
+
 
 
 # Создание клавиатуры
@@ -205,8 +267,8 @@ async def my_ads(message: types.Message, state: FSMContext):
             await message.answer(f"{data}")
             # if data:
             #     for ad in data:
-            #         button_text = f"Ad: {ad['new_id']}"
-            #         callback_data = f"ad:{ad['new_id']}"
+            #         button_text = f"Ad: {ad['ad_id']}"
+            #         callback_data = f"ad:{ad['ad_id']}"
             #         keyboard = types.InlineKeyboardMarkup()
             #         keyboard.add(types.InlineKeyboardButton(text=button_text, callback_data=callback_data))
             #         await bot.send_message(chat_id='chat_id', text="Choose an ad:", reply_markup=keyboard)
@@ -671,7 +733,7 @@ async def select_currency(message, state):
     print('14', user_data)
 
     if await validate_button_input(message.text, dict_currency):
-        await state.update_data(currency=message.text)
+        await state.update_data(car_currency=message.text)
         image_path = ImageDirectory.auto_car_price
         msg = await send_photo_with_caption(message, state, image_path, "⌨ Цена автомобиля?")
         await add_message_id(state, msg.message_id)
@@ -1005,6 +1067,37 @@ async def get_job_conditions(message, state):
 
     await state.update_data(job_conditions=message.text)
     await delete_saved_messages(message, state)
+    builder = create_keyboard(['Пропустить'])
+
+    image_path = ImageDirectory.realty_currency
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "В какой валюте ЗП? \n (нажмите Пропустить ⏭ если если не требуется указывать, )", builder)
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_CURRENCY)
+
+@router.message(Job.STATE_JOB_CURRENCY)
+async def get_job_currency(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_currency=message.text)
+    await delete_saved_messages(message, state)
+    builder = create_keyboard(['Пропустить'])
+
+    image_path = ImageDirectory.auto_car_price
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Укажите ЗП \n (нажмите Пропустить ⏭ если если не требуется указывать, )", builder)
+    # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
+    await add_message_id(state, msg.message_id)
+    await state.set_state(Job.STATE_JOB_PRICE)
+
+@router.message(Job.STATE_JOB_PRICE)
+async def get_job_price(message, state):
+    user_data = await state.get_data()
+    await delete_saved_messages(message, state)
+
+    await state.update_data(job_price=message.text)
+    await delete_saved_messages(message, state)
 
     image_path = ImageDirectory.auto_seller_name
     msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
@@ -1014,7 +1107,7 @@ async def get_job_conditions(message, state):
 
 
 @router.message(Job.STATE_JOB_NAME)
-async def get_job_conditions(message, state):
+async def get_job_name(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
 
@@ -1050,9 +1143,9 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
     print('19', user_data)
     if 'sent_photos' not in user_data:
         user_data['sent_photos'] = []
-    new_id = str(uuid.uuid4().int)[:6]
-    if 'new_id' not in user_data:
-        user_data['new_id'] = new_id
+    ad_id = str(uuid.uuid4().int)[:6]
+    if 'ad_id' not in user_data:
+        user_data['ad_id'] = ad_id
     if user_data['category'] == 'car':
         caption = (
             f"🛞 <b>#{user_data['car_brand']}-{user_data['car_model']}</b>\n\n"
@@ -1075,14 +1168,14 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['seller_phone']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             f" {hlink('Selbie Auto. Рынок тачек в ДНР', 'https://t.me/selbieauto')} | {hlink('Разместить авто', 'https://t.me/selbie_bot')} \n\n"
-            f"<b>ID объявления: #{user_data['new_id']}</b>"
+            f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
     elif user_data['category'] == 'realty':
         caption = (
             f"<b> {user_data['realty_deal']} {user_data['realty_type']}  </b>\n\n"
             f"<b> {user_data['realty_type']} {user_data['realty_square']}</b>\n\n"
             f"👤<b>Имя:</b> <span class='tg-spoiler'> {user_data['realty_name']} </span>\n"
-            f"<b>ID объявления: #{user_data['new_id']}</b>"
+            f"<b>ID объявления: #{user_data['ad_id']}</b>"
             f"{user_data}"
         )
     elif user_data['category'] == 'job':
@@ -1097,7 +1190,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
 
-            f"<b>ID объявления: #{user_data['new_id']}</b>"
+            f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
 
     for message in album:
@@ -1177,7 +1270,7 @@ async def preview_advertisement(message: types.Message, state: FSMContext):
 #     print('22 excel', user_data)
 #     file_path = 'db.xlsx'
 #     row_data = [
-#         user_data['new_id'], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+#         user_data['ad_id'], datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
 #         user_data['car_brand'], user_data['car_model'], user_data['car_year'], user_data['car_body_type'],
 #         user_data['car_engine_type'], user_data['car_engine_volume'], user_data['car_power'],
 #         user_data['car_transmission_type'], user_data['car_color'], user_data['car_mileage'],
