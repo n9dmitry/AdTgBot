@@ -1171,7 +1171,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"   <b>-Растаможка:</b> {'Да' if user_data['car_customs_cleared'] else 'Нет'}\n"
             f"   <b>-Состояние:</b> {user_data['car_condition']}\n\n"
             f"ℹ️<b>Дополнительная информация:</b> {user_data['car_description']}\n\n"
-            f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['currency']}\n\n"
+            f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['car_currency']}\n\n"
             f"📍<b>Местоположение:</b> {user_data['car_location']}\n"
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data['seller_name']} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['seller_phone']} </span>\n"
