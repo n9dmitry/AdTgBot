@@ -76,11 +76,11 @@ async def send_api(message, state):
 
     try:
         data = {
+            'user_id': user_data['user_id'],
+            'username_tg': message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
             'ad_id': user_data['ad_id'],
             'category': user_data['category'],
-            'photos': ','.join(photo_urls),
-            'user_id': user_data['user_id'],
-            # '',
+            'sent_photos': ','.join(photo_urls),
         }
 
         if user_data['category'] == 'car':
@@ -105,16 +105,23 @@ async def send_api(message, state):
                 'car_location': user_data['car_location'],
                 'seller_name': user_data['seller_name'],
                 'seller_phone': user_data['seller_phone'],
-                'username': message.from_user.username if message.from_user.username is not None else 'по номеру телефона'
             })
 
         elif user_data['category'] == 'realty':
             data.update({
                 'realty_deal': user_data['realty_deal'],
                 'realty_type': user_data['realty_type'],
+                'realty_rooms': user_data['realty_rooms'],
+                'realty_floors_total': user_data['realty_floors_total'],
+                'realty_floor': user_data['realty_floor'],
                 'realty_square': user_data['realty_square'],
-                'rooms_number': user_data['rooms_number'],
-                'total_floors': user_data['total_floors']
+                'realty_location': user_data['realty_location'],
+                'realty_currency': user_data['realty_currency'],
+                'realty_price': user_data['realty_price'],
+                'realty_description': user_data['realty_description'],
+                'realty_name': user_data['realty_name'],
+                'realty_contacts': user_data['realty_contacts'],
+
             })
 
         elif user_data['category'] == 'job':
@@ -123,6 +130,8 @@ async def send_api(message, state):
                 'job_requirements': user_data['job_requirements'],
                 'job_responsibilities': user_data['job_responsibilities'],
                 'job_conditions': user_data['job_conditions'],
+                'job_currency': user_data['job_currency'],
+                'job_price': user_data['job_price'],
                 'job_name': user_data['job_name'],
                 'job_contacts': user_data['job_contacts'],
             })
@@ -132,7 +141,8 @@ async def send_api(message, state):
             return
 
         print('data', data)
-        response = requests.post('http://127.0.0.1:8000/api/user_data/', data=data)
+        endpoint = f'http://127.0.0.1:8000/api/{user_data["category"]}_ad/'
+        response = requests.post(endpoint, data=data)
 
         if response.status_code == 200:
             print("Успешно получили данные пользователя с сервера Django!")
@@ -141,7 +151,6 @@ async def send_api(message, state):
 
     except requests.RequestException as e:
         print("Ошибка при отправке запроса на сервер Django:", e)
-
 
 
 # Создание клавиатуры
@@ -1219,6 +1228,8 @@ async def send_advertisement(message: types.Message, state):
     print('21', user_data)
     # await add_data_to_excel(message, state)
     user_id = message.from_user.id
+    await state.update_data(user_id=user_id)
+
     if user_data['category'] == 'car':
         await bot.send_media_group(chat_id=CHANNEL_CAR_ID, media=user_data['sent_photos'], disable_notification=True)
     elif user_data['category'] == 'realty':
@@ -1229,7 +1240,7 @@ async def send_advertisement(message: types.Message, state):
     msg = await bot.send_message(user_id, "Объявление отправлено в канал!",
                                  reply_markup=builder.as_markup(resize_keyboard=True))
     await add_message_id(state, msg.message_id)  # добавляем айдишник доп функцией
-    # await send_api(message, state)
+    await send_api(message, state)
     await state.clear()
 
 
