@@ -2,6 +2,10 @@ import re
 
 # Функция полиморфная
 
+# Разделить на несколько классов
+# Класс валидация, Написать ядро
+
+
 
 async def validate_button_input(event_text, options):
     return event_text in options
@@ -83,8 +87,7 @@ async def validate_phone_number(phone_number):
     # Проверим, что номер содержит 10 или 11 цифр
     if re.match(r'^\+?[78]\d{10}$', phone_digits) or re.match(r'^\+?\d{11}$', phone_digits):
         return True
-    else:
-        return False
+    return False
 
 async def validate_length_text(event):
     return len(event.text) <= 400
