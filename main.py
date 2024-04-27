@@ -60,10 +60,145 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 dict_realty_deal = dicts.get('dict_realty_deal', {})
 dict_realty_type = dicts.get('dict_realty_type', {})
 
+#
+# async def send_api(message, state):
+#     user_data = await state.get_data()
+#
+#     photo_urls = []
+#     for photo_data in user_data.get('sent_photos', []):
+#         if isinstance(photo_data, InputMediaPhoto):
+#             file_id = photo_data.media
+#             file_info_response = requests.get(f'https://api.telegram.org/bot{API_TOKEN}/getFile?file_id={file_id}')
+#             file_info = file_info_response.json()
+#             file_path = file_info['result']['file_path']
+#             photo_url = f'https://api.telegram.org/file/bot{API_TOKEN}/{file_path}'
+#             photo_urls.append(photo_url)
+#
+#     try:
+#         data = {
+#             'user_id': user_data['user_id'],
+#             'username_tg': message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
+#             'ad_id': user_data['ad_id'],
+#             'category': user_data['category'],
+#             'sent_photos': ','.join(photo_urls),
+#         }
+#
+#         if user_data['category'] == 'car':
+#             data.update({
+#                 'car_brand': user_data['car_brand'],
+#                 'car_model': user_data['car_model'],
+#                 'car_year': user_data['car_year'],
+#                 'car_body_type': user_data['car_body_type'],
+#                 'car_engine_type': user_data['car_engine_type'],
+#                 'car_engine_volume': user_data['car_engine_volume'],
+#                 'car_power': user_data['car_power'],
+#                 'car_transmission_type': user_data['car_transmission_type'],
+#                 'car_color': user_data['car_color'],
+#                 'car_mileage': user_data['car_mileage'],
+#                 'car_document_status': user_data['car_document_status'],
+#                 'car_owners': user_data['car_owners'],
+#                 'car_customs_cleared': user_data['car_customs_cleared'],
+#                 'car_condition': user_data['car_condition'],
+#                 'car_description': user_data['car_description'],
+#                 'car_currency': user_data['car_currency'],
+#                 'car_price': user_data['car_price'],
+#                 'car_location': user_data['car_location'],
+#                 'seller_name': user_data['seller_name'],
+#                 'seller_phone': user_data['seller_phone'],
+#             })
+#
+#         elif user_data['category'] == 'realty':
+#             data.update({
+#                 'realty_deal': user_data['realty_deal'],
+#                 'realty_type': user_data['realty_type'],
+#                 'realty_rooms': user_data['realty_rooms'],
+#                 'realty_floors_total': user_data['realty_floors_total'],
+#                 'realty_floor': user_data['realty_floor'],
+#                 'realty_square': user_data['realty_square'],
+#                 'realty_location': user_data['realty_location'],
+#                 'realty_currency': user_data['realty_currency'],
+#                 'realty_price': user_data['realty_price'],
+#                 'realty_description': user_data['realty_description'],
+#                 'realty_name': user_data['realty_name'],
+#                 'realty_contacts': user_data['realty_contacts'],
+#
+#             })
+#
+#         elif user_data['category'] == 'job':
+#             data.update({
+#                 'job_title': user_data['job_title'],
+#                 'job_requirements': user_data['job_requirements'],
+#                 'job_responsibilities': user_data['job_responsibilities'],
+#                 'job_conditions': user_data['job_conditions'],
+#                 'job_currency': user_data['job_currency'],
+#                 'job_price': user_data['job_price'],
+#                 'job_name': user_data['job_name'],
+#                 'job_contacts': user_data['job_contacts'],
+#             })
+#
+#         else:
+#             print("Неподдерживаемая категория:", user_data['category'])
+#             return
+#
+#         print('data', data)
+#         endpoint = f'http://127.0.0.1:8000/api/{user_data["category"]}_ad/'
+#         response = requests.post(endpoint, data=data)
+#
+#         if response.status_code == 200:
+#             print("Успешно получили данные пользователя с сервера Django!")
+#         else:
+#             print("Ошибка при получении данных пользователя с сервера Django. Код состояния:", response.status_code)
+#
+#     except requests.RequestException as e:
+#         print("Ошибка при отправке запроса на сервер Django:", e)
+
+
 
 async def send_api(message, state):
     user_data = await state.get_data()
+    field_mapping = {
+        'car': {
+            'contact_name': 'car_name',
+            'contact_phone': 'car_phone',
+            'currency': 'car_currency',
+            'price': 'car_price',
+            'description': 'car_description',
+        },
+        'realty': {
+            'contact_phone': 'realty_phone',
+            'currency': 'realty_currency',
+            'price': 'realty_price',
+            'description': '',
 
+        },
+        'job': {
+            'contact_name': 'job_name',
+            'contact_phone': 'job_phone',
+            'currency': 'job_currency',
+            'price': 'job_price',
+            'description': 'job_description',
+
+        },
+    }
+    # Получаем категорию объявления
+    category = user_data.get('category')
+    if category not in field_mapping:
+        print("Неподдерживаемая категория:", category)
+        return
+
+
+    # Получаем сопоставление полей для выбранной категории
+    field_mapping_category = field_mapping[category]
+
+    # Формируем данные для отправки
+    data = {
+        'user_id': user_data.get('user_id', ''),
+        'username_tg': message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
+        'ad_id': user_data.get('ad_id', ''),
+        'category': category,
+    }
+
+    # Обрабатываем фотографии, если они есть
     photo_urls = []
     for photo_data in user_data.get('sent_photos', []):
         if isinstance(photo_data, InputMediaPhoto):
@@ -73,75 +208,40 @@ async def send_api(message, state):
             file_path = file_info['result']['file_path']
             photo_url = f'https://api.telegram.org/file/bot{API_TOKEN}/{file_path}'
             photo_urls.append(photo_url)
+    data['sent_photos'] = ','.join(photo_urls)
+
+    if user_data['category'] == 'car':
+        title = f"{user_data['car_brand']} - {user_data['car_model']}, {user_data['car_year']}, {user_data['car_mileage']}"
+    elif user_data['category'] == 'realty':
+        title = f"{user_data['realty_rooms']}, {user_data['realty_type']}, {user_data['realty_square']}, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
+    elif user_data['category'] == 'job':
+        title = user_data['job_title']
+
+    # Добавляем заголовок в данные
+    data['title'] = title
+
+    for key, value in user_data.items():
+        if isinstance(value, set):
+            value = list(value)
+        if isinstance(value, (list, set)):
+            data[key] = ' '.join(str(item) for item in value)
+        else:
+            data[key] = str(value)
+
+    for key, value in field_mapping_category.items():
+        user_data_value = user_data.get(value, '')
+
+        # Если значение - список, объединяем его в строку
+        if isinstance(user_data_value, list):
+            user_data_value = ' '.join(user_data_value)
+            print(f"user_data[{value}] после объединения: {user_data_value}")
+
+        data[key] = user_data_value
+
 
     try:
-        data = {
-            'user_id': user_data['user_id'],
-            'username_tg': message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
-            'ad_id': user_data['ad_id'],
-            'category': user_data['category'],
-            'sent_photos': ','.join(photo_urls),
-        }
-
-        if user_data['category'] == 'car':
-            data.update({
-                'car_brand': user_data['car_brand'],
-                'car_model': user_data['car_model'],
-                'car_year': user_data['car_year'],
-                'car_body_type': user_data['car_body_type'],
-                'car_engine_type': user_data['car_engine_type'],
-                'car_engine_volume': user_data['car_engine_volume'],
-                'car_power': user_data['car_power'],
-                'car_transmission_type': user_data['car_transmission_type'],
-                'car_color': user_data['car_color'],
-                'car_mileage': user_data['car_mileage'],
-                'car_document_status': user_data['car_document_status'],
-                'car_owners': user_data['car_owners'],
-                'car_customs_cleared': user_data['car_customs_cleared'],
-                'car_condition': user_data['car_condition'],
-                'car_description': user_data['car_description'],
-                'car_currency': user_data['car_currency'],
-                'car_price': user_data['car_price'],
-                'car_location': user_data['car_location'],
-                'seller_name': user_data['seller_name'],
-                'seller_phone': user_data['seller_phone'],
-            })
-
-        elif user_data['category'] == 'realty':
-            data.update({
-                'realty_deal': user_data['realty_deal'],
-                'realty_type': user_data['realty_type'],
-                'realty_rooms': user_data['realty_rooms'],
-                'realty_floors_total': user_data['realty_floors_total'],
-                'realty_floor': user_data['realty_floor'],
-                'realty_square': user_data['realty_square'],
-                'realty_location': user_data['realty_location'],
-                'realty_currency': user_data['realty_currency'],
-                'realty_price': user_data['realty_price'],
-                'realty_description': user_data['realty_description'],
-                'realty_name': user_data['realty_name'],
-                'realty_contacts': user_data['realty_contacts'],
-
-            })
-
-        elif user_data['category'] == 'job':
-            data.update({
-                'job_title': user_data['job_title'],
-                'job_requirements': user_data['job_requirements'],
-                'job_responsibilities': user_data['job_responsibilities'],
-                'job_conditions': user_data['job_conditions'],
-                'job_currency': user_data['job_currency'],
-                'job_price': user_data['job_price'],
-                'job_name': user_data['job_name'],
-                'job_contacts': user_data['job_contacts'],
-            })
-
-        else:
-            print("Неподдерживаемая категория:", user_data['category'])
-            return
-
         print('data', data)
-        endpoint = f'http://127.0.0.1:8000/api/{user_data["category"]}_ad/'
+        endpoint = f'http://127.0.0.1:8000/api/{category}_ad/'
         response = requests.post(endpoint, data=data)
 
         if response.status_code == 200:
@@ -864,7 +964,7 @@ async def get_custom_realty_type(message, state):
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_rooms
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Сколько комнат? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат, )",
+                                            "Сколько комнат? (если комната, сколько в квартире) \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат, )",
                                             builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
@@ -878,6 +978,8 @@ async def get_realty_type(message, state):
     user_data = await state.get_data()
     print('realty 3', user_data)
     await state.update_data(realty_type=message.text)
+    if message.text == 'Пропустить':
+        await state.update_data(realty_type=None)
     builder = create_keyboard(['Пропустить'])
     image_path = ImageDirectory.realty_rooms
     msg = await send_photo_with_caption(message, state, image_path,
@@ -1035,46 +1137,61 @@ async def get_job_title(message, state):
     await delete_saved_messages(message, state)
 
     image_path = ImageDirectory.job_requirements
-    msg = await send_photo_with_caption(message, state, image_path, "Какие требования к кандидату? (⌨ напишите)")
+    msg = await send_photo_with_caption(message, state, image_path, "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
     await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_REQUIREMENTS)
+    await state.set_state(Job.STATE_JOB_DESCRIPTION)
 
 
-@router.message(Job.STATE_JOB_REQUIREMENTS)
-async def get_job_requirements(message, state):
+# @router.message(Job.STATE_JOB_REQUIREMENTS)
+# async def get_job_requirements(message, state):
+#     user_data = await state.get_data()
+#     await delete_saved_messages(message, state)
+#
+#     await state.update_data(job_requirements=message.text)
+#     await delete_saved_messages(message, state)
+#
+#     image_path = ImageDirectory.job_responsibilities
+#     msg = await send_photo_with_caption(message, state, image_path, "Напиишите обязанности для кандидата (⌨ напишите)")
+#     await add_message_id(state, msg.message_id)
+#     await state.set_state(Job.STATE_JOB_RESPONSIBILITIES)
+#
+#
+# @router.message(Job.STATE_JOB_RESPONSIBILITIES)
+# async def get_job_responsibilities(message, state):
+#     user_data = await state.get_data()
+#     await delete_saved_messages(message, state)
+#
+#     await state.update_data(job_responsibilities=message.text)
+#     await delete_saved_messages(message, state)
+#
+#     image_path = ImageDirectory.job_condition
+#     msg = await send_photo_with_caption(message, state, image_path,
+#                                         "Напишите условия работы. Например ЗП, оформление, офис/удаленка и т.д. (⌨ напишите)")
+#     await add_message_id(state, msg.message_id)
+#     await state.set_state(Job.STATE_JOB_CONDITIONS)
+#
+#
+# @router.message(Job.STATE_JOB_CONDITIONS)
+# async def get_job_conditions(message, state):
+#     user_data = await state.get_data()
+#     await delete_saved_messages(message, state)
+#
+#     await state.update_data(job_conditions=message.text)
+#     await delete_saved_messages(message, state)
+#     builder = create_keyboard(['Пропустить'])
+#
+#     image_path = ImageDirectory.realty_currency
+#     msg = await send_photo_with_caption(message, state, image_path,
+#                                         "В какой валюте ЗП? \n (нажмите Пропустить ⏭ если если не требуется указывать, )", builder)
+#     await add_message_id(state, msg.message_id)
+#     await state.set_state(Job.STATE_JOB_CURRENCY)
+
+@router.message(Job.STATE_JOB_DESCRIPTION)
+async def get_job_description(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
 
-    await state.update_data(job_requirements=message.text)
-    await delete_saved_messages(message, state)
-
-    image_path = ImageDirectory.job_responsibilities
-    msg = await send_photo_with_caption(message, state, image_path, "Напиишите обязанности для кандидата (⌨ напишите)")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_RESPONSIBILITIES)
-
-
-@router.message(Job.STATE_JOB_RESPONSIBILITIES)
-async def get_job_responsibilities(message, state):
-    user_data = await state.get_data()
-    await delete_saved_messages(message, state)
-
-    await state.update_data(job_responsibilities=message.text)
-    await delete_saved_messages(message, state)
-
-    image_path = ImageDirectory.job_condition
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Напишите условия работы. Например ЗП, оформление, офис/удаленка и т.д. (⌨ напишите)")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_CONDITIONS)
-
-
-@router.message(Job.STATE_JOB_CONDITIONS)
-async def get_job_conditions(message, state):
-    user_data = await state.get_data()
-    await delete_saved_messages(message, state)
-
-    await state.update_data(job_conditions=message.text)
+    await state.update_data(job_description=message.text)
     await delete_saved_messages(message, state)
     builder = create_keyboard(['Пропустить'])
 
@@ -1171,7 +1288,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"   <b>-Растаможка:</b> {'Да' if user_data['car_customs_cleared'] else 'Нет'}\n"
             f"   <b>-Состояние:</b> {user_data['car_condition']}\n\n"
             f"ℹ️<b>Дополнительная информация:</b> {user_data['car_description']}\n\n"
-            f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['currency']}\n\n"
+            f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['car_currency']}\n\n"
             f"📍<b>Местоположение:</b> {user_data['car_location']}\n"
             f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data['seller_name']} </span>\n"
             f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['seller_phone']} </span>\n"

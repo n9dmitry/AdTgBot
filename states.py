@@ -69,6 +69,8 @@ class Job(StatesGroup):
     STATE_JOB_REQUIREMENTS = State()
     STATE_JOB_RESPONSIBILITIES = State()
     STATE_JOB_CONDITIONS = State()
+
+    STATE_JOB_DESCRIPTION = State()
     STATE_JOB_NAME = State()
     STATE_JOB_CURRENCY = State()
     STATE_JOB_PRICE = State()
