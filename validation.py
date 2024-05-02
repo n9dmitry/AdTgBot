@@ -80,6 +80,8 @@ async def validate_name(name):
     return bool(re.match(r'^[A-Za-zА-Яа-я\s]+$', name, re.UNICODE))
 
 
+# ===============================================
+#
 async def validate_phone_number(phone_number):
     # Уберем все нецифровые символы и проверим, что остались только цифры
     phone_digits = re.sub(r'\D', '', phone_number)
@@ -99,4 +101,11 @@ async def validate_final_length(event, state, user_data):
     user_data_length = sum(len(str(value)) for value in user_data.values())
     return (user_data_length + caption_length) <= max_caption_length
 
+# ===============================================
+
+async def validate_realty_rooms(realty_rooms):
+    return realty_rooms.isdigit() or 'Пропустить'
+
+async def validate_realty_floors_total(realty_floors_total):
+    return realty_floors_total.isdigit() or 'Пропустить'
 

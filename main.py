@@ -59,6 +59,7 @@ dict_car_mileages = dicts.get("dict_car_mileages", {})
 dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 dict_realty_deal = dicts.get('dict_realty_deal', {})
 dict_realty_type = dicts.get('dict_realty_type', {})
+dict_commercial_realty_type = dicts.get('dict_commercial_realty_type', {})
 
 #
 # async def send_api(message, state):
@@ -168,7 +169,7 @@ async def send_api(message, state):
             'contact_phone': 'realty_phone',
             'currency': 'realty_currency',
             'price': 'realty_price',
-            'description': '',
+            'description': 'realty_description',
 
         },
         'job': {
@@ -244,10 +245,8 @@ async def send_api(message, state):
         endpoint = f'http://127.0.0.1:8000/api/{category}_ad/'
         response = requests.post(endpoint, data=data)
 
-        if response.status_code == 200:
+        if response.status_code == 200 or response.status_code == 201:
             print("Успешно получили данные пользователя с сервера Django!")
-        else:
-            print("Ошибка при получении данных пользователя с сервера Django. Код состояния:", response.status_code)
 
     except requests.RequestException as e:
         print("Ошибка при отправке запроса на сервер Django:", e)
@@ -941,25 +940,26 @@ async def get_seller_phone(message, state):
 async def get_realty_deal(message, state):
     user_data = await state.get_data()
     print('realty 1', user_data)
-    await state.update_data(realty_deal=message.text)
-    await delete_saved_messages(message, state)
+    if message.text in dict_realty_deal:
+        await state.update_data(realty_deal=message.text)
+        await delete_saved_messages(message, state)
 
-    builder = create_keyboard(dict_realty_type)
-    image_path = ImageDirectory.realty_type
-    msg = await send_photo_with_caption(message, state, image_path, "Укажите тип недвижимости:", builder)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_TYPE)
+        builder = create_keyboard(dict_realty_type)
+        image_path = ImageDirectory.realty_type
+        msg = await send_photo_with_caption(message, state, image_path, "Укажите тип недвижимости:", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_TYPE)
+    else:
+        msg = await message.answer("Пожалуйста, выберите тип недвижимости из кнопок.")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_DEAL)
 
 
 @router.message(Realty.STATE_REALTY_TYPE)
-async def get_custom_realty_type(message, state):
+async def get_realty_type(message, state):
     user_data = await state.get_data()
     print('realty 2', user_data)
-
-    if message.text == "⌨ ввести вручную (нет в списке)":
-        await message.answer("Напишите тип недвижимости вручную ⌨ .")
-        await state.set_state(Realty.STATE_CUSTOM_REALTY_TYPE)
-    elif message.text in dict_realty_type:
+    if message.text in dict_realty_type and message.text not in 'Коммерческий объект':
         await state.update_data(realty_type=message.text)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_rooms
@@ -968,58 +968,100 @@ async def get_custom_realty_type(message, state):
                                             builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
+    elif message.text in 'Коммерческий объект':
+        builder = create_keyboard(dict_commercial_realty_type)
+        image_path = ImageDirectory.realty_type
+        msg = await send_photo_with_caption(message, state, image_path, "Укажите тип коммерческой недвижимости:", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_COMMERCIAL_REALTY_TYPE)
     else:
-        await message.answer("Недопустимый тип недвижимости. Пожалуйста, выберите из списка или введите вручную.")
+        builder = create_keyboard(dict_realty_type)
+        msg = await message.answer("Недопустимый тип недвижимости. Пожалуйста, выберите из списка или введите вручную.", builder)
+        await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_TYPE)
 
 
-@router.message(Realty.STATE_CUSTOM_REALTY_TYPE)
-async def get_realty_type(message, state):
+@router.message(Realty.STATE_COMMERCIAL_REALTY_TYPE)
+async def get_commercial_realty_type(message, state):
     user_data = await state.get_data()
-    print('realty 3', user_data)
-    await state.update_data(realty_type=message.text)
-    if message.text == 'Пропустить':
-        await state.update_data(realty_type=None)
-    builder = create_keyboard(['Пропустить'])
-    image_path = ImageDirectory.realty_rooms
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Сколько комнат? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат)",
-                                        builder)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_ROOMS)
+    print('realty 2.1', user_data)
+    if message.text in (dict_commercial_realty_type):
+        await state.update_data(commercial_realty_type=message.text)
+        await delete_saved_messages(message, state)
 
+        builder = create_keyboard(['Пропустить'])
+        image_path = ImageDirectory.realty_rooms
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Сколько комнат? (если комната, сколько в квартире) \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат, )",
+                                            builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_ROOMS)
+    else:
+        builder = create_keyboard(dict_commercial_realty_type)
+        msg = await message.answer("Недопустимый тип коммерческой недвижимости. Пожалуйста, выберите из списка или введите вручную.", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_COMMERCIAL_REALTY_TYPE)
+
+
+# @router.message(Realty.STATE_CUSTOM_REALTY_TYPE)
+# async def get_realty_type(message, state):
+#     user_data = await state.get_data()
+#     print('realty 3', user_data)
+#     await state.update_data(realty_type=message.text)
+#     if message.text == 'Пропустить':
+#         await state.update_data(realty_type=None)
+#     builder = create_keyboard(['Пропустить'])
+#     image_path = ImageDirectory.realty_rooms
+#     msg = await send_photo_with_caption(message, state, image_path,
+#                                         "Сколько комнат? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество комнат)",
+#                                         builder)
+#     await add_message_id(state, msg.message_id)
+#     await state.set_state(Realty.STATE_REALTY_ROOMS)
 
 @router.message(Realty.STATE_REALTY_ROOMS)
 async def get_realty_rooms(message, state):
     user_data = await state.get_data()
     print('realty 4', user_data)
-    await state.update_data(realty_rooms=message.text)
-    if message.text == 'Пропустить':
-        await state.update_data(realty_rooms=None)
-    builder = create_keyboard(['Пропустить'])
-    image_path = ImageDirectory.realty_floors_total
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Сколько этажей? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество этажей, )",
-                                        builder)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_TOTAL_FLOORS)
+    if validate_realty_rooms(message.text):
+        await state.update_data(realty_rooms=message.text)
+        if message.text == 'Пропустить':
+            await state.update_data(realty_rooms=None)
+        builder = create_keyboard(['Пропустить'])
+        image_path = ImageDirectory.realty_floors_total
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Сколько этажей? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрено количество этажей, )",
+                                            builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_TOTAL_FLOORS)
+    else:
+        builder = create_keyboard(['Пропустить'])
+        msg = await message.answer(
+            "Недопустимый тип данных. Введите или число или нажмите кнопку Пропустить ⏭", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_ROOMS)
 
 
 @router.message(Realty.STATE_REALTY_TOTAL_FLOORS)
 async def get_realty_floors_total(message, state):
     user_data = await state.get_data()
     print('realty 5', user_data)
-    await state.update_data(realty_floors_total=message.text)
-    if message.text == 'Пропустить':
-        await state.update_data(realty_rooms=None)
-    builder = create_keyboard(['Пропустить'])
-    image_path = ImageDirectory.realty_floor
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Какой этаж? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрен этаж)",
-                                        builder)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_FLOOR)
-
+    if validate_realty_floors_total(message.text):
+        await state.update_data(realty_floors_total=message.text)
+        if message.text == 'Пропустить':
+            await state.update_data(realty_rooms=None)
+        builder = create_keyboard(['Пропустить'])
+        image_path = ImageDirectory.realty_floor
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Какой этаж? \n (нажмите Пропустить ⏭ если в недвижимости не предусмотрен этаж)",
+                                            builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_FLOOR)
+    else:
+        builder = create_keyboard(['Пропустить'])
+        msg = await message.answer(
+            "Недопустимый тип данных. Введите или число или нажмите кнопку Пропустить ⏭", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_ROOMS)
 
 @router.message(Realty.STATE_REALTY_FLOOR)
 async def get_realty_floor(message, state):
@@ -1029,7 +1071,7 @@ async def get_realty_floor(message, state):
     if message.text == 'Пропустить':
         await state.update_data(realty_rooms=None)
     image_path = ImageDirectory.realty_square
-    msg = await send_photo_with_caption(message, state, image_path, "Какая площадь объекта? (Введите вручную ⌨ )")
+    msg = await send_photo_with_caption(message, state, image_path, "Какая площадь объекта? (по умолчанию м2, если земельный участок, то сот) \n (Введите вручную ⌨ )")
     await add_message_id(state, msg.message_id)
     await state.set_state(Realty.STATE_REALTY_SQUARE)
 
@@ -1308,9 +1350,9 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
 
         caption = (
             f"🛞 <b> Название вакансии: {user_data['job_title']}</b>\n\n"
-            f" <b> Требования к кандидату: </b> {user_data['job_requirements']}\n"
-            f" <b> Обязанности и задачи: </b> {user_data['job_responsibilities']}\n"
-            f" <b> Условия работы: </b>{user_data['job_conditions']}\n\n"
+            # f" <b> Требования к кандидату: </b> {user_data['job_requirements']}\n"
+            # f" <b> Обязанности и задачи: </b> {user_data['job_responsibilities']}\n"
+            f" <b> Описание работы: </b>{user_data['job_description']}\n\n"
 
             f"👤<b>Работодатель:</b> <span class='tg-spoiler'> {user_data['job_name']} </span>\n"
             f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
