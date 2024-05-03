@@ -91,8 +91,8 @@ async def validate_phone_number(phone_number):
         return True
     return False
 
-async def validate_length_text(event):
-    return len(event.text) <= 400
+async def validate_length_text(value):
+    return len(value) <= 400
 
 async def validate_final_length(event, state, user_data):
     caption_length = 350
