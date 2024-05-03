@@ -1216,16 +1216,14 @@ async def get_realty_contacts(message, state):
 @router.message(Job.STATE_JOB_TITLE)
 async def get_job_title(message, state):
     user_data = await state.get_data()
-    await delete_saved_messages(message, state)
-
-    await state.update_data(job_title=message.text)
-    await delete_saved_messages(message, state)
-
-    image_path = ImageDirectory.job_requirements
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_DESCRIPTION)
+    if validate_job_title(message.text):
+        await state.update_data(job_title=message.text)
+        await delete_saved_messages(message, state)
+        image_path = ImageDirectory.job_requirements
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_DESCRIPTION)
 
 
 # @router.message(Job.STATE_JOB_REQUIREMENTS)

@@ -116,3 +116,6 @@ async def validate_realty_floor(value):
 async def validate_realty_square(value):
     return value.isdigit() or value in 'Пропустить'
 
+# ===============================================
+async def validate_job_title(value):
+    return len(value) <= 150
