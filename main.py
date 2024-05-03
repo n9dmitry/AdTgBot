@@ -61,6 +61,7 @@ dict_realty_deal = dicts.get('dict_realty_deal', {})
 dict_realty_type = dicts.get('dict_realty_type', {})
 dict_commercial_realty_type = dicts.get('dict_commercial_realty_type', {})
 
+
 #
 # async def send_api(message, state):
 #     user_data = await state.get_data()
@@ -154,7 +155,6 @@ dict_commercial_realty_type = dicts.get('dict_commercial_realty_type', {})
 #         print("Ошибка при отправке запроса на сервер Django:", e)
 
 
-
 async def send_api(message, state):
     user_data = await state.get_data()
     field_mapping = {
@@ -186,7 +186,6 @@ async def send_api(message, state):
     if category not in field_mapping:
         print("Неподдерживаемая категория:", category)
         return
-
 
     # Получаем сопоставление полей для выбранной категории
     field_mapping_category = field_mapping[category]
@@ -238,7 +237,6 @@ async def send_api(message, state):
             print(f"user_data[{value}] после объединения: {user_data_value}")
 
         data[key] = user_data_value
-
 
     try:
         print('data', data)
@@ -381,11 +379,11 @@ async def my_ads(message: types.Message, state: FSMContext):
             #         keyboard.add(types.InlineKeyboardButton(text=button_text, callback_data=callback_data))
             #         await bot.send_message(chat_id='chat_id', text="Choose an ad:", reply_markup=keyboard)
 
+
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
     msg = await message.answer(f"У вас пока нет размещенных объявлений. Нажмите /restart для перезапуска бота")
     await add_message_id(state, msg.message_id)
-
 
 
 @router.message(Command("support"))
@@ -959,7 +957,7 @@ async def get_realty_deal(message, state):
 async def get_realty_type(message, state):
     user_data = await state.get_data()
     print('realty 2', user_data)
-    if message.text in dict_realty_type and message.text not in 'Коммерческий объект':
+    if (message.text in dict_realty_type) and ('Коммерческий объект' not in message.text):
         await state.update_data(realty_type=message.text)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_rooms
@@ -968,24 +966,24 @@ async def get_realty_type(message, state):
                                             builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
-    elif message.text in 'Коммерческий объект':
+    elif 'Коммерческий объект🏪' in message.text:
         builder = create_keyboard(dict_commercial_realty_type)
         image_path = ImageDirectory.realty_type
-        msg = await send_photo_with_caption(message, state, image_path, "Укажите тип коммерческой недвижимости:", builder)
+        msg = await send_photo_with_caption(message, state, image_path, "Укажите тип коммерческой недвижимости:",
+                                            builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_COMMERCIAL_REALTY_TYPE)
+
     else:
-        builder = create_keyboard(dict_realty_type)
-        msg = await message.answer("Недопустимый тип недвижимости. Пожалуйста, выберите из списка или введите вручную.", builder)
+        msg = await message.answer("Недопустимый тип недвижимости. Пожалуйста, выберите из списка.")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_TYPE)
-
 
 @router.message(Realty.STATE_COMMERCIAL_REALTY_TYPE)
 async def get_commercial_realty_type(message, state):
     user_data = await state.get_data()
     print('realty 2.1', user_data)
-    if message.text in (dict_commercial_realty_type):
+    if message.text in dict_commercial_realty_type:
         await state.update_data(commercial_realty_type=message.text)
         await delete_saved_messages(message, state)
 
@@ -997,8 +995,8 @@ async def get_commercial_realty_type(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
     else:
-        builder = create_keyboard(dict_commercial_realty_type)
-        msg = await message.answer("Недопустимый тип коммерческой недвижимости. Пожалуйста, выберите из списка или введите вручную.", builder)
+        msg = await message.answer(
+            "Недопустимый тип коммерческой недвижимости. Пожалуйста, выберите из списка или введите вручную.")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_COMMERCIAL_REALTY_TYPE)
 
@@ -1022,7 +1020,7 @@ async def get_commercial_realty_type(message, state):
 async def get_realty_rooms(message, state):
     user_data = await state.get_data()
     print('realty 4', user_data)
-    if validate_realty_rooms(message.text):
+    if await validate_realty_rooms(message.text):
         await state.update_data(realty_rooms=message.text)
         if message.text == 'Пропустить':
             await state.update_data(realty_rooms=None)
@@ -1034,9 +1032,8 @@ async def get_realty_rooms(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_TOTAL_FLOORS)
     else:
-        builder = create_keyboard(['Пропустить'])
         msg = await message.answer(
-            "Недопустимый тип данных. Введите или число или нажмите кнопку Пропустить ⏭", builder)
+            "Недопустимый тип данных. Введите или число или нажмите кнопку Пропустить ⏭")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
 
@@ -1045,10 +1042,10 @@ async def get_realty_rooms(message, state):
 async def get_realty_floors_total(message, state):
     user_data = await state.get_data()
     print('realty 5', user_data)
-    if validate_realty_floors_total(message.text):
+    if await validate_realty_floors_total(message.text):
         await state.update_data(realty_floors_total=message.text)
         if message.text == 'Пропустить':
-            await state.update_data(realty_rooms=None)
+            await state.update_data(realty_floors_total=None)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_floor
         msg = await send_photo_with_caption(message, state, image_path,
@@ -1057,115 +1054,189 @@ async def get_realty_floors_total(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_FLOOR)
     else:
-        builder = create_keyboard(['Пропустить'])
-        msg = await message.answer(
-            "Недопустимый тип данных. Введите или число или нажмите кнопку Пропустить ⏭", builder)
+        msg = await message.answer("Недопустимый тип данных. Введите или число или нажмите кнопку Пропустить ⏭ ")
         await add_message_id(state, msg.message_id)
-        await state.set_state(Realty.STATE_REALTY_ROOMS)
+        await state.set_state(Realty.STATE_REALTY_TOTAL_FLOORS)
+
 
 @router.message(Realty.STATE_REALTY_FLOOR)
 async def get_realty_floor(message, state):
     user_data = await state.get_data()
     print('realty 6', user_data)
-    await state.update_data(realty_floor=message.text)
-    if message.text == 'Пропустить':
-        await state.update_data(realty_rooms=None)
-    image_path = ImageDirectory.realty_square
-    msg = await send_photo_with_caption(message, state, image_path, "Какая площадь объекта? (по умолчанию м2, если земельный участок, то сот) \n (Введите вручную ⌨ )")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_SQUARE)
+    if await validate_realty_floor(message.text) and message.text >= user_data['realty_floors_total']:
+        await state.update_data(realty_floor=message.text)
+        if message.text == 'Пропустить':
+            await state.update_data(realty_rooms=None)
+        image_path = ImageDirectory.realty_square
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_SQUARE)
+    else:
+        msg = await message.answer("Введите корректное значение этажа или нажмите кнопку Пропустить ⏭",)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_TOTAL_FLOORS)
+
+# @router.message(Realty.STATE_REALTY_SQUARE)
+# async def get_realty_square(message, state):
+#     user_data = await state.get_data()
+#
+#     if message.text.replace(',', '.', 1).replace('.', '', 1).isdigit():
+#         # Если введенное значение является целым числом, преобразуем его во float
+#         if message.text.isdigit():
+#             realty_square = float(message.text)
+#         # Если введенное значение является числом с плавающей точкой, преобразуем его во float
+#         else:
+#             realty_square = float(message.text.replace(',', '.'))
+#
+#     await state.update_data(realty_square=message.text)
+#     await delete_saved_messages(message, state)
+#
+#     image_path = ImageDirectory.realty_location
+#     msg = await send_photo_with_caption(message, state, image_path,
+#                                         "Напишите адрес недвижимости (Город, Улица, Дом и т.д.) ")
+#     await add_message_id(state, msg.message_id)
+#     await state.set_state(Realty.STATE_REALTY_LOCATION)
 
 
 @router.message(Realty.STATE_REALTY_SQUARE)
 async def get_realty_square(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_square=message.text)
-    await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.realty_location
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Напишите адрес недвижимости (Город, Улица, Дом и т.д.) ")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_LOCATION)
+    if message.text.replace(',', '.', 1).replace('.', '', 1).isdigit():
+        if message.text.isdigit():
+            realty_square = float(message.text)
+        else:
+            realty_square = float(message.text.replace(',', '.'))
+
+        await state.update_data(realty_square=realty_square)
+        await delete_saved_messages(message, state)
+
+        image_path = ImageDirectory.realty_location
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Напишите адрес недвижимости (Город, Улица, Дом и т.д.) ")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_LOCATION)
+    else:
+        msg = await message.answer("Пожалуйста, введите площадь недвижимости в виде числа.")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_SQUARE)
 
 
 @router.message(Realty.STATE_REALTY_LOCATION)
 async def get_realty_location(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_location=message.text)
-    await delete_saved_messages(message, state)
+    if validate_length_text(message.text):
+        await state.update_data(realty_location=message.text)
+        await delete_saved_messages(message, state)
 
-    builder = create_keyboard(dict_currency)
-    image_path = ImageDirectory.realty_currency
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Выберите валюту:", builder)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_CURRENCY)
-
+        builder = create_keyboard(dict_currency)
+        image_path = ImageDirectory.realty_currency
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Выберите валюту:", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_CURRENCY)
+    else:
+        msg = await message.answer("Текст получился сильно длинным. Напишите корректно адрес в формате Город, Улица, Дом и т.д.")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_LOCATION)
 
 @router.message(Realty.STATE_REALTY_CURRENCY)
 async def get_realty_currency(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_currency=message.text)
-    await delete_saved_messages(message, state)
+    if message.text in dict_currency:
+        await state.update_data(realty_currency=message.text)
+        await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.realty_price
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Напишите цену :")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_PRICE)
-
+        image_path = ImageDirectory.realty_price
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Напишите цену :")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_PRICE)
+    else:
+        msg = await message.answer("Выберите валюту из предложенных")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_CURRENCY)
 
 @router.message(Realty.STATE_REALTY_PRICE)
 async def get_realty_price(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_price=message.text)
-    await delete_saved_messages(message, state)
+    if message.text.isdigit() and int(message.text) > 0:
+        await state.update_data(realty_price=message.text)
+        await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.realty_description
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Опишите важные детали (не больше 300 символов):")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
-
+        image_path = ImageDirectory.realty_description
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Опишите важные детали (не больше 300 символов):")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
+    else:
+        msg = await message.answer("Напишите корретное значение цены, числом без точек и запятых")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_PRICE)
 
 @router.message(Realty.STATE_REALTY_DESCRIPTION)
 async def get_realty_description(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_description=message.text)
-    await delete_saved_messages(message, state)
+    if validate_length_text(message.text):
+        await state.update_data(realty_description=message.text)
+        await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.realty_contacts
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Напишите имя: ")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_NAME)
-
+        image_path = ImageDirectory.realty_contacts
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Напишите имя: ")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_NAME)
+    else:
+        msg = await message.answer("Текст получился сильно длинным! Постарайтесь вместиться в 300 символов")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
 
 @router.message(Realty.STATE_REALTY_NAME)
 async def get_realty_name(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_name=message.text)
-    await delete_saved_messages(message, state)
+    if validate_name(message.text):
+        await state.update_data(realty_name=message.text)
+        await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.auto_seller_name
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Напишите контакты: ")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Realty.STATE_REALTY_CONTACTS)
-
+        image_path = ImageDirectory.auto_seller_name
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Напишите контакты: ")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_CONTACTS)
+    else:
+        msg = await message.answer("Напишите корректное имя")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
 
 @router.message(Realty.STATE_REALTY_CONTACTS)
 async def get_realty_contacts(message, state):
     user_data = await state.get_data()
-    await state.update_data(realty_contacts=message.text)
-    await delete_saved_messages(message, state)
+    if await validate_phone_number(message.text) is True:
+        phone_text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
+        await state.update_data(seller_phone=phone_text)
+        if await validate_final_length(message, state, user_data):
+            await state.update_data(realty_contacts=message.text)
+            await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.realty_photo
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Загрузите фото")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Ads.STATE_PHOTO)
+            image_path = ImageDirectory.realty_photo
+            msg = await send_photo_with_caption(message, state, image_path,
+                                                "Загрузите фото")
+            await add_message_id(state, msg.message_id)
+            await state.set_state(Ads.STATE_PHOTO)
+
+        else:
+            msg = await message.answer("Сообщение получилось слишком длинным! Нажмите /restart и заполните заново")
+            await add_message_id(state, msg.message_id)
+            await state.set_state(Realty.STATE_REALTY_CONTACTS)
+    else:
+        msg = await message.answer("Напишите корректный номер")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_CONTACTS)
+
+
+
+
 
     # РАБОТА
 
@@ -1179,7 +1250,8 @@ async def get_job_title(message, state):
     await delete_saved_messages(message, state)
 
     image_path = ImageDirectory.job_requirements
-    msg = await send_photo_with_caption(message, state, image_path, "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
+    msg = await send_photo_with_caption(message, state, image_path,
+                                        "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
     await add_message_id(state, msg.message_id)
     await state.set_state(Job.STATE_JOB_DESCRIPTION)
 
@@ -1239,9 +1311,11 @@ async def get_job_description(message, state):
 
     image_path = ImageDirectory.realty_currency
     msg = await send_photo_with_caption(message, state, image_path,
-                                        "В какой валюте ЗП? \n (нажмите Пропустить ⏭ если если не требуется указывать, )", builder)
+                                        "В какой валюте ЗП? \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
+                                        builder)
     await add_message_id(state, msg.message_id)
     await state.set_state(Job.STATE_JOB_CURRENCY)
+
 
 @router.message(Job.STATE_JOB_CURRENCY)
 async def get_job_currency(message, state):
@@ -1254,10 +1328,12 @@ async def get_job_currency(message, state):
 
     image_path = ImageDirectory.auto_car_price
     msg = await send_photo_with_caption(message, state, image_path,
-                                        "Укажите ЗП \n (нажмите Пропустить ⏭ если если не требуется указывать, )", builder)
+                                        "Укажите ЗП \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
+                                        builder)
     # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
     await add_message_id(state, msg.message_id)
     await state.set_state(Job.STATE_JOB_PRICE)
+
 
 @router.message(Job.STATE_JOB_PRICE)
 async def get_job_price(message, state):

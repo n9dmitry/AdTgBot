@@ -101,11 +101,18 @@ async def validate_final_length(event, state, user_data):
     user_data_length = sum(len(str(value)) for value in user_data.values())
     return (user_data_length + caption_length) <= max_caption_length
 
+
 # ===============================================
 
-async def validate_realty_rooms(realty_rooms):
-    return realty_rooms.isdigit() or 'Пропустить'
+async def validate_realty_rooms(value):
+    return value.isdigit() or value in 'Пропустить'
 
-async def validate_realty_floors_total(realty_floors_total):
-    return realty_floors_total.isdigit() or 'Пропустить'
+async def validate_realty_floors_total(value):
+    return value.isdigit() or value in 'Пропустить'
+
+async def validate_realty_floor(value):
+    return value.isdigit() or value in 'Пропустить'
+
+async def validate_realty_square(value):
+    return value.isdigit() or value in 'Пропустить'
 
