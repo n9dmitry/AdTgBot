@@ -980,6 +980,7 @@ async def get_realty_type(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_TYPE)
 
+
 @router.message(Realty.STATE_COMMERCIAL_REALTY_TYPE)
 async def get_commercial_realty_type(message, state):
     user_data = await state.get_data()
@@ -1000,6 +1001,7 @@ async def get_commercial_realty_type(message, state):
             "Недопустимый тип коммерческой недвижимости. Пожалуйста, выберите из списка или введите вручную.")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_COMMERCIAL_REALTY_TYPE)
+
 
 @router.message(Realty.STATE_REALTY_ROOMS)
 async def get_realty_rooms(message, state):
@@ -1109,9 +1111,11 @@ async def get_realty_location(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_CURRENCY)
     else:
-        msg = await message.answer("Текст получился сильно длинным. Напишите корректно адрес в формате Город, Улица, Дом и т.д.")
+        msg = await message.answer(
+            "Текст получился сильно длинным. Напишите корректно адрес в формате Город, Улица, Дом и т.д.")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_LOCATION)
+
 
 @router.message(Realty.STATE_REALTY_CURRENCY)
 async def get_realty_currency(message, state):
@@ -1130,6 +1134,7 @@ async def get_realty_currency(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_CURRENCY)
 
+
 @router.message(Realty.STATE_REALTY_PRICE)
 async def get_realty_price(message, state):
     user_data = await state.get_data()
@@ -1146,6 +1151,7 @@ async def get_realty_price(message, state):
         msg = await message.answer("Напишите корретное значение цены, числом без точек и запятых")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_PRICE)
+
 
 @router.message(Realty.STATE_REALTY_DESCRIPTION)
 async def get_realty_description(message, state):
@@ -1164,6 +1170,7 @@ async def get_realty_description(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
 
+
 @router.message(Realty.STATE_REALTY_NAME)
 async def get_realty_name(message, state):
     user_data = await state.get_data()
@@ -1180,6 +1187,7 @@ async def get_realty_name(message, state):
         msg = await message.answer("Напишите корректное имя")
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_DESCRIPTION)
+
 
 @router.message(Realty.STATE_REALTY_CONTACTS)
 async def get_realty_contacts(message, state):
@@ -1206,17 +1214,13 @@ async def get_realty_contacts(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_CONTACTS)
 
-
-
-
-
     # РАБОТА
 
 
 @router.message(Job.STATE_JOB_TITLE)
 async def get_job_title(message, state):
     user_data = await state.get_data()
-    if validate_job_title(message.text):
+    if await validate_job_title(message.text):
         await state.update_data(job_title=message.text)
         await delete_saved_messages(message, state)
         image_path = ImageDirectory.job_requirements
@@ -1224,7 +1228,10 @@ async def get_job_title(message, state):
                                             "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_DESCRIPTION)
-
+    else:
+        msg = await message.answer("Название вакансии сильно длинное! Уложитесь в 100 символов")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_TITLE)
 
 # @router.message(Job.STATE_JOB_REQUIREMENTS)
 # async def get_job_requirements(message, state):
