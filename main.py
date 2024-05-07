@@ -4,7 +4,7 @@ import random
 import requests
 import datetime
 import uuid
-import openpyxl
+# import openpyxl
 
 from aiogram import Bot, Dispatcher, Router, F, types
 from aiogram.client.session import aiohttp
@@ -1225,11 +1225,11 @@ async def get_job_title(message, state):
         await delete_saved_messages(message, state)
         image_path = ImageDirectory.job_requirements
         msg = await send_photo_with_caption(message, state, image_path,
-                                            "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
+                                            "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности/расположение/условия и тд (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_DESCRIPTION)
     else:
-        msg = await message.answer("Название вакансии сильно длинное! Уложитесь в 100 символов")
+        msg = await message.answer("Название вакансии сильно длинное! Уложитесь в 50 символов")
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_TITLE)
 
@@ -1280,58 +1280,73 @@ async def get_job_title(message, state):
 @router.message(Job.STATE_JOB_DESCRIPTION)
 async def get_job_description(message, state):
     user_data = await state.get_data()
-    await delete_saved_messages(message, state)
+    if await validate_job_description(message.text):
+        await delete_saved_messages(message, state)
 
-    await state.update_data(job_description=message.text)
-    await delete_saved_messages(message, state)
-    builder = create_keyboard(['Пропустить'])
+        await state.update_data(job_description=message.text)
+        await delete_saved_messages(message, state)
+        keyboard_buttons = ['Пропустить'] + dict_currency
+        builder = create_keyboard(keyboard_buttons)
 
-    image_path = ImageDirectory.realty_currency
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "В какой валюте ЗП? \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
-                                        builder)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_CURRENCY)
+        image_path = ImageDirectory.realty_currency
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "В какой валюте ЗП? \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
+                                            builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_CURRENCY)
+    else:
+        msg = await message.answer("Описание слишком длинное! Уложитесь в 700 символов")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_DESCRIPTION)
 
 
 @router.message(Job.STATE_JOB_CURRENCY)
 async def get_job_currency(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
+    if message.text == "Пропустить" or message.text in dict_currency:
+        await state.update_data(job_currency=message.text)
+        if message.text == "Пропустить":
+            await state.update_data(job_currency=None)
+        await delete_saved_messages(message, state)
+        builder = create_keyboard(['Пропустить'])
 
-    await state.update_data(job_currency=message.text)
-    await delete_saved_messages(message, state)
-    builder = create_keyboard(['Пропустить'])
+        image_path = ImageDirectory.auto_car_price
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Укажите ЗП \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
+                                            builder)
+        # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_PRICE)
+    else:
+        keyboard_buttons = ['Пропустить'] + dict_currency
+        builder = create_keyboard(keyboard_buttons)
 
-    image_path = ImageDirectory.auto_car_price
-    msg = await send_photo_with_caption(message, state, image_path,
-                                        "Укажите ЗП \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
-                                        builder)
-    # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_PRICE)
-
+        msg = await message.answer("Укажите валюту из предложенных кнопок!", builder)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_CURRENCY)
 
 @router.message(Job.STATE_JOB_PRICE)
 async def get_job_price(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
+    if message.text == "Пропустить" or int(message.text) >= 0:
+        await state.update_data(job_price=message.text)
+        await delete_saved_messages(message, state)
 
-    await state.update_data(job_price=message.text)
-    await delete_saved_messages(message, state)
-
-    image_path = ImageDirectory.auto_seller_name
-    msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
-    # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_NAME)
-
-
+        image_path = ImageDirectory.auto_seller_name
+        msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
+        # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_NAME)
+    else:
+        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку Пропустить ⏭ !")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_CURRENCY)
 @router.message(Job.STATE_JOB_NAME)
 async def get_job_name(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
-
     await state.update_data(job_name=message.text)
     await delete_saved_messages(message, state)
 

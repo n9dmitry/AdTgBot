@@ -118,4 +118,7 @@ async def validate_realty_square(value):
 
 # ===============================================
 async def validate_job_title(value):
-    return len(value) <= 150
+    return len(value) <= 50
+
+async def validate_job_description(value):
+    return len(value) <= 700
