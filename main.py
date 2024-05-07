@@ -1319,7 +1319,9 @@ async def get_job_currency(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_PRICE)
     else:
-        msg = await message.answer("Выберите данные из кнопок")
+        builder = create_keyboard(dict_currency2)
+        msg = await message.answer("Пожалуйста, выберите корректную валюту.",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_CURRENCY)
 
@@ -1327,46 +1329,56 @@ async def get_job_currency(message, state):
 async def get_job_price(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
-    if message.text == "Пропустить" or int(message.text) >= 0:
+    if message.text == "Пропустить" or (message.text.isdigit() and int(message.text) >= 0):
         await state.update_data(job_price=message.text)
+        if message.text == "Пропустить":
+            await state.update_data(job_price=None)
         await delete_saved_messages(message, state)
-
         image_path = ImageDirectory.auto_seller_name
         msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
         # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_NAME)
     else:
-        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку Пропустить ⏭ !")
+        builder = create_keyboard(['Пропустить'])
+        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку Пропустить ⏭ !",
+                                   reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
-        await state.set_state(Job.STATE_JOB_CURRENCY)
+        await state.set_state(Job.STATE_JOB_PRICE)
 @router.message(Job.STATE_JOB_NAME)
 async def get_job_name(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
-    await state.update_data(job_name=message.text)
-    await delete_saved_messages(message, state)
+    if await validate_name(message.text):
+        await state.update_data(job_name=message.text)
+        await delete_saved_messages(message, state)
 
-    image_path = ImageDirectory.job_contacts
-    msg = await send_photo_with_caption(message, state, image_path, "Напишите номер для связи (⌨ напишите)")
-    # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Job.STATE_JOB_CONTACTS)
+        image_path = ImageDirectory.job_contacts
+        msg = await send_photo_with_caption(message, state, image_path, "Напишите номер для связи (⌨ напишите)")
+        # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_CONTACTS)
+    else:
+        msg = await message.answer("Введите корректное имя")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_NAME)
 
 
 @router.message(Job.STATE_JOB_CONTACTS)
 async def get_job_contacts(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
-
-    await state.update_data(job_contacts=message.text)
-    await delete_saved_messages(message, state)
-    print(user_data)
-    image_path = ImageDirectory.job_photos
-    msg = await send_photo_with_caption(message, state, image_path, "Загрузите фото!")
-    await add_message_id(state, msg.message_id)
-    await state.set_state(Ads.STATE_PHOTO)
-
+    if await validate_phone_number(message.text):
+        await state.update_data(job_contacts=message.text)
+        print(user_data)
+        image_path = ImageDirectory.job_photos
+        msg = await send_photo_with_caption(message, state, image_path, "Загрузите фото!")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Ads.STATE_PHOTO)
+    else:
+        msg = await message.answer("Введите корректный номер")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_CONTACTS)
 
 @router.message(Ads.STATE_PHOTO)
 @router.message(F.media_group_id)
