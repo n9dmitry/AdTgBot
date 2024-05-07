@@ -54,6 +54,7 @@ dict_car_document_statuses = dicts.get("dict_car_document_statuses", {})
 dict_car_owners = dicts.get("dict_car_owners", {})
 dict_car_customs_cleared = dicts.get("dict_car_customs_cleared", {})
 dict_currency = dicts.get("dict_currency", {})
+dict_currency2 = dicts.get("dict_currency2", {})
 dict_car_conditions = dicts.get("dict_car_conditions", {})
 dict_car_mileages = dicts.get("dict_car_mileages", {})
 dict_edit_buttons = dicts.get("dict_edit_buttons", {})
@@ -1285,8 +1286,7 @@ async def get_job_description(message, state):
 
         await state.update_data(job_description=message.text)
         await delete_saved_messages(message, state)
-        keyboard_buttons = ['Пропустить'] + dict_currency
-        builder = create_keyboard(keyboard_buttons)
+        builder = create_keyboard(dict_currency2)
 
         image_path = ImageDirectory.realty_currency
         msg = await send_photo_with_caption(message, state, image_path,
@@ -1304,7 +1304,7 @@ async def get_job_description(message, state):
 async def get_job_currency(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
-    if message.text == "Пропустить" or message.text in dict_currency:
+    if message.text in dict_currency2:
         await state.update_data(job_currency=message.text)
         if message.text == "Пропустить":
             await state.update_data(job_currency=None)
@@ -1319,10 +1319,7 @@ async def get_job_currency(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_PRICE)
     else:
-        keyboard_buttons = ['Пропустить'] + dict_currency
-        builder = create_keyboard(keyboard_buttons)
-
-        msg = await message.answer("Укажите валюту из предложенных кнопок!", builder)
+        msg = await message.answer("Выберите данные из кнопок")
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_CURRENCY)
 
