@@ -970,7 +970,7 @@ async def get_realty_type(message, state):
     elif 'Коммерческий объект🏪' in message.text:
         await state.update_data(realty_type=message.text)
         builder = create_keyboard(dict_commercial_realty_type)
-        image_path = ImageDirectory.realty_type
+        image_path = ImageDirectory.realty_commercial_type
         msg = await send_photo_with_caption(message, state, image_path, "Укажите тип коммерческой недвижимости:",
                                             builder)
         await add_message_id(state, msg.message_id)
@@ -1161,7 +1161,7 @@ async def get_realty_description(message, state):
         await state.update_data(realty_description=message.text)
         await delete_saved_messages(message, state)
 
-        image_path = ImageDirectory.realty_contacts
+        image_path = ImageDirectory.realty_name
         msg = await send_photo_with_caption(message, state, image_path,
                                             "Напишите имя: ")
         await add_message_id(state, msg.message_id)
@@ -1179,7 +1179,7 @@ async def get_realty_name(message, state):
         await state.update_data(realty_name=message.text)
         await delete_saved_messages(message, state)
 
-        image_path = ImageDirectory.auto_seller_name
+        image_path = ImageDirectory.realty_contacts
         msg = await send_photo_with_caption(message, state, image_path,
                                             "Напишите номер: ")
         await add_message_id(state, msg.message_id)
@@ -1224,7 +1224,7 @@ async def get_job_title(message, state):
     if await validate_job_title(message.text):
         await state.update_data(job_title=message.text)
         await delete_saved_messages(message, state)
-        image_path = ImageDirectory.job_requirements
+        image_path = ImageDirectory.job_description
         msg = await send_photo_with_caption(message, state, image_path,
                                             "Опишите вакансию! Напишите требования к кандидату/задачи/обязанности/расположение/условия и тд (⌨ напишите) \n (для указания уровня ЗП будет отдельное поле)")
         await add_message_id(state, msg.message_id)
@@ -1311,7 +1311,7 @@ async def get_job_currency(message, state):
         await delete_saved_messages(message, state)
         builder = create_keyboard(['Пропустить'])
 
-        image_path = ImageDirectory.auto_car_price
+        image_path = ImageDirectory.job_price
         msg = await send_photo_with_caption(message, state, image_path,
                                             "Укажите ЗП \n (нажмите Пропустить ⏭ если если не требуется указывать, )",
                                             builder)
@@ -1334,14 +1334,14 @@ async def get_job_price(message, state):
         if message.text == "Пропустить":
             await state.update_data(job_price=None)
         await delete_saved_messages(message, state)
-        image_path = ImageDirectory.auto_seller_name
+        image_path = ImageDirectory.job_name
         msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
         # msg = await message.reply("Напишите название вакансии (Например: Middle Python разработчик",)
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_NAME)
     else:
         builder = create_keyboard(['Пропустить'])
-        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку Пропустить ⏭ !",
+        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку aПропустить ⏭ !",
                                    reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_PRICE)
@@ -1369,7 +1369,8 @@ async def get_job_contacts(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
     if await validate_phone_number(message.text):
-        await state.update_data(job_contacts=message.text)
+        phone_text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
+        await state.update_data(job_contacts=phone_text)
         print(user_data)
         image_path = ImageDirectory.job_photos
         msg = await send_photo_with_caption(message, state, image_path, "Загрузите фото!")

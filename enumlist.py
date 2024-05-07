@@ -28,11 +28,16 @@ class ImageDirectory:
     job_responsibilities = os.path.join(base_path, "job_responsibilities.jpg")
     job_requirements = os.path.join(base_path, "job_requirements.jpg")
     job_condition = os.path.join(base_path, "job_condition.jpg")
+    job_description = os.path.join(base_path, "job_description.jpg")
+    job_name = os.path.join(base_path, "job_name.jpg")
+    job_price = os.path.join(base_path, "job_price.jpg")
     job_contacts = os.path.join(base_path, "job_contacts.jpg")
     job_photos = os.path.join(base_path, "job_photos.jpg")
     # недвижимость
     realty_deal_type = os.path.join(base_path, "realty_deal_type.jpg")
     realty_type = os.path.join(base_path, "realty_type.jpg")
+    realty_commercial_type = os.path.join(base_path, "realty_commercial_type.jpg")
+
     # asdasd
     realty_rooms = os.path.join(base_path, "realty_rooms.jpg")
     realty_floor = os.path.join(base_path, "realty_floor.jpg")
@@ -44,5 +49,6 @@ class ImageDirectory:
     realty_currency = os.path.join(base_path, "realty_currency.jpg")
     realty_price = os.path.join(base_path, "realty_price.jpg")
     realty_photo = os.path.join(base_path, "realty_photo.jpg")
+    realty_name = os.path.join(base_path, "realty_name.jpg")
     realty_contacts = os.path.join(base_path, "realty_contacts.jpg")
 
