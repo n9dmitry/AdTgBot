@@ -214,7 +214,16 @@ async def send_api(message, state):
     if user_data['category'] == 'car':
         title = f"{user_data['car_brand']} - {user_data['car_model']}, {user_data['car_year']}, {user_data['car_mileage']}"
     elif user_data['category'] == 'realty':
-        title = f"{user_data['realty_rooms']}, {user_data['realty_type']}, {user_data['realty_square']}, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
+        if user_data['realty_type'] in "Комната":
+            title = f"{user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
+        elif user_data['realty_commercial_type']:
+            title = f"{user_data['realty_rooms']} комнат, {user_data['realty_commercial_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
+        elif user_data['realty_type'] in "Земельный участок":
+            title = f"{user_data['realty_type']}, {user_data['realty_square']} сот"
+        elif user_data['realty_type'] in "Дом":
+            title = f"{user_data['realty_rooms']} комнат, {user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floors_total']} этажей"
+        else:
+            title = f"{user_data['realty_rooms']} комнат, {user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
     elif user_data['category'] == 'job':
         title = user_data['job_title']
 
@@ -1234,6 +1243,7 @@ async def get_job_title(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_TITLE)
 
+
 # @router.message(Job.STATE_JOB_REQUIREMENTS)
 # async def get_job_requirements(message, state):
 #     user_data = await state.get_data()
@@ -1325,6 +1335,7 @@ async def get_job_currency(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_CURRENCY)
 
+
 @router.message(Job.STATE_JOB_PRICE)
 async def get_job_price(message, state):
     user_data = await state.get_data()
@@ -1345,6 +1356,8 @@ async def get_job_price(message, state):
                                    reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_PRICE)
+
+
 @router.message(Job.STATE_JOB_NAME)
 async def get_job_name(message, state):
     user_data = await state.get_data()
@@ -1380,6 +1393,7 @@ async def get_job_contacts(message, state):
         msg = await message.answer("Введите корректный номер")
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_CONTACTS)
+
 
 @router.message(Ads.STATE_PHOTO)
 @router.message(F.media_group_id)
@@ -1418,9 +1432,16 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
         )
     elif user_data['category'] == 'realty':
         caption = (
-            f"<b> {user_data['realty_deal']} {user_data['realty_type']}  </b>\n\n"
-            f"<b> {user_data['realty_type']} {user_data['realty_square']}</b>\n\n"
+            f"<b> {user_data['title']} </b>\n\n"
+            f"<b> {user_data['realty_deal']} "
+            f"<b> {user_data['realty_type']}  </b>\n\n"
+            f"<b> {user_data['realty_commercial_type']}  </b>\n\n"
+            f"<b> {user_data['realty_square']}</b>\n\n"
+            f"<b> {user_data['realty_rooms']}  </b>\n\n"
+            f"<b> {user_data['realty_floor']} / {user_data['realty_floors_total']}  </b>\n\n"
             f"👤<b>Имя:</b> <span class='tg-spoiler'> {user_data['realty_name']} </span>\n"
+            f"<b>Телефон:</b> <span class='tg-spoiler'> {user_data['realty_contacts']} </span>\n"
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             f"<b>ID объявления: #{user_data['ad_id']}</b>"
             f"{user_data}"
         )
@@ -1428,11 +1449,13 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
 
         caption = (
             f"🛞 <b> Название вакансии: {user_data['job_title']}</b>\n\n"
-            # f" <b> Требования к кандидату: </b> {user_data['job_requirements']}\n"
-            # f" <b> Обязанности и задачи: </b> {user_data['job_responsibilities']}\n"
+            
+            f" <b> ЗП: </b>{user_data['job_price']}{user_data['job_currency']}\n\n"
+
             f" <b> Описание работы: </b>{user_data['job_description']}\n\n"
 
             f"👤<b>Работодатель:</b> <span class='tg-spoiler'> {user_data['job_name']} </span>\n"
+
             f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
 
