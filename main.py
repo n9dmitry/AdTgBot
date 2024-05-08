@@ -214,13 +214,13 @@ async def send_api(message, state):
     if user_data['category'] == 'car':
         title = f"{user_data['car_brand']} - {user_data['car_model']}, {user_data['car_year']}, {user_data['car_mileage']}"
     elif user_data['category'] == 'realty':
-        if user_data['realty_type'] in "Комната":
-            title = f"{user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
-        elif user_data['realty_commercial_type']:
+        if 'realty_commercial_type' in user_data:
             title = f"{user_data['realty_rooms']} комнат, {user_data['realty_commercial_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
-        elif user_data['realty_type'] in "Земельный участок":
+        elif user_data['realty_type'] == "Комната":
+            title = f"{user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
+        elif user_data['realty_type'] == "Земельный участок":
             title = f"{user_data['realty_type']}, {user_data['realty_square']} сот"
-        elif user_data['realty_type'] in "Дом":
+        elif user_data['realty_type'] == "Дом":
             title = f"{user_data['realty_rooms']} комнат, {user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floors_total']} этажей"
         else:
             title = f"{user_data['realty_rooms']} комнат, {user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
@@ -1431,20 +1431,23 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
     elif user_data['category'] == 'realty':
+        # Добавляем информацию о типе сделки и типе недвижимости
         caption = (
-            f"<b> {user_data['title']} </b>\n\n"
-            f"<b> {user_data['realty_deal']} "
-            f"<b> {user_data['realty_type']}  </b>\n\n"
-            f"<b> {user_data['realty_commercial_type']}  </b>\n\n"
-            f"<b> {user_data['realty_square']}</b>\n\n"
-            f"<b> {user_data['realty_rooms']}  </b>\n\n"
-            f"<b> {user_data['realty_floor']} / {user_data['realty_floors_total']}  </b>\n\n"
-            f"👤<b>Имя:</b> <span class='tg-spoiler'> {user_data['realty_name']} </span>\n"
-            f"<b>Телефон:</b> <span class='tg-spoiler'> {user_data['realty_contacts']} </span>\n"
-            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-            f"<b>ID объявления: #{user_data['ad_id']}</b>"
-            f"{user_data}"
+                f"<b>Тип сделки:</b> {user_data['realty_deal']} \n\n" +
+                f"<b>Тип недвижимости:</b> {user_data['realty_type']}" +
+                (f" {user_data['realty_commercial_type']}" if 'realty_commercial_type' in user_data else '') +
+                f"<b>{user_data['realty_square']} {'сот' if user_data['realty_type'] in 'Земельный участок' else 'м2'}</b>\n\n" +
+                (f"<b>{user_data['realty_rooms']}</b>\n\n" if user_data['realty_rooms'] not in [None,
+                                                                                                "Пропустить"] else '') +
+                f"<b>{user_data['realty_floor']} / {user_data['realty_floors_total'] } этаж </b>\n\n" +
+                f"<b>Описание:</b> {user_data['realty_description']}\n\n" +
+                f"👤<b>Имя:</b> <span class='tg-spoiler'>{user_data['realty_name']}</span>\n" +
+                f"<b>Телефон:</b> <span class='tg-spoiler'>{user_data['realty_contacts']}</span>\n" +
+                f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n" +
+                f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
+
+
     elif user_data['category'] == 'job':
 
         caption = (
