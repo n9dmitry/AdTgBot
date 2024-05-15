@@ -457,7 +457,7 @@ async def start(message: types.Message, state: FSMContext):
         f'/start - Запуск бота\n'
         f'/restart - Перезагрузка бота\n'
         f'/my_ads - Просмотр объявлений\n'
-        f'/my_profile - Мой профиль на selbie.ru [возможность редактирования объявления]\n'
+        f'/my_profile - Мой профиль на selbie.ru \n'
         f'/support - Написать в техподдержку')
     await add_message_id(state, msg.message_id)
     msg = await message.answer("Привет! Давай разместим объявление! \n Выбери категорию:", reply_markup=builder)
@@ -969,6 +969,7 @@ async def get_realty_type(message, state):
     print('realty 2', user_data)
     if (message.text in dict_realty_type) and ('Коммерческий объект' not in message.text):
         await state.update_data(realty_type=message.text)
+        await state.update_data(realty_commercial_type=None)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_rooms
         msg = await send_photo_with_caption(message, state, image_path,
@@ -1066,7 +1067,7 @@ async def get_realty_floor(message, state):
         if user_data.get('realty_floors_total') is None or int(text) <= int(user_data['realty_floors_total']):
             await state.update_data(realty_floor=text)
             if text == 'Пропустить':
-                await state.update_data(realty_rooms=None)
+                await state.update_data(realty_floor=None)
             image_path = ImageDirectory.realty_square
             msg = await send_photo_with_caption(message, state, image_path,
                                                 "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
