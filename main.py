@@ -60,7 +60,7 @@ dict_car_mileages = dicts.get("dict_car_mileages", {})
 dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 dict_realty_deal = dicts.get('dict_realty_deal', {})
 dict_realty_type = dicts.get('dict_realty_type', {})
-dict_commercial_realty_type = dicts.get('dict_commercial_realty_type', {})
+dict_realty_commercial_type = dicts.get('dict_realty_commercial_type', {})
 
 
 #
@@ -160,13 +160,13 @@ async def send_api(message, state):
     user_data = await state.get_data()
     field_mapping = {
         'car': {
-            'contact_name': 'car_name',
             'contact_phone': 'car_phone',
             'currency': 'car_currency',
             'price': 'car_price',
             'description': 'car_description',
         },
         'realty': {
+            'contact_name': 'realty_name',
             'contact_phone': 'realty_phone',
             'currency': 'realty_currency',
             'price': 'realty_price',
@@ -214,16 +214,8 @@ async def send_api(message, state):
     if user_data['category'] == 'car':
         title = f"{user_data['car_brand']} - {user_data['car_model']}, {user_data['car_year']}, {user_data['car_mileage']}"
     elif user_data['category'] == 'realty':
-        if 'realty_commercial_type' in user_data:
-            title = f"{user_data['realty_rooms']} комнат, {user_data['realty_commercial_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
-        elif user_data['realty_type'] == "Комната":
-            title = f"{user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
-        elif user_data['realty_type'] == "Земельный участок":
-            title = f"{user_data['realty_type']}, {user_data['realty_square']} сот"
-        elif user_data['realty_type'] == "Дом":
-            title = f"{user_data['realty_rooms']} комнат, {user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floors_total']} этажей"
-        else:
-            title = f"{user_data['realty_rooms']} комнат, {user_data['realty_type']}, {user_data['realty_square']} м2, {user_data['realty_floor']} / {user_data['realty_floors_total']} этаж"
+        generate_realty_title(user_data)  # Обновление user_data['title']
+        title = user_data['title']
     elif user_data['category'] == 'job':
         title = user_data['job_title']
 
@@ -271,7 +263,33 @@ def create_keyboard(button_texts):
 def create_keyboard_inline(buttons):
     builder = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     return builder
+def generate_realty_title(user_data):
+    title_parts = []
 
+    # Добавляем количество комнат, если оно задано
+    if user_data['realty_rooms'] is not None:
+        title_parts.append(f"{user_data['realty_rooms']} комнат")
+
+    # Добавляем тип недвижимости
+    title_parts.append(user_data['realty_type'])
+
+    # Добавляем площадь, если она задана
+    if user_data['realty_square'] is not None:
+        if user_data['realty_type'] == "Земельный участок":
+            title_parts.append(f"{user_data['realty_square']} сот")
+        else:
+            title_parts.append(f"{user_data['realty_square']} м2")
+
+    # Добавляем информацию о этаже, если она задана
+    if user_data['realty_floor'] is not None and user_data['realty_floors_total'] is not None:
+        title_parts.append(f"{user_data['realty_floor']} / {user_data['realty_floors_total']} этаж")
+    elif user_data['realty_floor'] is not None:
+        title_parts.append(f"{user_data['realty_floor']} этаж")
+    elif user_data['realty_floors_total'] is not None:
+        title_parts.append(f"{user_data['realty_floors_total']} этажей")
+
+    # Собираем тайтл из всех составляющих, исключая None значения
+    user_data['title'] = ", ".join(part for part in title_parts if part)
 
 async def add_message_id(state, message_id):
     user_data = await state.get_data()
@@ -843,7 +861,7 @@ async def get_car_description(message, state):
 
 
 @router.message(Car.STATE_SELECT_CURRENCY)
-async def select_currency(message, state):
+async def get_car_currency(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
     print('14', user_data)
@@ -900,13 +918,13 @@ async def get_car_location(message, state):
 
 
 @router.message(Car.STATE_SELLER_NAME)
-async def get_seller_name(message, state):
+async def get_car_name(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
     print('17', user_data)
 
     if await validate_name(message.text) is True:
-        await state.update_data(seller_name=message.text)
+        await state.update_data(car_name=message.text)
         image_path = ImageDirectory.auto_seller_phone
         msg = await send_photo_with_caption(message, state, image_path,
                                             "Отлично! Какой телефонный номер у продавца? (⌨ напишите в формате +7XXXNNNXXNN или 8XXXNNNXXNN)")
@@ -919,14 +937,14 @@ async def get_seller_name(message, state):
 
 
 @router.message(Car.STATE_SELLER_PHONE)
-async def get_seller_phone(message, state):
+async def get_car_phone(message, state):
     user_data = await state.get_data()
     await delete_saved_messages(message, state)
     print('18', user_data)
 
     if await validate_phone_number(message.text) is True:
         phone_text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
-        await state.update_data(seller_phone=phone_text)
+        await state.update_data(car_phone=phone_text)
         if await validate_final_length(message, state, user_data):
             image_path = ImageDirectory.auto_car_photos
             msg = await send_photo_with_caption(message, state, image_path,
@@ -969,7 +987,6 @@ async def get_realty_type(message, state):
     print('realty 2', user_data)
     if (message.text in dict_realty_type) and ('Коммерческий объект' not in message.text):
         await state.update_data(realty_type=message.text)
-        await state.update_data(realty_commercial_type=None)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_rooms
         msg = await send_photo_with_caption(message, state, image_path,
@@ -979,7 +996,7 @@ async def get_realty_type(message, state):
         await state.set_state(Realty.STATE_REALTY_ROOMS)
     elif 'Коммерческий объект🏪' in message.text:
         await state.update_data(realty_type=message.text)
-        builder = create_keyboard(dict_commercial_realty_type)
+        builder = create_keyboard(dict_realty_commercial_type)
         image_path = ImageDirectory.realty_commercial_type
         msg = await send_photo_with_caption(message, state, image_path, "Укажите тип коммерческой недвижимости:",
                                             builder)
@@ -996,8 +1013,8 @@ async def get_realty_type(message, state):
 async def get_commercial_realty_type(message, state):
     user_data = await state.get_data()
     print('realty 2.1', user_data)
-    if message.text in dict_commercial_realty_type:
-        await state.update_data(commercial_realty_type=message.text)
+    if message.text in dict_realty_commercial_type:
+        await state.update_data(realty_commercial_type=message.text)
         await delete_saved_messages(message, state)
 
         builder = create_keyboard(['Пропустить'])
@@ -1061,13 +1078,18 @@ async def get_realty_floors_total(message, state):
 async def get_realty_floor(message, state):
     user_data = await state.get_data()
     print('realty 6', user_data)
-    text = message.text.strip()  # Remove extra whitespaces
+    text = message.text
 
     if await validate_realty_floor(text):
+        if text == 'Пропустить':
+            await state.update_data(realty_floor=None)
+            image_path = ImageDirectory.realty_square
+            msg = await send_photo_with_caption(message, state, image_path,
+                                                "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
+            await add_message_id(state, msg.message_id)
+            await state.set_state(Realty.STATE_REALTY_SQUARE)
         if user_data.get('realty_floors_total') is None or int(text) <= int(user_data['realty_floors_total']):
             await state.update_data(realty_floor=text)
-            if text == 'Пропустить':
-                await state.update_data(realty_floor=None)
             image_path = ImageDirectory.realty_square
             msg = await send_photo_with_caption(message, state, image_path,
                                                 "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
@@ -1082,6 +1104,49 @@ async def get_realty_floor(message, state):
         msg = await message.answer("Введите корректное значение этажа или нажмите кнопку Пропустить ⏭", )
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_FLOOR)
+
+@router.message(Realty.STATE_REALTY_FLOOR)
+async def get_realty_floor(message, state):
+    user_data = await state.get_data()
+    print('realty 6', user_data)
+
+    if await validate_realty_floor(message.text):
+        if message.text == 'Пропустить':
+            image_path = ImageDirectory.realty_square
+            msg = await send_photo_with_caption(message, state, image_path,
+                                                "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
+            await add_message_id(state, msg.message_id)
+            await state.set_state(Realty.STATE_REALTY_SQUARE)
+
+        elif user_data['realty_floors_total'] is not None and int(message.text) <= int(user_data['realty_floors_total']):
+            await state.update_data(realty_floor=message.text)
+                # await state.update_data(realty_floor=None)
+            image_path = ImageDirectory.realty_square
+            msg = await send_photo_with_caption(message, state, image_path,
+                                                "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
+            await add_message_id(state, msg.message_id)
+            await state.set_state(Realty.STATE_REALTY_SQUARE)
+        else:
+            msg = await message.answer(
+                "Введенный этаж превышает общее количество этажей в здании. Пожалуйста, введите корректный этаж или нажмите кнопку 'Пропустить'.")
+            await add_message_id(state, msg.message_id)
+            await state.set_state(Realty.STATE_REALTY_FLOOR)
+    else:
+        msg = await message.answer("Введите корректное значение этажа или нажмите кнопку Пропустить ⏭", )
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Realty.STATE_REALTY_FLOOR)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @router.message(Realty.STATE_REALTY_SQUARE)
@@ -1201,13 +1266,13 @@ async def get_realty_name(message, state):
 
 
 @router.message(Realty.STATE_REALTY_CONTACTS)
-async def get_realty_contacts(message, state):
+async def get_realty_phone(message, state):
     user_data = await state.get_data()
     if await validate_phone_number(message.text) is True:
         phone_text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
-        await state.update_data(realty_contacts=phone_text)
+        await state.update_data(realty_phone=phone_text)
         if await validate_final_length(message, state, user_data):
-            await state.update_data(realty_contacts=phone_text)
+            await state.update_data(realty_phone=phone_text)
             await delete_saved_messages(message, state)
 
             image_path = ImageDirectory.realty_photo
@@ -1432,18 +1497,20 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
     elif user_data['category'] == 'realty':
+        generate_realty_title(user_data)  # Обновление user_data['title']
         # Добавляем информацию о типе сделки и типе недвижимости
         caption = (
+                f"<b> {user_data['title']} </b>\n\n" +
                 f"<b>Тип сделки:</b> {user_data['realty_deal']} \n\n" +
                 f"<b>Тип недвижимости:</b> {user_data['realty_type']}" +
                 (f" {user_data['realty_commercial_type']}" if 'realty_commercial_type' in user_data else '') +
                 f"<b>{user_data['realty_square']} {'сот' if user_data['realty_type'] in 'Земельный участок' else 'м2'}</b>\n\n" +
                 (f"<b>{user_data['realty_rooms']}</b>\n\n" if user_data['realty_rooms'] not in [None,
                                                                                                 "Пропустить"] else '') +
-                f"<b>{user_data['realty_floor']} / {user_data['realty_floors_total'] } этаж </b>\n\n" +
+                # f"<b>Этажей {user_data['realty_floor']} / {user_data['realty_floors_total'] } этаж </b>\n\n" +
                 f"<b>Описание:</b> {user_data['realty_description']}\n\n" +
                 f"👤<b>Имя:</b> <span class='tg-spoiler'>{user_data['realty_name']}</span>\n" +
-                f"<b>Телефон:</b> <span class='tg-spoiler'>{user_data['realty_contacts']}</span>\n" +
+                f"<b>Телефон:</b> <span class='tg-spoiler'>{user_data['realty_phone']}</span>\n" +
                 f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n" +
                 f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
