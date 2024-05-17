@@ -160,6 +160,7 @@ async def send_api(message, state):
     user_data = await state.get_data()
     field_mapping = {
         'car': {
+            'contact_name': 'car_name',
             'contact_phone': 'car_phone',
             'currency': 'car_currency',
             'price': 'car_price',
@@ -266,12 +267,16 @@ def create_keyboard_inline(buttons):
 def generate_realty_title(user_data):
     title_parts = []
 
+    title_parts.append(user_data['realty_deal'])
+
     # Добавляем количество комнат, если оно задано
     if user_data['realty_rooms'] is not None:
         title_parts.append(f"{user_data['realty_rooms']} комнат")
 
     # Добавляем тип недвижимости
     title_parts.append(user_data['realty_type'])
+    if 'realty_commercial_type' in user_data:
+        title_parts.append(user_data['realty_commercial_type'])
 
     # Добавляем площадь, если она задана
     if user_data['realty_square'] is not None:
@@ -923,7 +928,7 @@ async def get_car_name(message, state):
     await delete_saved_messages(message, state)
     print('17', user_data)
 
-    if await validate_name(message.text) is True:
+    if await validate_name(message.text):
         await state.update_data(car_name=message.text)
         image_path = ImageDirectory.auto_seller_phone
         msg = await send_photo_with_caption(message, state, image_path,
@@ -1088,7 +1093,7 @@ async def get_realty_floor(message, state):
                                                 "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
             await add_message_id(state, msg.message_id)
             await state.set_state(Realty.STATE_REALTY_SQUARE)
-        if user_data.get('realty_floors_total') is None or int(text) <= int(user_data['realty_floors_total']):
+        elif user_data.get('realty_floors_total') is None or int(text) <= int(user_data['realty_floors_total']):
             await state.update_data(realty_floor=text)
             image_path = ImageDirectory.realty_square
             msg = await send_photo_with_caption(message, state, image_path,
@@ -1502,7 +1507,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
         caption = (
                 f"<b> {user_data['title']} </b>\n\n" +
                 f"<b>Тип сделки:</b> {user_data['realty_deal']} \n\n" +
-                f"<b>Тип недвижимости:</b> {user_data['realty_type']}" +
+                (f"<b>Тип недвижимости:</b> {user_data['realty_type']}" if 'realty_commercial_type' in user_data else '') +
                 (f" {user_data['realty_commercial_type']}" if 'realty_commercial_type' in user_data else '') +
                 f"<b>{user_data['realty_square']} {'сот' if user_data['realty_type'] in 'Земельный участок' else 'м2'}</b>\n\n" +
                 (f"<b>{user_data['realty_rooms']}</b>\n\n" if user_data['realty_rooms'] not in [None,
