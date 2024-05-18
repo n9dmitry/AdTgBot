@@ -1454,7 +1454,7 @@ async def get_job_contacts(message, state):
     await delete_saved_messages(message, state)
     if await validate_phone_number(message.text):
         phone_text = '+7' + message.text[1:] if message.text.startswith('8') else message.text
-        await state.update_data(job_contacts=phone_text)
+        await state.update_data(job_phone=phone_text)
         print(user_data)
         image_path = ImageDirectory.job_photos
         msg = await send_photo_with_caption(message, state, image_path, "Загрузите фото!")
@@ -1495,8 +1495,8 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
             f"ℹ️<b>Дополнительная информация:</b> {user_data['car_description']}\n\n"
             f"🔥<b>Цена:</b> {user_data['car_price']} {user_data['car_currency']}\n\n"
             f"📍<b>Местоположение:</b> {user_data['car_location']}\n"
-            f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data['seller_name']} </span>\n"
-            f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['seller_phone']} </span>\n"
+            f"👤<b>Продавец:</b> <span class='tg-spoiler'> {user_data['car_name']} </span>\n"
+            f"📲<b>Телефон продавца:</b> <span class='tg-spoiler'>{user_data['car_phone']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
             f" {hlink('Selbie Auto. Рынок тачек в ДНР', 'https://t.me/selbieauto')} | {hlink('Разместить авто', 'https://t.me/selbie_bot')} \n\n"
             f"<b>ID объявления: #{user_data['ad_id']}</b>"
@@ -1532,7 +1532,7 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
 
             f"👤<b>Работодатель:</b> <span class='tg-spoiler'> {user_data['job_name']} </span>\n"
 
-            f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_contacts']} </span>\n"
+            f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_phone']} </span>\n"
             f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
 
             f"<b>ID объявления: #{user_data['ad_id']}</b>"
