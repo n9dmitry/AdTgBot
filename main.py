@@ -264,26 +264,34 @@ def create_keyboard(button_texts):
 def create_keyboard_inline(buttons):
     builder = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     return builder
+
+
 def generate_realty_title(user_data):
     title_parts = []
 
     title_parts.append(user_data['realty_deal'])
+    print("After realty_deal:", title_parts)
 
     # Добавляем количество комнат, если оно задано
     if user_data['realty_rooms'] is not None:
         title_parts.append(f"{user_data['realty_rooms']} комнат")
+        print("After realty_rooms:", title_parts)
 
     # Добавляем тип недвижимости
     title_parts.append(user_data['realty_type'])
+    print("After realty_type:", title_parts)
+
     if 'realty_commercial_type' in user_data:
         title_parts.append(user_data['realty_commercial_type'])
+        print("After realty_commercial_type:", title_parts)
 
     # Добавляем площадь, если она задана
     if user_data['realty_square'] is not None:
-        if user_data['realty_type'] == "Земельный участок":
+        if "Земельный участок" in user_data['realty_type'] :
             title_parts.append(f"{user_data['realty_square']} сот")
         else:
             title_parts.append(f"{user_data['realty_square']} м2")
+        print("After realty_square:", title_parts)
 
     # Добавляем информацию о этаже, если она задана
     if user_data['realty_floor'] is not None and user_data['realty_floors_total'] is not None:
@@ -292,9 +300,12 @@ def generate_realty_title(user_data):
         title_parts.append(f"{user_data['realty_floor']} этаж")
     elif user_data['realty_floors_total'] is not None:
         title_parts.append(f"{user_data['realty_floors_total']} этажей")
+    print("After floors:", title_parts)
 
     # Собираем тайтл из всех составляющих, исключая None значения
     user_data['title'] = ", ".join(part for part in title_parts if part)
+    print("Final title:", user_data['title'])
+
 
 async def add_message_id(state, message_id):
     user_data = await state.get_data()
@@ -1423,7 +1434,7 @@ async def get_job_price(message, state):
         await state.set_state(Job.STATE_JOB_NAME)
     else:
         builder = create_keyboard(['Пропустить'])
-        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку aПропустить ⏭ !",
+        msg = await message.answer("Укажите корректные данные заработной платы либо нажмите кнопку Пропустить ⏭ !",
                                    reply_markup=builder.as_markup(resize_keyboard=True))
         await add_message_id(state, msg.message_id)
         await state.set_state(Job.STATE_JOB_PRICE)
@@ -1505,36 +1516,43 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
         generate_realty_title(user_data)  # Обновление user_data['title']
         # Добавляем информацию о типе сделки и типе недвижимости
         caption = (
-                f"<b> {user_data['title']} </b>\n\n" +
-                f"<b>Тип сделки:</b> {user_data['realty_deal']} \n\n" +
-                (f"<b>Тип недвижимости:</b> {user_data['realty_type']}" if 'realty_commercial_type' in user_data else '') +
-                (f" {user_data['realty_commercial_type']}" if 'realty_commercial_type' in user_data else '') +
-                f"<b>{user_data['realty_square']} {'сот' if user_data['realty_type'] in 'Земельный участок' else 'м2'}</b>\n\n" +
-                (f"<b>{user_data['realty_rooms']}</b>\n\n" if user_data['realty_rooms'] not in [None,
-                                                                                                "Пропустить"] else '') +
-                # f"<b>Этажей {user_data['realty_floor']} / {user_data['realty_floors_total'] } этаж </b>\n\n" +
-                f"<b>Описание:</b> {user_data['realty_description']}\n\n" +
+                f"<b> 🏘 {user_data['title']} </b>\n\n"
+                f"<b>▪Тип недвижимости:</b> {user_data.get('realty_commercial_type', user_data['realty_type'])} \n" +
+                (f"<b>▪️Комнат:</b> {user_data['realty_rooms']}\n" if user_data['realty_rooms'] not in [None,
+                                                                                                        "Пропустить"] else '') +
+                (f"<b>▪️Этаж:</b> {user_data['realty_floor']} из {user_data['realty_floors_total']} \n"
+                 if user_data['realty_floor'] is not None and user_data['realty_floors_total'] is not None else '') +
+                (f"<b>▪️Этажей:</b> {user_data['realty_floors_total']} \n"
+                 if user_data['realty_floors_total'] is not None and user_data['realty_floor'] is None else '') +
+                (f"<b>▪️Этаж:</b> {user_data['realty_floor']} \n"
+                 if user_data['realty_floor'] is not None and user_data['realty_floors_total'] is None else '') +
+                f"<b>▪️Площадь:</b> {user_data['realty_square']} {'сот' if 'Земельный участок' in user_data['realty_type'] else 'м2'}\n\n" +
+                f"<b>✅Описание:✅</b>\n {user_data['realty_description']}\n\n" +
+                f"🔥<b>Цена:</b> {user_data['realty_price']} {user_data['realty_currency']} 🔥\n\n"
+                f"<b>📍Местонахождение:</b> {user_data['realty_location']}\n\n" +
+                f"<b>📬Контакты:</b>\n" +
                 f"👤<b>Имя:</b> <span class='tg-spoiler'>{user_data['realty_name']}</span>\n" +
-                f"<b>Телефон:</b> <span class='tg-spoiler'>{user_data['realty_phone']}</span>\n" +
+                f"📲<b>Телефон:</b> <span class='tg-spoiler'>{user_data['realty_phone']}</span>\n" +
                 f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n" +
-                f"<b>ID объявления: #{user_data['ad_id']}</b>"
-        )
 
+                f" {hlink('Selbie Realty. Недвижимость в ДНР', 'https://t.me/selbierealty')} | {hlink('Разместить объявление', 'https://t.me/selbie_bot')} \n\n"
+                f"<b>ID объявления: #{user_data['ad_id']}</b>"
+
+        )
 
     elif user_data['category'] == 'job':
 
         caption = (
-            f"🛞 <b> Название вакансии: {user_data['job_title']}</b>\n\n"
-            
-            f" <b> ЗП: </b>{user_data['job_price']}{user_data['job_currency']}\n\n"
-
-            f" <b> Описание работы: </b>{user_data['job_description']}\n\n"
-
-            f"👤<b>Работодатель:</b> <span class='tg-spoiler'> {user_data['job_name']} </span>\n"
-
-            f"📲<b>Телефон работодателя:</b> <span class='tg-spoiler'>{user_data['job_phone']} </span>\n"
-            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n"
-
+            f"‼️ЕСТЬ РАБОТА!‼️\n\n" +
+            f"<b> Требуется:</b> {user_data['job_title']}\n\n" +
+            f" <b>✅Описание работы:✅</b>\n{user_data['job_description']}\n\n" +
+            (f"<b>ЗП: </b>💸💸💸{user_data['job_price']}{user_data['job_currency']}💸💸💸\n\n"
+                if user_data.get('job_price') is not None and user_data.get('job_currency') is not None else '') +
+            f"<b>📬Контакты:</b>\n" +
+            f"👤<b>Имя:</b> <span class='tg-spoiler'>{user_data['job_name']}</span>\n" +
+            f"📲<b>Телефон:</b> <span class='tg-spoiler'>{user_data['job_phone']}</span>\n" +
+            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n" +
+            f" {hlink('Selbie Work. Есть работа в ДНР', 'https://t.me/selbiejob')} | {hlink('Разместить вакансию', 'https://t.me/selbie_bot')} \n\n"
             f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
 

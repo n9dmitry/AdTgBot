@@ -121,4 +121,4 @@ async def validate_job_title(value):
     return len(value) <= 50
 
 async def validate_job_description(value):
-    return len(value) <= 700
+    return len(value) <= 800
