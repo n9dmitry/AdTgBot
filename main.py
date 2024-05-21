@@ -287,7 +287,7 @@ def generate_realty_title(user_data):
 
     # Добавляем площадь, если она задана
     if user_data['realty_square'] is not None:
-        if "Земельный участок" in user_data['realty_type'] :
+        if "Земельный участок" in user_data['realty_type']:
             title_parts.append(f"{user_data['realty_square']} сот")
         else:
             title_parts.append(f"{user_data['realty_square']} м2")
@@ -426,8 +426,33 @@ async def my_ads(message: types.Message, state: FSMContext):
 
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
-    msg = await message.answer(f"У вас пока нет размещенных объявлений. Нажмите /restart для перезапуска бота")
-    await add_message_id(state, msg.message_id)
+    username = f'user_{message.from_user.id}'
+    print(username)
+    url = f'http://127.0.0.1:8000/api/check_user/{username}/'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status in [200, 201]:
+                print('Заебись!')
+                builder = create_keyboard(['Сменить пароль', 'Перезагрузить бота'])
+                msg = await message.answer(f"Ваша ссылка для входа: http://127.0.0.1:8000/auth/{username}/",
+                                           reply_markup=builder.as_markup(resize_keyboard=True))
+                await add_message_id(state, msg.message_id)
+            else:
+                print('Нихуя!')
+                msg = await message.answer(
+                    f"У вас пока нет размещенных объявлений. Нажмите /restart для перезапуска бота")
+                await add_message_id(state, msg.message_id)
+
+    #                 data = await response.json()
+    #                 user_exists = data.get('exists', False)
+    #                 if user_exists:
+    #                     msg = await message.answer(f"User '{username}' exists in the system.")
+    #                 else:
+    #                     msg = await message.answer(f"User '{username}' does not exist in the system.")
+    #             else:
+    #                 msg = await message.answer(f"Error checking user status. Please try again later.")
+    # else:
+    #     msg = await message.answer(f"Username not found in Telegram profile.")
 
 
 @router.message(Command("support"))
@@ -1053,7 +1078,7 @@ async def get_realty_rooms(message, state):
     print('realty 4', user_data)
     if await validate_realty_rooms(message.text):
         await state.update_data(realty_rooms=message.text)
-        if message.text == 'Пропустить':
+        if message.text == 'Пропустить' or message.text == '0':
             await state.update_data(realty_rooms=None)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_floors_total
@@ -1075,7 +1100,7 @@ async def get_realty_floors_total(message, state):
     print('realty 5', user_data)
     if await validate_realty_floors_total(message.text):
         await state.update_data(realty_floors_total=message.text)
-        if message.text == 'Пропустить':
+        if message.text == 'Пропустить' or message.text == '0':
             await state.update_data(realty_floors_total=None)
         builder = create_keyboard(['Пропустить'])
         image_path = ImageDirectory.realty_floor
@@ -1097,7 +1122,7 @@ async def get_realty_floor(message, state):
     text = message.text
 
     if await validate_realty_floor(text):
-        if text == 'Пропустить':
+        if text == 'Пропустить' or text == '0':
             await state.update_data(realty_floor=None)
             image_path = ImageDirectory.realty_square
             msg = await send_photo_with_caption(message, state, image_path,
@@ -1121,22 +1146,24 @@ async def get_realty_floor(message, state):
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_FLOOR)
 
+
 @router.message(Realty.STATE_REALTY_FLOOR)
 async def get_realty_floor(message, state):
     user_data = await state.get_data()
     print('realty 6', user_data)
 
     if await validate_realty_floor(message.text):
-        if message.text == 'Пропустить':
+        if message.text == 'Пропустить' or message.text == '0':
             image_path = ImageDirectory.realty_square
             msg = await send_photo_with_caption(message, state, image_path,
                                                 "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
             await add_message_id(state, msg.message_id)
             await state.set_state(Realty.STATE_REALTY_SQUARE)
 
-        elif user_data['realty_floors_total'] is not None and int(message.text) <= int(user_data['realty_floors_total']):
+        elif user_data['realty_floors_total'] is not None and int(message.text) <= int(
+                user_data['realty_floors_total']):
             await state.update_data(realty_floor=message.text)
-                # await state.update_data(realty_floor=None)
+            # await state.update_data(realty_floor=None)
             image_path = ImageDirectory.realty_square
             msg = await send_photo_with_caption(message, state, image_path,
                                                 "Какая площадь объекта? (По умолчанию в м2. Если земельный участок, то в сот) \n (Введите вручную ⌨ )")
@@ -1151,18 +1178,6 @@ async def get_realty_floor(message, state):
         msg = await message.answer("Введите корректное значение этажа или нажмите кнопку Пропустить ⏭", )
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_FLOOR)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @router.message(Realty.STATE_REALTY_SQUARE)
@@ -1424,7 +1439,7 @@ async def get_job_price(message, state):
     await delete_saved_messages(message, state)
     if message.text == "Пропустить" or (message.text.isdigit() and int(message.text) >= 0):
         await state.update_data(job_price=message.text)
-        if message.text == "Пропустить":
+        if message.text == "Пропустить" or message.text == '0':
             await state.update_data(job_price=None)
         await delete_saved_messages(message, state)
         image_path = ImageDirectory.job_name
@@ -1543,17 +1558,17 @@ async def handle_photos(message: types.Message, state: FSMContext, album: list[M
     elif user_data['category'] == 'job':
 
         caption = (
-            f"‼️ЕСТЬ РАБОТА!‼️\n\n" +
-            f"<b> Требуется:</b> {user_data['job_title']}\n\n" +
-            f" <b>✅Описание работы:✅</b>\n{user_data['job_description']}\n\n" +
-            (f"<b>ЗП: </b>💸💸💸{user_data['job_price']}{user_data['job_currency']}💸💸💸\n\n"
-                if user_data.get('job_price') is not None and user_data.get('job_currency') is not None else '') +
-            f"<b>📬Контакты:</b>\n" +
-            f"👤<b>Имя:</b> <span class='tg-spoiler'>{user_data['job_name']}</span>\n" +
-            f"📲<b>Телефон:</b> <span class='tg-spoiler'>{user_data['job_phone']}</span>\n" +
-            f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n" +
-            f" {hlink('Selbie Work. Есть работа в ДНР', 'https://t.me/selbiejob')} | {hlink('Разместить вакансию', 'https://t.me/selbie_bot')} \n\n"
-            f"<b>ID объявления: #{user_data['ad_id']}</b>"
+                f"‼️ЕСТЬ РАБОТА!‼️\n\n" +
+                f"<b> Требуется:</b> {user_data['job_title']}\n\n" +
+                f" <b>✅Описание работы:✅</b>\n{user_data['job_description']}\n\n" +
+                (f"<b>ЗП: </b>💸💸💸{user_data['job_price']}{user_data['job_currency']}💸💸💸\n\n"
+                 if user_data.get('job_price') is not None and user_data.get('job_currency') is not None else '') +
+                f"<b>📬Контакты:</b>\n" +
+                f"👤<b>Имя:</b> <span class='tg-spoiler'>{user_data['job_name']}</span>\n" +
+                f"📲<b>Телефон:</b> <span class='tg-spoiler'>{user_data['job_phone']}</span>\n" +
+                f"💬<b>Телеграм:</b> <span class='tg-spoiler'>@{message.from_user.username if message.from_user.username is not None else 'по номеру телефона'}</span>\n\n" +
+                f" {hlink('Selbie Work. Есть работа в ДНР', 'https://t.me/selbiejob')} | {hlink('Разместить вакансию', 'https://t.me/selbie_bot')} \n\n"
+                f"<b>ID объявления: #{user_data['ad_id']}</b>"
         )
 
     for message in album:
