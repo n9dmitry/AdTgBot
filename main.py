@@ -409,19 +409,14 @@ async def restart(message: types.Message, state: FSMContext):
 
 @router.message(Command("my_ads"))
 async def my_ads(message: types.Message, state: FSMContext):
-    msg = await message.answer(f"Список ваших объявлений.")
-    await add_message_id(state, msg.message_id)
+    username = f'user_{message.from_user.id}'
+    await message.answer(f"отправляем запрос на сайт")
+
     async with aiohttp.ClientSession() as session:
-        async with session.get('http://127.0.0.1:8000/api/myads/') as response:
-            data = await response.json()
-            await message.answer(f"{data}")
-            # if data:
-            #     for ad in data:
-            #         button_text = f"Ad: {ad['ad_id']}"
-            #         callback_data = f"ad:{ad['ad_id']}"
-            #         keyboard = types.InlineKeyboardMarkup()
-            #         keyboard.add(types.InlineKeyboardButton(text=button_text, callback_data=callback_data))
-            #         await bot.send_message(chat_id='chat_id', text="Choose an ad:", reply_markup=keyboard)
+        async with session.get(f'http://127.0.0.1:8000/api/myads/?username={username}') as response:
+            ads_data = await response.json()
+            print(ads_data)
+            await message.answer(f"{ads_data}")
 
 
 @router.message(Command("my_profile"))
