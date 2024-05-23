@@ -426,6 +426,7 @@ async def my_ads(message: types.Message, state: FSMContext):
 
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
+    await delete_saved_messages(message, state)
     username = f'user_{message.from_user.id}'
     print(username)
     url = f'http://127.0.0.1:8000/api/check_user/{username}/'
@@ -438,7 +439,7 @@ async def my_profile(message: types.Message, state: FSMContext):
                     async with session.post(gen_link_url, json={'username': username}) as gen_link_response:
                         if gen_link_response.status in [200, 201]:
                             gen_link_data = await gen_link_response.json()
-                            print('Заебись!')
+                            print('Пользователь получил ссылку!')
                             builder = create_keyboard(['Перезагрузить бота'])
                             msg = await message.answer(f"Ваша ссылка для входа: {gen_link_data['link']}",
                                                        reply_markup=builder.as_markup(resize_keyboard=True))
@@ -448,7 +449,7 @@ async def my_profile(message: types.Message, state: FSMContext):
                             msg = await message.answer("Ошибка при генерации ссылки. Попробуйте позже.")
                             await add_message_id(state, msg.message_id)
                 else:
-                    print('Нихуя!')
+                    print('Пользователь не получил ссылку!')
                     msg = await message.answer("У вас пока нет размещенных объявлений. Нажмите /restart для перезапуска бота")
                     await add_message_id(state, msg.message_id)
 
