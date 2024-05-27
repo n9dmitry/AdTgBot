@@ -406,18 +406,19 @@ async def restart(message: types.Message, state: FSMContext):
     await add_message_id(state, msg.message_id)
     await start(message, state)
 
-
 @router.message(Command("my_ads"))
 async def my_ads(message: types.Message, state: FSMContext):
     username = f'user_{message.from_user.id}'
-    await message.answer(f"отправляем запрос на сайт")
-
+    await message.answer("отправляем запрос на сайт")
+    url = f'http://127.0.0.1:8000/api/myads/{username}/'
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'http://127.0.0.1:8000/api/myads/?username={username}') as response:
-            ads_data = await response.json()
-            print(ads_data)
-            await message.answer(f"{ads_data}")
-
+        async with session.get(url) as response:
+            if response.status in [200, 201]:
+                data = await response.json()
+                await message.answer(f"{data}")
+            else:
+                error_message = await response.text()
+                await message.answer(f"Error: {error_message}")
 
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
