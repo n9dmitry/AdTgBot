@@ -415,7 +415,14 @@ async def my_ads(message: types.Message, state: FSMContext):
         async with session.get(url) as response:
             if response.status in [200, 201]:
                 data = await response.json()
-                await message.answer(f"{data}")
+                buttons = [
+                    [types.InlineKeyboardButton(text='Кнопка 1', callback_data='Кнопка 1')],
+                    [types.InlineKeyboardButton(text='Кнопка 2', callback_data='Кнопка 2')],
+                    [types.InlineKeyboardButton(text='Кнопка 3', callback_data='Кнопка 3')],
+                ]
+                builder = create_keyboard_inline(buttons)
+                await message.answer(f"{data}", reply_markup=builder)
+
             else:
                 error_message = await response.text()
                 await message.answer(f"Error: {error_message}")
