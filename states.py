@@ -66,6 +66,7 @@ class Realty(StatesGroup):
 class Job(StatesGroup):
     #hr_bot
     STATE_START_JOB = State()
+    STATE_JOB_CATEGORY = State()
     STATE_JOB_TITLE = State()
     STATE_JOB_REQUIREMENTS = State()
     STATE_JOB_RESPONSIBILITIES = State()

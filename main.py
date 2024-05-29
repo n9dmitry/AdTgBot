@@ -61,7 +61,7 @@ dict_edit_buttons = dicts.get("dict_edit_buttons", {})
 dict_realty_deal = dicts.get('dict_realty_deal', {})
 dict_realty_type = dicts.get('dict_realty_type', {})
 dict_realty_commercial_type = dicts.get('dict_realty_commercial_type', {})
-
+dict_job_categories = dicts.get('dict_job_categories', {})
 
 #
 # async def send_api(message, state):
@@ -416,8 +416,6 @@ async def my_ads(message: types.Message, state: FSMContext):
                 data = await response.json()
                 # buttons = [
                 #     [types.InlineKeyboardButton(text='Кнопка 1', callback_data='Кнопка 1')],
-                #     [types.InlineKeyboardButton(text='Кнопка 2', callback_data='Кнопка 2')],
-                #     [types.InlineKeyboardButton(text='Кнопка 3', callback_data='Кнопка 3')],
                 # ]
                 # builder = create_keyboard_inline(buttons)
                 # await message.answer(f"{data}", reply_markup=builder)
@@ -559,14 +557,16 @@ async def hr_bot_start(callback_query: types.CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     await delete_saved_messages(callback_query.message, state)
 
-    image_path = ImageDirectory.job_title
+    image_path = ImageDirectory.job_category
+    builder = create_keyboard(dict_job_categories).adjust(2)
+
     # await callback_query.message.answer('Напиши название своей вакансии')
     msg = await send_photo_with_caption(callback_query.message, state, image_path,
-                                        f"{callback_query.from_user.first_name} Напишите название вакансии (Например: Middle Python разработчик (⌨ напишите)")
+                                        f"{callback_query.from_user.first_name}, выберите категорию вакансии", builder)
     await add_message_id(state, msg.message_id)
 
     await state.update_data(category='job'),
-    await state.set_state(Job.STATE_JOB_TITLE)
+    await state.set_state(Job.STATE_JOB_CATEGORY)
 
 
 @router.message(Car.STATE_CAR_BRAND)
@@ -1323,7 +1323,21 @@ async def get_realty_phone(message, state):
         await state.set_state(Realty.STATE_REALTY_CONTACTS)
 
     # РАБОТА
-
+@router.message(Job.STATE_JOB_CATEGORY)
+async def get_job_category(message, state):
+    user_data = await state.get_data()
+    if message.text in dict_job_categories:
+        await state.update_data(job_category=message.text)
+        await delete_saved_messages(message, state)
+        image_path = ImageDirectory.job_title
+        msg = await send_photo_with_caption(message, state, image_path,
+                                            "Напишите название вакансии ")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_TITLE)
+    else:
+        msg = await message.answer("Выберите название категории из кнопок")
+        await add_message_id(state, msg.message_id)
+        await state.set_state(Job.STATE_JOB_CATEGORY)
 
 @router.message(Job.STATE_JOB_TITLE)
 async def get_job_title(message, state):
