@@ -409,19 +409,19 @@ async def restart(message: types.Message, state: FSMContext):
 @router.message(Command("my_ads"))
 async def my_ads(message: types.Message, state: FSMContext):
     username = f'user_{message.from_user.id}'
-    await message.answer("отправляем запрос на сайт")
     url = f'http://127.0.0.1:8000/api/myads/{username}/'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status in [200, 201]:
                 data = await response.json()
-                buttons = [
-                    [types.InlineKeyboardButton(text='Кнопка 1', callback_data='Кнопка 1')],
-                    [types.InlineKeyboardButton(text='Кнопка 2', callback_data='Кнопка 2')],
-                    [types.InlineKeyboardButton(text='Кнопка 3', callback_data='Кнопка 3')],
-                ]
-                builder = create_keyboard_inline(buttons)
-                await message.answer(f"{data}", reply_markup=builder)
+                # buttons = [
+                #     [types.InlineKeyboardButton(text='Кнопка 1', callback_data='Кнопка 1')],
+                #     [types.InlineKeyboardButton(text='Кнопка 2', callback_data='Кнопка 2')],
+                #     [types.InlineKeyboardButton(text='Кнопка 3', callback_data='Кнопка 3')],
+                # ]
+                # builder = create_keyboard_inline(buttons)
+                # await message.answer(f"{data}", reply_markup=builder)
+                await message.answer(f"На данный момент просмотр объявлений доступен на сайте. Перейдите в /my_profile чтобы получить ссылку для входа на сайт. \n\nПерейдите в ваш профиль в раздел Мои объявления")
 
             else:
                 error_message = await response.text()
