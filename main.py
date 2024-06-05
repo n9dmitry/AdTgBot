@@ -158,6 +158,7 @@ dict_job_categories = dicts.get('dict_job_categories', {})
 
 async def send_api(message, state):
     user_data = await state.get_data()
+
     field_mapping = {
         'car': {
             'contact_name': 'car_name',
@@ -165,6 +166,8 @@ async def send_api(message, state):
             'currency': 'car_currency',
             'price': 'car_price',
             'description': 'car_description',
+            'photos': 'sent_photos',
+
         },
         'realty': {
             'contact_name': 'realty_name',
@@ -172,6 +175,7 @@ async def send_api(message, state):
             'currency': 'realty_currency',
             'price': 'realty_price',
             'description': 'realty_description',
+            'photos': 'sent_photos',
 
         },
         'job': {
@@ -180,6 +184,7 @@ async def send_api(message, state):
             'currency': 'job_currency',
             'price': 'job_price',
             'description': 'job_description',
+            'photos': 'sent_photos',
 
         },
     }
@@ -191,15 +196,6 @@ async def send_api(message, state):
 
     # Получаем сопоставление полей для выбранной категории
     field_mapping_category = field_mapping[category]
-
-    # Формируем данные для отправки
-    data = {
-        'user_id': user_data.get('user_id', ''),
-        'username_tg': message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
-        'ad_id': user_data.get('ad_id', ''),
-        'category': category,
-    }
-
     # Обрабатываем фотографии, если они есть
     photo_urls = []
     for photo_data in user_data.get('sent_photos', []):
@@ -210,7 +206,21 @@ async def send_api(message, state):
             file_path = file_info['result']['file_path']
             photo_url = f'https://api.telegram.org/file/bot{API_TOKEN}/{file_path}'
             photo_urls.append(photo_url)
-    data['sent_photos'] = ','.join(photo_urls)
+    user_data['sent_photos'] = ','.join(photo_urls) + ','
+
+    # Формируем данные для отправки
+    data = {
+        'user_id': user_data.get('user_id', ''),
+        'username_tg': message.from_user.username if message.from_user.username is not None else 'по номеру телефона',
+        'ad_id': user_data.get('ad_id', ''),
+        'category': category,
+        'photos': user_data.get('sent_photos'),
+
+    }
+
+    print('sent_photos', data)
+
+
 
     if user_data['category'] == 'car':
         title = f"{user_data['car_brand']} - {user_data['car_model']}, {user_data['car_year']}, {user_data['car_mileage']}"
