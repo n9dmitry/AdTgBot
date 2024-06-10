@@ -9,4 +9,6 @@ asyncio==3.4.3
 environs~=9.5.0
 redis
 betterlogging
+fuzzywuzzy
+openpyxl
 
