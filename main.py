@@ -417,23 +417,24 @@ async def restart(message: types.Message, state: FSMContext):
     await start(message, state)
 
 @router.message(Command("my_ads"))
-async def my_ads(message: types.Message, state: FSMContext):
+async def my_ads(message: types.Message, state):
+    await delete_saved_messages(message, state)
+
     username = f'user_{message.from_user.id}'
-    url = f'http://127.0.0.1:8000/api/myads/{username}/'
+    url = f'http://127.0.0.1:8000/api/my_ads/{username}/'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status in [200, 201]:
-                data = await response.json()
-                # buttons = [
-                #     [types.InlineKeyboardButton(text='Кнопка 1', callback_data='Кнопка 1')],
-                # ]
-                # builder = create_keyboard_inline(buttons)
-                # await message.answer(f"{data}", reply_markup=builder)
-                await message.answer(f"На данный момент просмотр объявлений доступен на сайте. Перейдите в /my_profile чтобы получить ссылку для входа на сайт. \n\nПерейдите в ваш профиль в раздел Мои объявления")
-
+                msg = await message.answer(
+                    "На данный момент просмотр объявлений доступен на сайте. "
+                    "Перейдите в /my_profile чтобы получить ссылку для входа на сайт. "
+                    "\n\nПерейдите в ваш профиль в раздел Мои объявления"
+                )
+                await add_message_id(state, msg.message_id)
             else:
-                error_message = await response.text()
-                await message.answer(f"Error: {error_message}")
+                msg = await message.answer('Ошибка')
+                await add_message_id(state, msg.message_id)
+
 
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
