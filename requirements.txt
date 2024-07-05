@@ -11,4 +11,5 @@ redis
 betterlogging
 fuzzywuzzy
 openpyxl
+cbrf
 

@@ -4,6 +4,7 @@ import random
 import requests
 import datetime
 import uuid
+import cbrf
 # import openpyxl
 
 from aiogram import Bot, Dispatcher, Router, F, types
@@ -262,6 +263,13 @@ async def send_api(message, state):
     except requests.RequestException as e:
         print("Ошибка при отправке запроса на сервер Django:", e)
 
+def get_usd_rate():
+    rates = cbrf.get_daily_rates()
+    for rate in rates:
+        if rate.find('CharCode').text == 'USD':
+            currency_value = rate.find('Value').text
+            return round(int((float(currency_value.replace(',', '.')))))
+
 
 # Создание клавиатуры
 def create_keyboard(button_texts):
@@ -417,23 +425,24 @@ async def restart(message: types.Message, state: FSMContext):
     await start(message, state)
 
 @router.message(Command("my_ads"))
-async def my_ads(message: types.Message, state):
-    await delete_saved_messages(message, state)
-
+async def my_ads(message: types.Message, state: FSMContext):
     username = f'user_{message.from_user.id}'
     url = f'http://127.0.0.1:8000/api/my_ads/{username}/'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             if response.status in [200, 201]:
-                msg = await message.answer(
-                    "На данный момент просмотр объявлений доступен на сайте. "
-                    "Перейдите в /my_profile чтобы получить ссылку для входа на сайт. "
-                    "\n\nПерейдите в ваш профиль в раздел Мои объявления"
-                )
-                await add_message_id(state, msg.message_id)
+                data = await response.json()
+                print(data)
+                # buttons = [
+                #     [types.InlineKeyboardButton(text='Кнопка 1', callback_data='Кнопка 1')],
+                # ]
+                # builder = create_keyboard_inline(buttons)
+                # await message.answer(f"{data}", reply_markup=builder)
+                await message.answer(f"На данный момент просмотр объявлений доступен на сайте. Ниже ссылка для авторизации:")
+                await my_profile(message, state)
             else:
-                msg = await message.answer('Ошибка')
-                await add_message_id(state, msg.message_id)
+                error_message = await response.text()
+                await message.answer(f"Error: {error_message}")
 
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
@@ -940,6 +949,9 @@ async def get_car_price(message, state):
 
     if await validate_car_price(message.text):
         await state.update_data(car_price=message.text)
+        if user_data['car_currency'] == '$':
+            await state.update_data(car_price=int(message.text) * get_usd_rate())
+            await state.update_data(car_currency='₽')
         image_path = ImageDirectory.auto_car_location
         msg = await send_photo_with_caption(message, state, image_path,
                                             "Прекрасно! Где находится автомобиль? Город/пункт. (⌨ напишите)")
@@ -1258,6 +1270,9 @@ async def get_realty_price(message, state):
     user_data = await state.get_data()
     if message.text.isdigit() and int(message.text) > 0:
         await state.update_data(realty_price=message.text)
+        if user_data['realty_currency'] == '$':
+            await state.update_data(realty_price=int(message.text) * get_usd_rate())
+            await state.update_data(realty_currency='₽')
         await delete_saved_messages(message, state)
 
         image_path = ImageDirectory.realty_description
@@ -1466,6 +1481,9 @@ async def get_job_price(message, state):
         await state.update_data(job_price=message.text)
         if message.text == "Пропустить" or message.text == '0':
             await state.update_data(job_price=None)
+        if user_data['job_currency'] == '$':
+            await state.update_data(job_price=int(message.text) * get_usd_rate())
+            await state.update_data(job_currency='₽')
         await delete_saved_messages(message, state)
         image_path = ImageDirectory.job_name
         msg = await send_photo_with_caption(message, state, image_path, "Напишите имя работодателя (⌨ напишите)")
