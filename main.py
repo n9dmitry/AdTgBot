@@ -435,7 +435,6 @@ async def my_ads(message: types.Message, state):
                 msg = await message.answer('Ошибка')
                 await add_message_id(state, msg.message_id)
 
-
 @router.message(Command("my_profile"))
 async def my_profile(message: types.Message, state: FSMContext):
     await delete_saved_messages(message, state)
