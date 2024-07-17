@@ -1058,7 +1058,7 @@ async def get_realty_type(message, state):
                                             builder)
         await add_message_id(state, msg.message_id)
         await state.set_state(Realty.STATE_REALTY_ROOMS)
-    elif 'Коммерческий объект🏪' in message.text:
+    elif 'Коммерческий объект' in message.text:
         await state.update_data(realty_type=message.text)
         builder = create_keyboard(dict_realty_commercial_type)
         image_path = ImageDirectory.realty_commercial_type
